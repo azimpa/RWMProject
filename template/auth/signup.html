@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Signup</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="{% static 'sigcss/style.css' %}" />
+</head>
+
+<body class="img js-fullheight" style="background-image: url('{% static 'sigimages/4.png' %}'); overflow: hidden;">
+	<section class="ftco-section">
+		<div class="container">
+			<div class="row justify-content-center" style="margin-top: -100px">
+				<div class="col-md-6 text-center mb-5" style="margin-top: 20px">
+					<h1 class="heading-section" style="
+                font-family: Arial, sans-serif;
+                font-size: 24px;
+                font-weight: bold;
+              ">
+						Create an RWM account
+					</h1>
+					<h6 class="heading-section" style="font-family: Arial, sans-serif; font-weight: bold">
+						Sign Up
+					</h6>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-md-6 col-lg-4">
+					<div class="login-wrap p-0" style="margin-top: -50px">
+						<form action="signup" method="post">
+							{% csrf_token %}
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Username" name="username"
+									id="username" style="font-size: 14px; height: 40px; width: 350px;"
+									onkeyup="validateUsername()" />
+								<p id="username-error" style="color: red;"></p>
+								<input type="email" class="form-control" placeholder="Email ID" name="email" id="email"
+									style="font-size: 14px; height: 40px; width: 350px;" onkeyup="validateEmail()" />
+								<p id="email-error" style="color: red;"></p>
+								<input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
+									id="phone_number" style="font-size: 14px; height: 40px; width: 350px;"
+									onkeyup="validatePhoneNumber()" />
+								<p id="phone_number-error" style="color: red;"></p>
+								<input id="password1-field" type="password" class="form-control" placeholder="Password"
+									name="password1" id="password1-field"
+									style="font-size: 14px; height: 40px; width: 350px;"
+									onkeyup="validatePasswords()" />
+								<p id="password1-error" style="color: red;"></p>
+
+								<input id="password2-field" type="password" class="form-control"
+									placeholder="Confirm Password" name="password2" id="password2-field"
+									style="font-size: 14px; height: 40px; width: 350px;"
+									onkeyup="validatePasswords()" />
+								<p id="password2-error" style="color: red;"></p>
+
+
+								<button type="submit" class="form-control btn btn-primary submit px-3 mt-2"
+									style="font-size: 14px; height: 55px; width: 350px;">
+									Sign Up
+								</button>
+							</div>
+						</form>
+						<div class="form-group d-md-flex"></div>
+						<div class="mt-4" style="text-align: right;">
+							<p class="text-black">
+								Already have an account?
+								<a href="login" style="color: rgb(229, 250, 1)">Log in</a>
+								here.
+							</p>
+						</div>
+
+						<div class="alert-container d-flex flex-column align-items-center"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script src="{% static 'sigjs/jquery.min.js' %}"></script>
+	<script src="{% static 'sigjs/popper.js' %}"></script>
+	<script src="{% static 'sigjs/bootstrap.min.js' %}"></script>
+	<script src="{% static 'sigjs/main.js' %}"></script>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script>
+
+		$(document).on("submit", "form", function (e) {
+			if (
+				!validateUsername() ||
+				!validateEmail() ||
+				!validatePhoneNumber() ||
+				!validatePasswords()
+			) {
+				e.preventDefault();
+				swal("Invalid data! Ensure you have entered correct data");
+			}
+		});
+
+		function validateUsername() {
+			var username = $("#username").val().trim();
+			var required = 2;
+			var left = required - username.length;
+			if (username.length == 0) {
+				$("#username-error").html("Username is required").css("color", "red");
+				return false;
+			}
+			if (left > 0) {
+				$("#username-error").html(left + " more characters required").css("color", "red");
+				return false;
+			}
+			$("#username-error").html("Username is valid").css("color", "green");
+			return true;
+		}
+
+		function validateEmail() {
+			var email = $("#email").val().trim();
+			if (email.length == 0) {
+				$("#email-error").html("Email is Required").css("color", "red");
+				return false;
+			}
+			var emailPattern =
+				/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			if (!email.match(emailPattern)) {
+				$("#email-error").html("Email is Invalid").css("color", "red");
+				return false;
+			}
+			$("#email-error").html("Email is valid").css("color", "green");
+			return true;
+		}
+
+		function validatePhoneNumber() {
+			var phoneNumber = $("#phone_number").val().trim();
+			var num = phoneNumber.replace(/[^\d]/g, "");
+			console.log(num);
+			if (num.length == 0) {
+				$("#phone_number-error").html("Phone number is Required").css("color", "red");
+				return false;
+			}
+			if (num.length < 10 || num.length > 14) {
+				$("#phone_number-error").html("Phone number should be between 10 and 14 digits").css("color", "red");
+				return false;
+			}
+			$("#phone_number-error").html("Phone number is valid").css("color", "green");
+			return true;
+		}
+
+		function validatePasswords() {
+			var password1 = $("#password1-field").val().trim();
+			var password2 = $("#password2-field").val().trim();
+
+			if (password1.length < 2 || password2.length < 2) {
+				$("#password1-error").html("Password length should be minimum 5").css("color", "red");
+				return false;
+			}
+
+			if (password1 !== password2) {
+				$("#password2-error").html("Passwords do not match").css("color", "red");
+				return false;
+			}
+			$("#password1-error").html("Passwords match and valid").css("color", "green");
+			$("#password2-error").html("Passwords match and valid").css("color", "green");
+			return true;
+		}
+	</script>
+</body>
+
+</html>

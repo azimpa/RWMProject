@@ -1,0 +1,25 @@
+{% extends 'adm/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h3 class="mb-4 text-center">Edit Category</h3>
+            <form method="post" action="{% url 'edit_adm_categories' cat.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Edit Category Name</label>
+                    <input type="text" class="form-control" name="edited_category_name" 
+                        value="{{ cat.name }}" required>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary">Edit Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

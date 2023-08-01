@@ -1,0 +1,81 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>Login</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'logcss/style.css' %}">
+	<style>
+		.form-group {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.form-group input {
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+
+<body class="img js-fullheight" style="background-image: url({% static 'logimages/4.png' %}); overflow: hidden;">
+	<section class="ftco-section">
+		<div class="container">
+			<div class="row justify-content-center" style="margin-top: -70px;">
+				<div class="col-md-6 text-center mb-5" style="margin-top: 20px;">
+					{% for message in messages %}
+					<div class="alert alert-{{ message.tags }} alert-dismissible fade show col-6" role="alert">
+						<strong></strong>{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+					{% endfor %}
+					<h1 class="heading-section"
+						style="font-family: Arial, sans-serif; font-size: 24px; font-weight: bold;">Welcome back !</h1>
+					<h6 class="heading-section" style="font-family: Arial, sans-serif; font-weight: bold;">Log In</h6>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-md-6 col-lg-4">
+					<div class="login-wrap p-0" style="margin-top: -20px;">
+						<form action="login" method="post">
+							{% csrf_token %}
+							<div class="form-group">
+								<input type="email" class="form-control mb-2" placeholder="Email ID" name="email"
+									required>
+								<input id="password-field" type="password" class="form-control mb-2" name="pass"
+									placeholder="Password" required>
+								<span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"
+									onclick="togglePasswordVisibility()"></span>
+								<button type="submit" class="form-control btn btn-primary submit px-3">Log In</button>
+							</div>
+						</form>
+						<div class="form-group d-md-flex justify-content-end" style="width: 100%;">
+							<div class="w-50">
+								<div>
+									<a href="#" style="color: #fff;" class="text-right">Forgot Password</a>
+								</div>
+							</div>
+						</div>																
+					</div>
+					<div style="text-align: right; margin-top: 20px;">
+						<div style="margin-left: -79px;">
+						  <p class="text-white" style="font-family: Arial, sans-serif; font-size: 16px;">
+							Don't have an account? <a href="signup" style="color: rgb(229, 250, 1); text-decoration: none; font-weight: bold;">Sign Up</a> here.
+						  </p>
+						</div>
+					  </div>					  
+				</div>
+			</div>
+		</div>
+
+		</div>
+	</section>
+	<script src="{% static 'logjs/jquery.min.js' %}"></script>
+	<script src="{% static 'logjs/popper.js' %}"></script>
+	<script src="{% static 'logjs/bootstrap.min.js' %}"></script>
+	<script src="{% static 'logjs/main.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+{% extends 'adm/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="position: relative; left: 90px;bottom: 50px; width: 1100px; padding: 50px;">
+  <h1 class="mb-4">Add Product</h1>
+  <form method="post" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group d-inline-flex" style="width: 70%;">
+      <div>
+        <label for="name">Product Name</label>
+        <input type="text" class="form-control" id="name" name="product_name" style="width: 300px;" required>
+      </div>
+      <div style="margin-left: 100px;">
+        <label for="category">Category</label>
+        <select class="form-control" id="category" name="category" style="width: 300px;" required>
+          <option value="gravel_bike">Gravel Bike</option>
+          <option value="mountain_bike">Mountain Bike</option>
+          <option value="road_bike">Road Bike</option>
+          <option value="hybrid_bike">Hybrid Bike</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group d-inline-flex" style="width: 70%;">
+      <div>
+        <label for="size">Size</label>
+        <select class="form-control" id="size" name="size" style="width: 300px;" required>
+          <option value="3XS">3XS</option>
+          <option value="2XS">2XS</option>
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="2XL">2XL</option>
+        </select>
+      </div>
+      <div style="margin-left: 100px;">
+        <label for="color">Color</label>
+        <input type="text" class="form-control" id="color" name="color" style="width: 300px;" required>
+      </div>
+    </div>
+    <div class="form-group d-inline-flex" style="width: 70%;">
+      <div>
+        <label for="price">Price</label>
+        <input type="text" class="form-control" id="price" name="price" style="width: 300px;" required>
+      </div>
+      <div style="margin-left: 100px;">
+        <label for="offer_price">Offer Price</label>
+        <input type="text" class="form-control" id="offer_price" name="offer_price" style="width: 300px;" required>
+      </div>
+    </div>
+    <div class="form-group d-inline-flex" style="width: 70%;">
+      <div>
+        <label for="quantity">Quantity</label>
+        <input type="text" class="form-control" id="quantity" name="quantity" style="width: 300px;" required>
+      </div>
+      <div style="margin-left: 100px;">
+        <label for="discount">Discount (%)</label>
+        <input type="text" class="form-control" id="discount" name="discount" style="width: 300px;" required>
+      </div>
+    </div>
+    <div class="form-group d-inline-flex" style="width: 70%;">
+      <div>
+        <label for="brand">Brand</label>
+        <input type="text" class="form-control" id="brand" name="brand" style="width: 300px;" required>
+      </div>
+    </div>
+    <div class="form-group d-inline-flex" style="width: 70%;">
+      <div>
+        <label for="status">Status</label>
+        <select class="form-control" id="status" name="status" style="width: 300px;" required>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div style="margin-left: 100px;">
+        <label for="product_image" class="col-md-2 col-form-label">Image</label>
+        <div class="col-md-4">
+          <input type="file" id="product_image" name="product_image" accept="image/*" required>
+        </div>
+      </div>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary">Add Product</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

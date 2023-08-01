@@ -1,0 +1,78 @@
+{% extends 'adm/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="card mb-4" style="width: 100%;">
+    <div class="card-header">
+        <h2>Users</h2>
+    </div>
+    <div class="card-body">
+        <h5 class="mb-4">User List</h5>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through users here -->
+                    {% for user in admin_users %}
+                    <tr>
+                        <td>{{user.id}}</td>
+                        <td>{{user.username}}</td>
+                        <td>{{user.email}}</td>
+                        <td>{{user.phone_number}}</td>
+                        <td>
+                            {% if user.is_active %}
+                            <a href="block_user/{{ user.id }}" class="btn btn-danger btn-sm">Block</a>
+                            {% else %}
+                            <a href="unblock_user/{{ user.id }}" class="btn btn-primary btn-sm">Unblock</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<style>
+    /* Custom styles for the container and card */
+    .container {
+        padding: 20px;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    /* Custom styles for the table */
+    table {
+        width: 100%;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+
+        .card {
+            width: 100%;
+        }
+    }
+</style>
+
+{% endblock %}
