@@ -3,7 +3,6 @@ from .models import CustomUser
 from django.contrib import messages
 from django.contrib import auth
 from django.views.decorators.cache import never_cache
-from django.contrib.auth.decorators import login_required
 from . import verify
 
 # Create your views here.
@@ -61,6 +60,7 @@ def signup(request):
     
     return render(request, "auth/signup.html")
 
+@never_cache
 def login(request):
     if request.user.is_authenticated:
         return redirect("home")
@@ -86,6 +86,7 @@ def login(request):
         
     return render(request, 'auth/login.html')
 
+@never_cache
 def otpcheck(request, id, phone_number):
     user = get_object_or_404(CustomUser, id=id)
 
@@ -101,12 +102,13 @@ def otpcheck(request, id, phone_number):
             return redirect('signup')
     else:
         return render(request, 'auth/otpcheck.html', {'phone_number': phone_number, 'id': id})
-    
+
+@never_cache
 def logout(request):
     auth.logout(request)
     return redirect('home')    
 
-@login_required
+@never_cache
 def userprofile(request):
     username = request.user.username
     return render(request,'user/userprofile.html',{'username': username})    

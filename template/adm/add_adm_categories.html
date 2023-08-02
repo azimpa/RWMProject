@@ -13,9 +13,15 @@
                     <label for="name">Category Name</label>
                     <input type="text" class="form-control" id="name" name="category_name" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Add Category</button>
+                <button type="submit" class="btn btn-primary btn-block">Add Category</button>
             </form>
         </div>
     </div>
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show col-6" role="alert">
+        <strong></strong>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

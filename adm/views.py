@@ -24,40 +24,72 @@ def adm_login(request):
     return render(request, 'adm/adm_login.html')
 
 def adm_logout(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     logout(request)
     return redirect('index')
 
 def user_details(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     adm_users = CustomUser.objects.all().order_by('id')
     print(adm_users)
     return render(request, 'adm/user_details.html', {'admin_users': adm_users})
 
+
 def Admin_block_user(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     adm_users = CustomUser.objects.get(id=id)
     adm_users.is_active = False
     adm_users.save()
     return redirect('user_details')
 
 def Admin_unblock_user(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     ad_users = CustomUser.objects.get(id=id)
     ad_users.is_active = True
     ad_users.save()
     return redirect('user_details')
 
 def adm_categories(request):
-    adm_category = AdmCategories.objects.all()
-    return render(request, 'adm/adm_categories.html', {'categories': adm_category})
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
+    category = AdmCategories.objects.all().order_by('id')
+    return render(request, 'adm/adm_categories.html', {'categories': category})
 
 def add_adm_categories(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
     if request.method == 'POST':
-        cat_name = request.POST.get('category_name', '') 
-        if cat_name is not None:
+        cat_name = request.POST.get('category_name', '')
+
+        if cat_name.strip():  
+            if AdmCategories.objects.filter(name=cat_name).exists():
+                messages.error(request, f'The category "{cat_name}" already exists.')
+                return redirect('add_adm_categories')
+
             category = AdmCategories(name=cat_name)
             category.save()
+            print("New category saved:", category.name)
             return redirect('adm_categories')
+        else:
+            messages.error(request, 'Category name cannot be empty.')
+            return redirect('add_adm_categories')
+
     return render(request, 'adm/add_adm_categories.html')
 
 def edit_adm_categories(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     category = get_object_or_404(AdmCategories, id=id)
 
     if request.method == 'POST':
@@ -69,19 +101,29 @@ def edit_adm_categories(request, id):
     return render(request, 'adm/edit_adm_categories.html', {'cat': category})
 
 def delete_adm_categories(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     category = get_object_or_404(AdmCategories, id=id)
     category.delete()
     return redirect('adm_categories')
 
 def adm_product(request):
-    adm_products = AdmProducts.objects.all()
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
+    adm_products = AdmProducts.objects.all().order_by('id')
     return render(request, 'adm/adm_product.html', {'products': adm_products})
 
 def add_adm_product(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     if request.method == 'POST':
         prod_name = request.POST.get('product_name', '')
         prod_brand = request.POST.get('brand', '')
-        prod_category = request.POST.get('category', '')
+        prod_category_name = request.POST.get('product_categories', '')
+        print("Category ID from Form:", prod_category_name)
         prod_image = request.FILES.get('product_image', None)
         prod_size = request.POST.get('size', '')
         prod_color = request.POST.get('color', '')
@@ -91,26 +133,40 @@ def add_adm_product(request):
         prod_discount = request.POST.get('discount', '')
         prod_status = request.POST.get('status', 'active')
 
-        product = AdmProducts(
-            name=prod_name,
-            brand=prod_brand,
-            category=prod_category,
-            product_image=prod_image,
-            size=prod_size,
-            color=prod_color,
-            price=prod_price,
-            offer_price=prod_offer_price,
-            quantity=prod_quantity,
-            discount=prod_discount,
-            status=prod_status
-        )
+        if AdmProducts.objects.filter(name=prod_name).exists():
+            messages.error(request, f'The product "{prod_name}" already exists.')
+            return redirect('add_adm_product')
 
-        product.save()
-        return redirect('adm_product')
+        try:
+            category = AdmCategories.objects.get(name=prod_category_name)
+            product = AdmProducts(
+                name=prod_name,
+                brand=prod_brand,
+                category=category,
+                product_image=prod_image,
+                size=prod_size,
+                color=prod_color,
+                price=prod_price,
+                offer_price=prod_offer_price,
+                quantity=prod_quantity,
+                discount=prod_discount,
+                status=prod_status
+            )
 
-    return render(request, 'adm/add_adm_product.html')
+            product.save()
+            return redirect('adm_product')
+    
+        except AdmCategories.DoesNotExist:
+            messages.error(request, 'invalid Category')
+            return redirect('add_adm_product')
+    else:
+        return render(request, 'adm/add_adm_product.html')
+
 
 def edit_adm_product(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     product = get_object_or_404(AdmProducts, id=id)
 
     if request.method == 'POST':
@@ -125,38 +181,31 @@ def edit_adm_product(request, id):
         edited_quantity = request.POST.get('edited_quantity', '')
         edited_discount = request.POST.get('edited_discount', '')
         edited_status = request.POST.get('edited_status', 'active')
+        
+        category = AdmCategories.objects.get(name=edited_category)
 
-        if edited_name:
-            product.name = edited_name
-        if edited_brand:
-            product.brand = edited_brand
-        if edited_category:
-            product.category = edited_category
-        if edited_image:
-            product.product_image = edited_image
-        if edited_size:
-            product.size = edited_size
-        if edited_color:
-            product.color = edited_color
-        if edited_price:
-            product.price = edited_price
-        if edited_offer_price:
-            product.offer_price = edited_offer_price
-        if edited_quantity:
-            product.quantity = edited_quantity
-        if edited_discount:
-            product.discount = edited_discount
-        if edited_status:
-            product.status = edited_status
+        product.name = edited_name
+        product.brand = edited_brand
+        product.category = category
+        product.product_image = edited_image
+        product.size = edited_size
+        product.color = edited_color
+        product.price = edited_price
+        product.offer_price = edited_offer_price
+        product.quantity = edited_quantity
+        product.discount = edited_discount
+        product.status = edited_status
 
         product.save()
         return redirect('adm_product') 
-
+    
     return render(request, 'adm/edit_adm_product.html', {'product': product})
 
 
-def delete_adm_product(request,id):
+def delete_adm_product(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+    
     product = get_object_or_404(AdmProducts, id=id)
     product.delete()
     return redirect('adm_product')
-

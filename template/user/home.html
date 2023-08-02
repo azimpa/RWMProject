@@ -26,10 +26,10 @@
 				<nav class="main_nav">
 					<ul>
 						<li><a href="/">home</a></li>
-						<li><a href="categories.html">Road Bikes</a></li>
-						<li><a href="categories.html">Gravel Bikes</a></li>
-						<li><a href="categories.html">Mountain Bikes </a></li>
-						<li><a href="categories.html">Hybrid Bikes</a></li>
+						<li><a href="categories">Road Bikes</a></li>
+						<li><a href="categories">Gravel Bikes</a></li>
+						<li><a href="categories">Mountain Bikes </a></li>
+						<li><a href="categories">Hybrid Bikes</a></li>
 						{% if user.is_authenticated %}
 						<li><a href="{% url 'logout' %}">Logout</a></li>
 						{% else %}
@@ -122,8 +122,7 @@
 				<div class="owl-carousel owl-theme home_slider">
 					<div class="owl-item">
 						<div class="home_slider_background" style="
-                  background-image: url('{% static 'homeimages\1.png' %}');
-                "></div>
+                  background-image: url('{% static 'homeimages\1.png' %}');"></div>
 						<div class="home_slider_content">
 							<div class="home_slider_content_inner">
 								<div class="home_slider_subtitle">Promo Prices</div>
@@ -157,36 +156,28 @@
 					</div>
 				</div>
 			</div>
+			<!-- home.html -->
 			<div class="row promo_container">
+				{% for pr in prod %}
 				<div class="col-lg-4 promo_col">
 					<div class="promo_item">
+						{% if pr.product_image %}
 						<div class="promo_image">
-							<img src="{% static 'images\Road Bikes 1.webp' %}" alt="" />
+							<img src="{{pr.product_image.url}}" alt="{{pr.name}}" />
 						</div>
-						<div class="promo_title" style="color: rgb(0, 0, 0); text-align: center;">Road Bikes</div>
-						<div class="promo_link" style="text-align: center;"><a href="#">Shop Now</a></div>
-
-					</div>
-				</div>
-				<div class="col-lg-4 promo_col">
-					<div class="promo_item">
+						{% else %}
+						<!-- Render a placeholder image if 'product_image' does not exist -->
 						<div class="promo_image">
-							<img src="{% static 'images\Gravel 1.webp' %}" alt="" />
+							<img src="{% static 'path_to_placeholder_image.jpg' %}" alt="{{pr.name}}" />
 						</div>
-						<div class="promo_title" style="color: rgb(0, 0, 0); text-align: center;">Gravel Bikes</div>
+						{% endif %}
+						<div class="promo_title" style="color: rgb(0, 0, 0); text-align: center;">{{pr.name}}</div>
 						<div class="promo_link" style="text-align: center;"><a href="#">Shop Now</a></div>
 					</div>
 				</div>
-				<div class="col-lg-4 promo_col">
-					<div class="promo_item">
-						<div class="promo_image">
-							<img src="{% static 'images\Mountain Bikes 1.webp' %}" alt="" />
-						</div>
-						<div class="promo_title" style="color: rgb(0, 0, 0); text-align: center;">Mountain Bikes</div>
-						<div class="promo_link" style="text-align: center;"><a href="#">Shop Now</a></div>
-					</div>
-				</div>
+				{% endfor %}
 			</div>
+
 		</div>
 	</div>
 

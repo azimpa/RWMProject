@@ -9,8 +9,8 @@ class AdmCategories(models.Model):
 class AdmProducts(models.Model):
     name = models.CharField(max_length=50, unique=True)
     brand = models.CharField(max_length=50, null=True, blank=True)
-    category = models.CharField(max_length=50, null=True, blank=True)
-    product_image = models.ImageField(upload_to='static/admimg/product', blank=True, null=True)
+    category = models.ForeignKey(AdmCategories, on_delete=models.CASCADE)
+    product_image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     size = models.CharField(max_length=20, null=True, blank=True)
     color = models.CharField(max_length=20, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
