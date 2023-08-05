@@ -19,12 +19,11 @@
                     </div>
                     <div class="col-md-6">
                         <label for="category">Category</label>
-                        <select class="form-control" id="category" name="edited_category" value="{{product.category}}"
-                            required>
-                            <option value="gravel_bikes">Gravel Bike</option>
-                            <option value="mountain_bikes">Mountain Bike</option>
-                            <option value="road_bikes">Road Bike</option>
-                            <option value="hybrid_bikes">Hybrid Bike</option>
+                        <select class="form-control" id="category" name="edited_category" required>
+                            <option value="" disabled selected>Select a category</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id}}" {% if product.category.id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>

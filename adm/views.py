@@ -6,10 +6,6 @@ from adm.models import AdmCategories, AdmProducts
 from django.http import HttpResponseRedirect
 
 
-def baseadmin(request):
-    return render(request, "adm/base.html")
-
-
 def index(request):
     return render(request, "adm/index.html")
 
@@ -82,8 +78,7 @@ def add_adm_categories(request):
 
         if cat_name.strip():
             if AdmCategories.objects.filter(name=cat_name).exists():
-                messages.error(
-                    request, f'The category "{cat_name}" already exists.')
+                messages.error(request, f'The category "{cat_name}" already exists.')
                 return redirect("add_adm_categories")
 
             category = AdmCategories(name=cat_name)
@@ -128,16 +123,17 @@ def adm_product(request):
     adm_products = AdmProducts.objects.all().order_by("id")
     return render(request, "adm/adm_product.html", {"products": adm_products})
 
-
 def add_adm_product(request):
     if not request.user.is_authenticated:
         return redirect("adm_login")
+    
+    categories = AdmCategories.objects.all()
 
     if request.method == "POST":
         prod_name = request.POST.get("product_name", "")
         prod_brand = request.POST.get("brand", "")
-        prod_category_name = request.POST.get("product_categories", "")
-        print("Category ID from Form:", prod_category_name)
+        category = request.POST.get("product_categories", "")
+        cat = AdmCategories.objects.get(id=category)
         prod_image = request.FILES.get("product_image", None)
         prod_size = request.POST.get("size", "")
         prod_color = request.POST.get("color", "")
@@ -148,35 +144,27 @@ def add_adm_product(request):
         prod_status = request.POST.get("status", "active")
 
         if AdmProducts.objects.filter(name=prod_name).exists():
-            messages.error(
-                request, f'The product "{prod_name}" already exists.')
-            return redirect("add_adm_product")
+            messages.error(request, f'The product "{prod_name}" already exists.')
+            return render(request, "adm/add_adm_product.html", {'categories': categories})
 
-        try:
-            category = AdmCategories.objects.get(name=prod_category_name)
-            product = AdmProducts(
-                name=prod_name,
-                brand=prod_brand,
-                category=category,
-                product_image=prod_image,
-                size=prod_size,
-                color=prod_color,
-                price=prod_price,
-                offer_price=prod_offer_price,
-                quantity=prod_quantity,
-                discount=prod_discount,
-                status=prod_status,
-            )
+        product = AdmProducts(
+            name=prod_name,
+            brand=prod_brand,
+            category=cat,
+            product_image=prod_image,
+            size=prod_size,
+            color=prod_color,
+            price=prod_price,
+            offer_price=prod_offer_price,
+            quantity=prod_quantity,
+            discount=prod_discount,
+            status=prod_status,
+        )
 
-            product.save()
-            return redirect("adm_product")
-
-        except AdmCategories.DoesNotExist:
-            messages.error(request, "invalid Category")
-            return redirect("add_adm_product")
+        product.save()
+        return redirect("adm_product")
     else:
-        return render(request, "adm/add_adm_product.html")
-
+        return render(request, "adm/add_adm_product.html", {'categories': categories})
 
 def edit_adm_product(request, id):
     if not request.user.is_authenticated:
@@ -188,6 +176,7 @@ def edit_adm_product(request, id):
         edited_name = request.POST.get("edited_product_name", "")
         edited_brand = request.POST.get("edited_brand", "")
         edited_category = request.POST.get("edited_category", "")
+        editcat=AdmCategories.objects.get(id=edited_category)
         edited_image = request.FILES.get("edited_product_image", None)
         edited_size = request.POST.get("edited_size", "")
         edited_color = request.POST.get("edited_color", "")
@@ -197,11 +186,9 @@ def edit_adm_product(request, id):
         edited_discount = request.POST.get("edited_discount", "")
         edited_status = request.POST.get("edited_status", "active")
 
-        category = AdmCategories.objects.get(name=edited_category)
-
         product.name = edited_name
         product.brand = edited_brand
-        product.category = category
+        product.category = editcat
         product.product_image = edited_image
         product.size = edited_size
         product.color = edited_color
@@ -213,8 +200,10 @@ def edit_adm_product(request, id):
 
         product.save()
         return redirect("adm_product")
-
-    return render(request, "adm/edit_adm_product.html", {"product": product})
+    
+    else:
+        categories = AdmCategories.objects.all()
+        return render(request, "adm/edit_adm_product.html", {'product': product, 'categories': categories})
 
 
 def delete_adm_product(request, id):
@@ -224,6 +213,7 @@ def delete_adm_product(request, id):
     product = get_object_or_404(AdmProducts, id=id)
     product.delete()
     return redirect("adm_product")
+
 
 def adm_order(request):
     if not request.user.is_authenticated:

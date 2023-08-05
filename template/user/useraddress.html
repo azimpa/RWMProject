@@ -1,0 +1,83 @@
+{% extends 'user/base_user.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<body>
+    <!-- Home Slider -->
+    <div class="home">
+        <div class="home_slider_container">
+            <div class="owl-carousel owl-theme home_slider">
+                <div class="owl-item">
+                    <div class="home_slider_background" style="background-image: url('{% static 'images\5.jpg' %}');">
+                    </div>
+                    <div class="home_slider_content">
+                        <div class="home_slider_content_inner">
+                            <div class="home_slider_subtitle">RWM</div>
+                            <div class="home_slider_title">RIDE WITH ME</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="owl-item">
+                    <div class="home_slider_background" style="background-image: url('{% static 'images/6.jpg' %}');">
+                    </div>
+                    <div class="home_slider_content">
+                        <div class="home_slider_content_inner">
+                            <div class="home_slider_subtitle">RWM</div>
+                            <div class="home_slider_title">RIDE WITH ME</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="Whole" style="margin-top: 200px;">
+        <div class="container mt-4">
+            <h2>Address List</h2>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>House Name</th>
+                        <th>Post Office</th>
+                        <th>Street</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>Pin Code</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for address in addresses %}
+                    <tr>
+                        <td>{{ address.house_name }}</td>
+                        <td>{{ address.postoffice }}</td>
+                        <td>{{ address.street }}</td>
+                        <td>{{ address.city }}</td>
+                        <td>{{ address.state }}</td>
+                        <td>{{ address.country }}</td>
+                        <td>{{ address.pin_code }}</td>
+                        <td>
+                            <a href="{% url 'edit_address' address.id %}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{% url 'delete_address' address.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <a href="{% url 'add_address' %}" class="btn btn-primary">
+            <h4>Add Address</h4>
+        </a>
+    </div>
+    
+    <!-- Link Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+{% endblock %}

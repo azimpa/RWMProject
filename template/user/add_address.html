@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Address</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container" style="padding-top: 120px;">
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'add_address' %}" method="post">{% csrf_token %}
+                    <div class="col-12 text-center">
+                        <h2>Address</h2>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputHouseName">House Name:</label>
+                        <input type="text" class="form-control" id="inputHouseName" name="House_name" placeholder="House Name">
+                    
+                        <label for="inputPostOffice">Post Office:</label>
+                        <input type="text" class="form-control" id="inputPostOffice" name="Post_office" placeholder="Post Office">
+                    
+                        <label for="inputStreet">Street:</label>
+                        <input type="text" class="form-control" id="inputStreet" name="Street" placeholder="Street">
+                    
+                        <label for="inputCity">City:</label>
+                        <input type="text" class="form-control" id="inputCity" name="City" placeholder="City">
+                    
+                        <label for="inputState">State:</label>
+                        <input type="text" class="form-control" id="inputState" name="State" placeholder="State">
+                    
+                        <label for="inputCountry">Country:</label>
+                        <input type="text" class="form-control" id="inputCountry" name="Country" placeholder="Country">
+                    
+                        <label for="inputPinCode">Pin Code:</label>
+                        <input type="text" class="form-control" id="inputPinCode" name="Pin_code" placeholder="Pin Code">
+                    </div>                    
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary">Add Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Add Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
