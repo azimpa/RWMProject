@@ -86,7 +86,7 @@ def login(request):
         
     return render(request, 'auth/login.html')
 
-@never_cache
+
 def otpcheck(request, id, phone_number):
     user = get_object_or_404(CustomUser, id=id)
 
@@ -108,7 +108,54 @@ def logout(request):
     auth.logout(request)
     return redirect('home')    
 
-@never_cache
 def userprofile(request):
     username = request.user.username
-    return render(request,'user/userprofile.html',{'username': username})    
+    return render(request,'auth/userprofile.html',{'username': username}) 
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        phone_number = request.POST.get("mobile_number")
+        print(phone_number)
+
+        try:
+            user = CustomUser.objects.get(phone_number=phone_number)
+            print(user.phone_number)
+
+            verify.send(user.phone_number)
+            return redirect('forgot_otpcheck', phone_number=phone_number, id=user.id)
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'User with the given mobile number does not exist.')
+            return redirect('forgot_password')
+
+    return render(request, 'auth/forgot_password.html')
+
+def forgot_otpcheck(request, id, phone_number):
+    user = get_object_or_404(CustomUser, id=id)
+
+    if request.method == 'POST':
+        code = request.POST.get("otp")
+
+        if verify.check(phone_number, code):
+            user.is_verified = True
+            user.save()
+
+            new_password = request.POST.get("password")
+            confirm_password = request.POST.get("confirm_password")
+
+            if new_password == confirm_password:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, 'Password updated successfully.')
+            else:
+                messages.error(request, 'Passwords do not match. Please try again.')
+                return redirect('forgot_otpcheck', id=id, phone_number=phone_number)
+
+            return redirect('login')
+        else:
+            messages.error(request, 'Entered OTP is incorrect')
+            return redirect('forgot_otpcheck', id=id, phone_number=phone_number)
+    else:
+        return render(request, 'auth/forgot_otpcheck.html', {'phone_number': phone_number, 'id': id})
+
+
