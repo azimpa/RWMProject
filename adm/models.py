@@ -15,10 +15,19 @@ class AdmProducts(models.Model):
     color = models.CharField(max_length=20, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     offer_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    stock = models.PositiveIntegerField(default=0)
-    quantity = models.PositiveIntegerField(null=True, blank=True)
+    stock = models.PositiveIntegerField(null=True, blank=True)
     discount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     status = models.CharField(max_length=20, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')
 
     def __str__(self):
         return self.name
+    
+class ProductColor(models.Model):
+    product = models.ForeignKey(AdmProducts, on_delete=models.CASCADE)
+    color_name = models.CharField(max_length=50)
+    color_image = models.ImageField(upload_to='color_images/', null=True, blank=True)
+    is_available = models.BooleanField(default=True)
+    stock = models.PositiveIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.color_name

@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import CustomUser
 from adm.models import AdmCategories, AdmProducts
-from django.http import HttpResponseRedirect
 
 
 def index(request):
@@ -139,7 +138,7 @@ def add_adm_product(request):
         prod_color = request.POST.get("color", "")
         prod_price = request.POST.get("price", "")
         prod_offer_price = request.POST.get("offer_price", "")
-        prod_quantity = request.POST.get("quantity", "")
+        prod_stock = request.POST.get("stock", "")
         prod_discount = request.POST.get("discount", "")
         prod_status = request.POST.get("status", "active")
 
@@ -156,7 +155,7 @@ def add_adm_product(request):
             color=prod_color,
             price=prod_price,
             offer_price=prod_offer_price,
-            quantity=prod_quantity,
+            stock=prod_stock,
             discount=prod_discount,
             status=prod_status,
         )
@@ -182,7 +181,7 @@ def edit_adm_product(request, id):
         edited_color = request.POST.get("edited_color", "")
         edited_price = request.POST.get("edited_price", "")
         edited_offer_price = request.POST.get("edited_offer_price", "")
-        edited_quantity = request.POST.get("edited_quantity", "")
+        edited_stock = request.POST.get("edited_stock", "")
         edited_discount = request.POST.get("edited_discount", "")
         edited_status = request.POST.get("edited_status", "active")
 
@@ -194,7 +193,7 @@ def edit_adm_product(request, id):
         product.color = edited_color
         product.price = edited_price
         product.offer_price = edited_offer_price
-        product.quantity = edited_quantity
+        product.stock = edited_stock
         product.discount = edited_discount
         product.status = edited_status
 
@@ -219,3 +218,5 @@ def adm_order(request):
     if not request.user.is_authenticated:
         return redirect("adm_login")
     return render(request, "adm/adm_order.html")
+
+

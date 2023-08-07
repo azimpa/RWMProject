@@ -23,7 +23,7 @@
                         <th>Price</th>
                         <th>Offer Price</th>
                         <th>Discount</th>
-                        <th>Quantity</th>
+                        <th>stock</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -42,7 +42,7 @@
                         <td>₹{{ prod.price }}</td>
                         <td>₹{{ prod.offer_price }}</td>
                         <td>{{ prod.discount }}%</td>
-                        <td>{{ prod.quantity }}</td>
+                        <td>{{ prod.stock }}</td>
                         <td>{{ prod.status }}</td>
                         <td>
                             <a href="{% url 'edit_adm_product' prod.id %}" class="btn btn-primary btn-sm">Edit</a>
