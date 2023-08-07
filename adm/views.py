@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import CustomUser
-from adm.models import AdmCategories, AdmProducts
+from adm.models import AdmCategories, AdmProducts, ProductSize, ProductColor, ProductVariant
 
 
 def index(request):
@@ -77,7 +77,8 @@ def add_adm_categories(request):
 
         if cat_name.strip():
             if AdmCategories.objects.filter(name=cat_name).exists():
-                messages.error(request, f'The category "{cat_name}" already exists.')
+                messages.error(
+                    request, f'The category "{cat_name}" already exists.')
                 return redirect("add_adm_categories")
 
             category = AdmCategories(name=cat_name)
@@ -122,10 +123,11 @@ def adm_product(request):
     adm_products = AdmProducts.objects.all().order_by("id")
     return render(request, "adm/adm_product.html", {"products": adm_products})
 
+
 def add_adm_product(request):
     if not request.user.is_authenticated:
         return redirect("adm_login")
-    
+
     categories = AdmCategories.objects.all()
 
     if request.method == "POST":
@@ -134,16 +136,11 @@ def add_adm_product(request):
         category = request.POST.get("product_categories", "")
         cat = AdmCategories.objects.get(id=category)
         prod_image = request.FILES.get("product_image", None)
-        prod_size = request.POST.get("size", "")
-        prod_color = request.POST.get("color", "")
-        prod_price = request.POST.get("price", "")
-        prod_offer_price = request.POST.get("offer_price", "")
-        prod_stock = request.POST.get("stock", "")
-        prod_discount = request.POST.get("discount", "")
         prod_status = request.POST.get("status", "active")
 
         if AdmProducts.objects.filter(name=prod_name).exists():
-            messages.error(request, f'The product "{prod_name}" already exists.')
+            messages.error(
+                request, f'The product "{prod_name}" already exists.')
             return render(request, "adm/add_adm_product.html", {'categories': categories})
 
         product = AdmProducts(
@@ -151,19 +148,40 @@ def add_adm_product(request):
             brand=prod_brand,
             category=cat,
             product_image=prod_image,
-            size=prod_size,
-            color=prod_color,
-            price=prod_price,
-            offer_price=prod_offer_price,
-            stock=prod_stock,
-            discount=prod_discount,
             status=prod_status,
         )
-
         product.save()
+
+        prod_sizes = request.POST.getlist("sizes", [])
+        prod_colors = request.POST.getlist("colors", [])
+
+        for color_id in prod_colors:
+            for size_id in prod_sizes:
+                color = ProductColor.objects.get(id=color_id)
+                size = ProductSize.objects.get(id=size_id)
+                price = request.POST.get(f"price_{color_id}_{size_id}", "")
+                offer_price = request.POST.get(
+                    f"offer_price_{color_id}_{size_id}", "")
+                stock = request.POST.get(f"stock_{color_id}_{size_id}", "")
+                discount = request.POST.get(
+                    f"discount_{color_id}_{size_id}", "")
+
+                variant = ProductVariant(
+                    product=product,
+                    color=color,
+                    size=size,
+                    price=price,
+                    offer_price=offer_price,
+                    stock=stock,
+                    discount=discount,
+                    status=prod_status,
+                )
+                variant.save()
+
         return redirect("adm_product")
     else:
         return render(request, "adm/add_adm_product.html", {'categories': categories})
+
 
 def edit_adm_product(request, id):
     if not request.user.is_authenticated:
@@ -175,7 +193,7 @@ def edit_adm_product(request, id):
         edited_name = request.POST.get("edited_product_name", "")
         edited_brand = request.POST.get("edited_brand", "")
         edited_category = request.POST.get("edited_category", "")
-        editcat=AdmCategories.objects.get(id=edited_category)
+        editcat = AdmCategories.objects.get(id=edited_category)
         edited_image = request.FILES.get("edited_product_image", None)
         edited_size = request.POST.get("edited_size", "")
         edited_color = request.POST.get("edited_color", "")
@@ -199,7 +217,7 @@ def edit_adm_product(request, id):
 
         product.save()
         return redirect("adm_product")
-    
+
     else:
         categories = AdmCategories.objects.all()
         return render(request, "adm/edit_adm_product.html", {'product': product, 'categories': categories})
@@ -220,3 +238,129 @@ def adm_order(request):
     return render(request, "adm/adm_order.html")
 
 
+def product_color(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_color = ProductColor.objects.all().order_by("id")
+    return render(request, "adm/product_color.html", {'product_color': product_color})
+
+
+def add_product_color(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_color = ProductColor.objects.all()
+
+    if request.method == "POST":
+        color_name = request.POST.get("name", "")
+
+        if color_name.strip():
+            if ProductColor.objects.filter(name=color_name).exists():
+                messages.error(
+                    request, f'The color "{color_name}" already exists.')
+                return render(request, "adm/add_product_color.html", {'product_color': product_color})
+
+            else:
+                color = ProductColor(name=color_name)
+                color.save()
+                print("New color saved:", color.name)
+                messages.success(
+                    request, f'The color "{color_name}" was added successfully.')
+                return redirect("product_color")
+        else:
+            messages.error(request, "Color name cannot be empty.")
+            return redirect("add_product_color")
+
+    return render(request, "adm/add_product_color.html", {'product_color': product_color})
+
+
+def edit_product_color(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_color = get_object_or_404(ProductColor, id=id)
+
+    if request.method == "POST":
+        new_name = request.POST.get("edited_color", "")
+        if new_name.strip():
+            product_color.name = new_name
+            product_color.save()
+            return redirect("product_color")
+        else:
+            messages.error(request, "Color name cannot be empty.")
+
+    return render(request, "adm/edit_product_color.html", {"product_color": product_color})
+
+
+def delete_product_color(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_color = get_object_or_404(ProductColor, id=id)
+    product_color.delete()
+    return redirect("product_color")
+
+
+def product_size(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_size = ProductSize.objects.all().order_by("id")
+    return render(request, "adm/product_size.html", {'product_size': product_size})
+
+
+def add_product_size(request):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_size = ProductSize.objects.all()
+
+    if request.method == "POST":
+        size_name = request.POST.get("name", "")
+
+        if size_name.strip():
+            if ProductSize.objects.filter(name=size_name).exists():
+                messages.error(
+                    request, f'The size "{size_name}" already exists.')
+                return render(request, "adm/add_product_size.html", {'product_size': product_size})
+
+            else:
+                size = ProductSize(name=size_name)
+                size.save()
+                print("New size saved:", size.name)
+                messages.success(
+                    request, f'The size "{size_name}" was added successfully.')
+                return redirect("product_size")
+        else:
+            messages.error(request, "size name cannot be empty.")
+            return redirect("add_product_size")
+
+    return render(request, "adm/add_product_size.html", {'product_size': product_size})
+
+
+def edit_product_size(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_size = get_object_or_404(ProductSize, id=id)
+
+    if request.method == "POST":
+        new_name = request.POST.get("edited_size", "")
+        if new_name.strip():
+            product_size.name = new_name
+            product_size.save()
+            return redirect("product_size")
+        else:
+            messages.error(request, "size name cannot be empty.")
+
+    return render(request, "adm/edit_product_size.html", {"product_size": product_size})
+
+
+def delete_product_size(request, id):
+    if not request.user.is_authenticated:
+        return redirect("adm_login")
+
+    product_size = get_object_or_404(ProductSize, id=id)
+    product_size.delete()
+    return redirect("product_size")
