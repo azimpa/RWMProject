@@ -7,6 +7,7 @@ class AdmCategories(models.Model):
     def __str__(self):
         return self.name
 
+
 class ProductColor(models.Model):
     name = models.CharField(max_length=20)
 
@@ -33,8 +34,8 @@ class AdmProducts(models.Model):
     status = models.CharField(max_length=20, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')
 
     def __str__(self):
-        return self.name
-    
+        return self.name    
+
 class ProductVariant(models.Model):
     product = models.ForeignKey(AdmProducts, on_delete=models.CASCADE)
     color = models.ForeignKey(ProductColor, on_delete=models.CASCADE)
@@ -51,4 +52,6 @@ class ProductVariant(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.color.name} - {self.size.name}"
+
+
 

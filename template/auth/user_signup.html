@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-	<title>Signup</title>
+	<title>User Signup</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet" />
@@ -30,7 +30,7 @@
 			<div class="row justify-content-center">
 				<div class="col-md-6 col-lg-4">
 					<div class="login-wrap p-0" style="margin-top: -50px">
-						<form action="signup" method="post">
+						<form action="user_signup" method="post">
 							{% csrf_token %}
 							<div class="form-group">
 								<input type="text" class="form-control" placeholder="Username" name="username"
@@ -67,7 +67,7 @@
 						<div class="mt-4" style="text-align: right;">
 							<p class="text-black">
 								Already have an account?
-								<a href="login" style="color: rgb(229, 250, 1)">Log in</a>
+								<a href="user_login" style="color: rgb(229, 250, 1)">Log in</a>
 								here.
 							</p>
 						</div>

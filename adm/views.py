@@ -8,7 +8,6 @@ from adm.models import AdmCategories, AdmProducts, ProductSize, ProductColor, Pr
 def index(request):
     return render(request, "adm/index.html")
 
-
 def adm_login(request):
     if request.method == "POST":
         admname = request.POST["username"]
@@ -22,26 +21,23 @@ def adm_login(request):
             return redirect("adm_login")
     return render(request, "adm/adm_login.html")
 
-
 def adm_logout(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     logout(request)
     return redirect("index")
 
-
 def user_details(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     adm_users = CustomUser.objects.all().order_by("id")
     print(adm_users)
     return render(request, "adm/user_details.html", {"admin_users": adm_users})
 
-
 def Admin_block_user(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     adm_users = CustomUser.objects.get(id=id)
@@ -49,9 +45,8 @@ def Admin_block_user(request, id):
     adm_users.save()
     return redirect("user_details")
 
-
 def Admin_unblock_user(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     ad_users = CustomUser.objects.get(id=id)
@@ -59,17 +54,15 @@ def Admin_unblock_user(request, id):
     ad_users.save()
     return redirect("user_details")
 
-
 def adm_categories(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     category = AdmCategories.objects.all().order_by("id")
     return render(request, "adm/adm_categories.html", {"categories": category})
 
-
 def add_adm_categories(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     if request.method == "POST":
@@ -91,9 +84,8 @@ def add_adm_categories(request):
 
     return render(request, "adm/add_adm_categories.html")
 
-
 def edit_adm_categories(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     category = get_object_or_404(AdmCategories, id=id)
@@ -106,26 +98,23 @@ def edit_adm_categories(request, id):
             return redirect("adm_categories")
     return render(request, "adm/edit_adm_categories.html", {"cat": category})
 
-
 def delete_adm_categories(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
-
+    
     category = get_object_or_404(AdmCategories, id=id)
     category.delete()
     return redirect("adm_categories")
 
-
 def adm_product(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     adm_products = AdmProducts.objects.all().order_by("id")
     return render(request, "adm/adm_product.html", {"products": adm_products})
 
-
 def add_adm_product(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     categories = AdmCategories.objects.all()
@@ -154,10 +143,13 @@ def add_adm_product(request):
 
         prod_sizes = request.POST.getlist("sizes", [])
         prod_colors = request.POST.getlist("colors", [])
-
+        print(prod_colors)
+        print(prod_sizes)
         for color_id in prod_colors:
+            color_name="'"+color_id+"'"
+            print(color_name)
+            color = ProductColor.objects.get(name=color_name)
             for size_id in prod_sizes:
-                color = ProductColor.objects.get(id=color_id)
                 size = ProductSize.objects.get(id=size_id)
                 price = request.POST.get(f"price_{color_id}_{size_id}", "")
                 offer_price = request.POST.get(
@@ -178,13 +170,16 @@ def add_adm_product(request):
                 )
                 variant.save()
 
+                # Add the many-to-many relations for colors and sizes
+                variant.colors.add(color)
+                variant.sizes.add(size)
+
         return redirect("adm_product")
     else:
         return render(request, "adm/add_adm_product.html", {'categories': categories})
 
-
 def edit_adm_product(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product = get_object_or_404(AdmProducts, id=id)
@@ -195,8 +190,6 @@ def edit_adm_product(request, id):
         edited_category = request.POST.get("edited_category", "")
         editcat = AdmCategories.objects.get(id=edited_category)
         edited_image = request.FILES.get("edited_product_image", None)
-        edited_size = request.POST.get("edited_size", "")
-        edited_color = request.POST.get("edited_color", "")
         edited_price = request.POST.get("edited_price", "")
         edited_offer_price = request.POST.get("edited_offer_price", "")
         edited_stock = request.POST.get("edited_stock", "")
@@ -207,8 +200,6 @@ def edit_adm_product(request, id):
         product.brand = edited_brand
         product.category = editcat
         product.product_image = edited_image
-        product.size = edited_size
-        product.color = edited_color
         product.price = edited_price
         product.offer_price = edited_offer_price
         product.stock = edited_stock
@@ -216,35 +207,54 @@ def edit_adm_product(request, id):
         product.status = edited_status
 
         product.save()
+
+        # Handling ManyToManyField relationships (colors and sizes)
+        edited_colors = request.POST.getlist("edited_color")
+        edited_sizes = request.POST.getlist("edited_size")
+        product.colors.clear()
+        product.sizes.clear()
+
+        for color_id in edited_colors:
+            color = ProductColor.objects.get(id=color_id)
+            product.colors.add(color)
+
+        for size_id in edited_sizes:
+            size = ProductSize.objects.get(id=size_id)
+            product.sizes.add(size)
+
         return redirect("adm_product")
 
     else:
         categories = AdmCategories.objects.all()
-        return render(request, "adm/edit_adm_product.html", {'product': product, 'categories': categories})
-
+        colors = ProductColor.objects.all()
+        sizes = ProductSize.objects.all()
+        return render(request, "adm/edit_adm_product.html", {
+            'product': product,
+            'categories': categories,
+            'colors': colors,
+            'sizes': sizes,
+        })
 
 def delete_adm_product(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product = get_object_or_404(AdmProducts, id=id)
     product.delete()
     return redirect("adm_product")
 
-
 def adm_order(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
+    
     return render(request, "adm/adm_order.html")
 
-
 def product_color(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product_color = ProductColor.objects.all().order_by("id")
     return render(request, "adm/product_color.html", {'product_color': product_color})
-
 
 def add_product_color(request):
     if not request.user.is_authenticated:
@@ -274,9 +284,8 @@ def add_product_color(request):
 
     return render(request, "adm/add_product_color.html", {'product_color': product_color})
 
-
 def edit_product_color(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product_color = get_object_or_404(ProductColor, id=id)
@@ -292,26 +301,23 @@ def edit_product_color(request, id):
 
     return render(request, "adm/edit_product_color.html", {"product_color": product_color})
 
-
 def delete_product_color(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product_color = get_object_or_404(ProductColor, id=id)
     product_color.delete()
     return redirect("product_color")
 
-
 def product_size(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product_size = ProductSize.objects.all().order_by("id")
     return render(request, "adm/product_size.html", {'product_size': product_size})
 
-
 def add_product_size(request):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product_size = ProductSize.objects.all()
@@ -338,9 +344,8 @@ def add_product_size(request):
 
     return render(request, "adm/add_product_size.html", {'product_size': product_size})
 
-
 def edit_product_size(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product_size = get_object_or_404(ProductSize, id=id)
@@ -356,11 +361,116 @@ def edit_product_size(request, id):
 
     return render(request, "adm/edit_product_size.html", {"product_size": product_size})
 
-
 def delete_product_size(request, id):
-    if not request.user.is_authenticated:
+    if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     product_size = get_object_or_404(ProductSize, id=id)
     product_size.delete()
     return redirect("product_size")
+
+def product_variant(request):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect("adm_login")
+
+    variant = ProductVariant.objects.all().order_by("id")
+    return render(request, "adm/product_variant.html", {"variants": variant})
+
+def add_product_variant(request, product_id):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect("adm_login")
+    
+    if request.method == 'POST':
+        product = AdmProducts.objects.get(pk=product_id)
+
+        color_id = request.POST.get('color')
+        size_id = request.POST.get('size')
+        price = request.POST.get('price')
+        offer_price = request.POST.get('offer_price')
+        stock = request.POST.get('stock')
+        discount = request.POST.get('discount')
+        status = request.POST.get('status')
+
+        try:
+            color = ProductColor.objects.get(pk=color_id)
+            size = ProductSize.objects.get(pk=size_id)
+            
+            variant = ProductVariant.objects.create(
+                product=product,
+                color=color,
+                size=size,
+                price=price,
+                offer_price=offer_price,
+                stock=stock,
+                discount=discount,
+                status=status
+            )
+
+            messages.success(request, 'Product variant added successfully')
+            return redirect('adm_product') 
+        except (ProductColor.DoesNotExist, ProductSize.DoesNotExist):
+            messages.error(request, 'Invalid color or size selection')
+            return render(request, 'add_product_variant.html')
+        except Exception as e:
+            error_message = str(e)
+            return render(request, 'add_product_variant.html')
+    else:
+        product = AdmProducts.objects.get(pk=product_id)
+        colors = ProductColor.objects.all()
+        sizes = ProductSize.objects.all()
+
+        return render(request, 'add_product_variant.html', {'product': product, 'colors': colors, 'sizes': sizes})
+
+def edit_product_variant(request, variant_id):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect("adm_login")
+
+    try:
+        variant = ProductVariant.objects.get(pk=variant_id)
+    except ProductVariant.DoesNotExist:
+        messages.error(request, 'Variant not found')
+        return redirect('adm_product')  
+    
+    if request.method == 'POST':
+        color_id = request.POST.get('edited_colors')
+        size_id = request.POST.get('edited_sizes')
+        price = request.POST.get('edited_price')
+        offer_price = request.POST.get('edited_offer_price')
+        stock = request.POST.get('edited_stock')
+        discount = request.POST.get('edited_discount')
+        status = request.POST.get('edited_status')
+
+        try:
+            color = ProductColor.objects.get(pk=color_id)
+            size = ProductSize.objects.get(pk=size_id)
+            
+            variant.color = color
+            variant.size = size
+            variant.price = price
+            variant.offer_price = offer_price
+            variant.stock = stock
+            variant.discount = discount
+            variant.status = status
+            variant.save()
+
+            messages.success(request, 'Product variant updated successfully')
+            return redirect('adm_product') 
+        except (ProductColor.DoesNotExist, ProductSize.DoesNotExist):
+            messages.error(request, 'Invalid color or size selection')
+            return render(request, 'edit_product_variant.html', {'variant': variant})
+        except Exception as e:
+            error_message = str(e)
+            return render(request, 'edit_product_variant.html', {'variant': variant})
+    else:
+        colors = ProductColor.objects.all()
+        sizes = ProductSize.objects.all()
+
+        return render(request, 'edit_product_variant.html', {'variant': variant, 'colors': colors, 'sizes': sizes})
+    
+def delete_product_variant(request, variant_id):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect("adm_login")
+
+    product_variant = get_object_or_404(ProductVariant, id=variant_id)
+    product_variant.delete()
+    return redirect("product_variant")

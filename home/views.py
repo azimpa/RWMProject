@@ -2,16 +2,19 @@ from django.shortcuts import render, redirect, get_object_or_404
 from adm.models import AdmProducts
 from home.models import Address
 from accounts.models import CustomUser
+from django.contrib.auth import logout
 from django.views.decorators.cache import never_cache
-from django.http import HttpResponseBadRequest
 
 # Create your views here.
 
-
-@never_cache
 def home(request):
-    products = AdmProducts.objects.all()
-    return render(request, "user/home.html", {"prod": products})
+    if request.user.is_anonymous:
+        return render(request, "user/home.html")
+    elif request.user.is_superuser:
+        logout(request)
+        return render(request, "user/home.html")
+    else:
+        return render(request, "user/home.html")
 
 
 def product(request):

@@ -35,9 +35,9 @@
                         <li><a href="/categories">Mountain Bikes</a></li>
                         <li><a href="/categories">Hybrid Bikes</a></li>
                         {% if user.is_authenticated %}
-                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                        <li><a href="{% url 'user_logout' %}">Logout</a></li>
                         {% else %}
-                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'user_login' %}">Login</a></li>
                         {% endif %}
                     </ul>
                 </nav>
@@ -80,7 +80,7 @@
                                 <img src="{% static 'images/avatar.svg' %}" alt="">
                             </a>
                             {% else %}
-                            <a href="{% url 'login' %}">
+                            <a href="{% url 'user_login' %}">
                                 <img src="{% static 'images/avatar.svg' %}" alt="">
                             </a>
                             {% endif %}
@@ -118,9 +118,9 @@
                     <li class="menu_mm"><a href="/contact">Wishlist</a></li>
                     <li class="menu_mm"><a href="/contact">Cart</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li><a href="{% url 'user_logout' %}">Logout</a></li>
                     {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'user_login' %}">Login</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -144,9 +144,9 @@
                                 <li><a href="/categories">MOUNTAIN BIKES</a></li>
                                 <li><a href="/contact">HYBRID BIKES</a></li>
                                 {% if user.is_authenticated %}
-                                <li><a href="{% url 'logout' %}">Logout</a></li>
+                                <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 {% else %}
-                                <li><a href="{% url 'login' %}">Login</a></li>
+                                <li><a href="{% url 'user_login' %}">Login</a></li>
                                 {% endif %}
                             </ul>
                         </nav>

@@ -1,0 +1,79 @@
+{% extends 'adm/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="card mb-4" style="width: 100%;">
+    <div class="card-header">
+        <h2>Edit Variant</h2>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'edit_product_variant' variant.id%}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="name">Product Name</label>
+                    <input type="text" class="form-control" id="name" name="edited_product_name" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="size">Sizes</label>
+                    <select class="form-control" id="size" name="edited_sizes" required>
+                        <option value="3XS">3XS</option>
+                        <option value="2XS">2XS</option>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="2XL">2XL</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="color">Colors</label>
+                    <input type="text" class="form-control" id="color" name="edited_colors" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="price">Price</label>
+                    <input type="text" class="form-control" id="price" name="edited_price" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="offer_price">Offer Price</label>
+                    <input type="text" class="form-control" id="offer_price" name="edited_offer_price" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="quantity">stock</label>
+                    <input type="text" class="form-control" id="stock" name="edited_stock" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="discount">Discount (%)</label>
+                    <input type="text" class="form-control" id="discount" name="edited_discount" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="status">Status</label>
+                    <select class="form-control" id="status" name="edited_status" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Edit Variant</button>
+            </div>
+        </form>
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show col-6" role="alert">
+            <strong></strong>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

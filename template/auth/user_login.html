@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Login</title>
+    <title>User Login</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-6 col-lg-4">
                     <div class="login-wrap p-0" style="margin-top: -20px;">
-                        <form action="login" method="post">
+                        <form action="user_login" method="post">
                             {% csrf_token %}
                             <div class="form-group">
                                 <input type="email" class="form-control mb-2" placeholder="Email ID" name="email"
@@ -55,7 +55,7 @@
                             <a href="forgot_password" style="color: #fff;" class="text-right">Forgot Password</a>
                             <div class="text-right">
                                 <p class="mb-0" style="display: inline;">Not an already registered user? </p>
-                                <a href="signup" style="color: yellow; display: inline;">Sign Up</a>
+                                <a href="user_signup" style="color: yellow; display: inline;">Sign Up</a>
                             </div>                                                       
                         </div>
                     </div>
