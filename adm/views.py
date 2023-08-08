@@ -5,6 +5,7 @@ from accounts.models import CustomUser
 from adm.models import AdmCategories, AdmProducts, ProductSize, ProductColor, ProductVariant
 
 
+
 def index(request):
     return render(request, "adm/index.html")
 
@@ -123,6 +124,7 @@ def add_adm_product(request):
         prod_brand = request.POST.get("product_brand", "")
         category = request.POST.get("product_categories", "")
         cat = AdmCategories.objects.get(id=category)
+        product_description = request.POST.get("product_description")
         prod_status = request.POST.get("product_status", "active")
 
         if AdmProducts.objects.filter(name=prod_name).exists():
@@ -136,6 +138,7 @@ def add_adm_product(request):
             category=cat,
             product_image=prod_image,
             status=prod_status,
+            description = product_description
         )
         product.save()
         return redirect("adm_product")
@@ -156,12 +159,14 @@ def edit_adm_product(request, id):
         edited_brand = request.POST.get("edited_brand", "")
         edited_category = request.POST.get("edited_category", "")
         editcat = AdmCategories.objects.get(id=edited_category)
+        edited_description = request.POST.get("edited_description")
         edited_status = request.POST.get("edited_status", "active")
 
         product.name = edited_name
         product.brand = edited_brand
         product.category = editcat
         product.product_image = edited_image
+        product.description = edited_description
         product.status = edited_status
 
         product.save()
@@ -212,8 +217,7 @@ def add_product_color(request):
                 color = ProductColor(name=color_name)
                 color.save()
                 print("New color saved:", color.name)
-                messages.success(
-                    request, f'The color "{color_name}" was added successfully.')
+                messages.success(request, f'The color "{color_name}" was added successfully.')
                 return redirect("product_color")
         else:
             messages.error(request, "Color name cannot be empty.")
@@ -307,111 +311,130 @@ def delete_product_size(request, id):
     return redirect("product_size")
 
 
-
-
-
-def product_variant(request):
+def product_variant(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
+    
+    try:
+        product = AdmProducts.objects.get(id=id)
+        variants = ProductVariant.objects.filter(product=product)
+        
+        if variants.exists():
+            return render(request, "adm/product_variant.html", {"variants": variants, "product": product})
+        else:
+            messages.error(request, 'No variants found for this product')
+            return redirect('adm_product')
+    except AdmProducts.DoesNotExist:
+        messages.error(request, 'Product not found')
+        return redirect('adm_product')
 
-    variant = ProductVariant.objects.all().order_by("id")
-    return render(request, "adm/product_variant.html", {"variants": variant})
 
-def add_product_variant(request, product_id):
+def add_product_variant(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
     
     if request.method == 'POST':
-        product = AdmProducts.objects.get(pk=product_id)
-
-        color_id = request.POST.get('color')
-        size_id = request.POST.get('size')
-        price = request.POST.get('price')
-        offer_price = request.POST.get('offer_price')
-        stock = request.POST.get('stock')
-        discount = request.POST.get('discount')
-        status = request.POST.get('status')
-
         try:
-            color = ProductColor.objects.get(pk=color_id)
-            size = ProductSize.objects.get(pk=size_id)
-            
+            product = AdmProducts.objects.get(id=id)
+            variant_color = request.POST.get('color')
+            color = ProductColor.objects.get(id=variant_color)
+            variant_size = request.POST.get('size')
+            size = ProductSize.objects.get(id=variant_size)
+            variant_price = request.POST.get('price')
+            variant_discount = request.POST.get('discount')
+            variant_stock = request.POST.get('stock')
+            variant_is_available = request.POST.get('is_available') 
+            variant_image = request.FILES.get('image') 
+
             variant = ProductVariant.objects.create(
                 product=product,
                 color=color,
                 size=size,
-                price=price,
-                offer_price=offer_price,
-                stock=stock,
-                discount=discount,
-                status=status
+                price=variant_price,
+                discount=variant_discount,
+                stock=variant_stock,
+                is_available=variant_is_available, 
+                image=variant_image, 
             )
 
             messages.success(request, 'Product variant added successfully')
-            return redirect('adm_product') 
+            return redirect('product_variant', id=product.id)
+        
         except (ProductColor.DoesNotExist, ProductSize.DoesNotExist):
             messages.error(request, 'Invalid color or size selection')
-            return render(request, 'add_product_variant.html')
+            return redirect('add_product_variant', id=id)
+        
         except Exception as e:
-            error_message = str(e)
-            return render(request, 'add_product_variant.html')
+            print("An error occurred:", str(e))
+            messages.error(request, 'An error occurred while adding the product variant')
+            return redirect('add_product_variant', id=id)
+
+
     else:
-        product = AdmProducts.objects.get(pk=product_id)
+        product = AdmProducts.objects.get(id=id)
         colors = ProductColor.objects.all()
         sizes = ProductSize.objects.all()
 
-        return render(request, 'add_product_variant.html', {'product': product, 'colors': colors, 'sizes': sizes})
+        return render(request, 'adm/add_product_variant.html', {'products': product, 'colors': colors, 'sizes': sizes})
 
-def edit_product_variant(request, variant_id):
+
+def edit_product_variant(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
     try:
-        variant = ProductVariant.objects.get(pk=variant_id)
+        variant = ProductVariant.objects.get(id=id)
     except ProductVariant.DoesNotExist:
         messages.error(request, 'Variant not found')
-        return redirect('adm_product')  
+        return redirect('adm_product')
     
     if request.method == 'POST':
-        color_id = request.POST.get('edited_colors')
-        size_id = request.POST.get('edited_sizes')
-        price = request.POST.get('edited_price')
-        offer_price = request.POST.get('edited_offer_price')
-        stock = request.POST.get('edited_stock')
-        discount = request.POST.get('edited_discount')
-        status = request.POST.get('edited_status')
+        edited_color_id = request.POST.get('edited_color')
+        edited_size_id = request.POST.get('edited_size')
+        edited_price = request.POST.get('edited_price')
+        edited_discount = request.POST.get('edited_discount')
+        edited_stock = request.POST.get('edited_stock')
+        edited_is_available = request.POST.get('edited_is_available')
 
         try:
-            color = ProductColor.objects.get(pk=color_id)
-            size = ProductSize.objects.get(pk=size_id)
+            edited_color = ProductColor.objects.get(pk=edited_color_id)
+            edited_size = ProductSize.objects.get(pk=edited_size_id)
             
-            variant.color = color
-            variant.size = size
-            variant.price = price
-            variant.offer_price = offer_price
-            variant.stock = stock
-            variant.discount = discount
-            variant.status = status
+
+            variant.color = edited_color
+            variant.size = edited_size
+            variant.price = edited_price
+            variant.discount = edited_discount
+            variant.stock = edited_stock
+            variant.is_available = edited_is_available
             variant.save()
 
             messages.success(request, 'Product variant updated successfully')
-            return redirect('adm_product') 
+            product_variant = get_object_or_404(ProductVariant, id=id)
+            product_id = product_variant.product.id
+            print(product_id)
+            return redirect('product_variant', id=product_id)
+        
         except (ProductColor.DoesNotExist, ProductSize.DoesNotExist):
             messages.error(request, 'Invalid color or size selection')
-            return render(request, 'edit_product_variant.html', {'variant': variant})
+            return render(request, 'adm/edit_product_variant.html', {'variants': variant})
+        
         except Exception as e:
-            error_message = str(e)
-            return render(request, 'edit_product_variant.html', {'variant': variant})
+            print("An error occurred:", str(e))
+            messages.error(request, 'An error occurred while updating the product variant')
+            return render(request, 'adm/edit_product_variant.html', {'variants': variant})
     else:
         colors = ProductColor.objects.all()
         sizes = ProductSize.objects.all()
 
-        return render(request, 'edit_product_variant.html', {'variant': variant, 'colors': colors, 'sizes': sizes})
+        return render(request, 'adm/edit_product_variant.html', {'variants': variant, 'colors': colors, 'sizes': sizes})
     
-def delete_product_variant(request, variant_id):
+def delete_product_variant(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    product_variant = get_object_or_404(ProductVariant, id=variant_id)
+    product_variant = get_object_or_404(ProductVariant, id=id)
+    product_id = product_variant.product.id
+    print(product_id)
     product_variant.delete()
-    return redirect("product_variant")
+    return redirect('product_variant', id=product_id)

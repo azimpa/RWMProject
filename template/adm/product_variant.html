@@ -18,28 +18,27 @@
                         <th>Size</th>
                         <th>Color</th>
                         <th>Price</th>
-                        <th>Offer Price</th>
                         <th>Discount</th>
                         <th>stock</th>
-                        <th>Status</th>
+                        <th>is_available</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for vari in variants %}
+                    {% for variant in variants %}
                     <tr>
-                        <td>{{ vari.id }}</td>
-                        <td>{{ vari.name }}</td>
-                        <td>{{ vari.size }}</td>
-                        <td>{{ vari.color }}</td>
-                        <td>₹{{ vari.price }}</td>
-                        <td>₹{{ vari.offer_price }}</td>
-                        <td>{{ vari.discount }}%</td>
-                        <td>{{ vari.stock }}</td>
-                        <td>{{ vari.status }}</td>
+                        <td>{{ variant.id }}</td>
+                        <td>{{ variant.product }}</td>
+                        <td>{{ variant.size }}</td>
+                        <td>{{ variant.color }}</td>
+                        <td>₹{{ variant.price }}</td>
+                        <td>{{ variant.discount }}%</td>
+                        <td>{{ variant.stock }}</td>
+                        <td>{{ variant.is_available }}</td>
                         <td>
-                            <a href="{% url 'edit_product_variant' vari.id %}" class="btn btn-primary btn-sm">Edit</a>
-                            <a href="{% url 'delete_product_variant' vari.id %}"
+                            <a href="{% url 'edit_product_variant' variant.id %}"
+                                class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'delete_product_variant' variant.id %}"
                                 class="btn btn-danger btn-sm">Delete</a>
                         </td>
                     </tr>
@@ -52,4 +51,6 @@
 <div class="d-flex justify-content-center">
     <a href="{% url 'add_product_variant' product.id %}" class="btn btn-primary" style="width: 170px;">Add Variant</a>
 </div>
+
+
 {% endblock %}

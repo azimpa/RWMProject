@@ -8,64 +8,57 @@
         <h2>Edit Variant</h2>
     </div>
     <div class="card-body">
-        <form action="{% url 'edit_product_variant' variant.id%}" method="post" enctype="multipart/form-data">
+        <form action="{% url 'edit_product_variant' variants.id %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group row">
                 <div class="col-md-6">
-                    <label for="name">Product Name</label>
-                    <input type="text" class="form-control" id="name" name="edited_product_name" required>
+                    <label for="image" class="col-form-label">Image</label>
+                    <input type="file" id="edited_image" name="edited_image" accept="image/*" required>
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-md-6">
                     <label for="size">Sizes</label>
-                    <select class="form-control" id="size" name="edited_sizes" required>
-                        <option value="3XS">3XS</option>
-                        <option value="2XS">2XS</option>
-                        <option value="XS">XS</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="2XL">2XL</option>
+                    <select class="form-control" id="edited_size" name="edited_size" required>
+                        {% for size in sizes %}
+                        <option value="{{size.id}}">{{ size.name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label for="color">Colors</label>
-                    <input type="text" class="form-control" id="color" name="edited_colors" required>
+                    <select class="form-control" id="edited_color" name="edited_color" required>
+                        {% for color in colors %}
+                        <option value="{{ color.id}}">{{ color.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-md-6">
                     <label for="price">Price</label>
-                    <input type="text" class="form-control" id="price" name="edited_price" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="offer_price">Offer Price</label>
-                    <input type="text" class="form-control" id="offer_price" name="edited_offer_price" required>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-md-6">
-                    <label for="quantity">stock</label>
-                    <input type="text" class="form-control" id="stock" name="edited_stock" required>
+                    <input type="text" class="form-control" id="edited_price" name="edited_price" value="{{ variants.price }}"  required>
                 </div>
                 <div class="col-md-6">
                     <label for="discount">Discount (%)</label>
-                    <input type="text" class="form-control" id="discount" name="edited_discount" required>
+                    <input type="text" class="form-control" id="edited_discount" name="edited_discount" value="{{ variants.discount }}"  required>
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-md-6">
-                    <label for="status">Status</label>
-                    <select class="form-control" id="status" name="edited_status" required>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
+                    <label for="stock">Stock</label>
+                    <input type="text" class="form-control" id="edited_stock" name="edited_stock" value="{{ variants.stock }}"  required>
                 </div>
+                <div class="col-md-6">
+                    <label for="is_available">Availability</label>
+                    <select class="form-control" id="edited_is_available" name="edited_is_available" value="{{ variants.is_available }}"  required>
+                        <option value="True">Available</option>
+                        <option value="False">Out of stock</option>
+                    </select>
+                </div>                
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Edit Variant</button>
+                <button type="submit" class="btn btn-primary">Save Edits</button>
             </div>
         </form>
         {% for message in messages %}
