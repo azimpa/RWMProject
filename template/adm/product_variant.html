@@ -49,8 +49,7 @@
         </div>
     </div>
 </div>
-
 <div class="d-flex justify-content-center">
-    <a href="{% url 'add_product_variant' %}" class="btn btn-primary" style="width: 170px;">Add Variant</a>
+    <a href="{% url 'add_product_variant' product.id %}" class="btn btn-primary" style="width: 170px;">Add Variant</a>
 </div>
 {% endblock %}

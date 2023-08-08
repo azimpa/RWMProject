@@ -117,20 +117,18 @@ def add_adm_product(request):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    categories = AdmCategories.objects.all()
-
     if request.method == "POST":
         prod_name = request.POST.get("product_name", "")
-        prod_brand = request.POST.get("brand", "")
+        prod_image = request.FILES.get("product_image", None)
+        prod_brand = request.POST.get("product_brand", "")
         category = request.POST.get("product_categories", "")
         cat = AdmCategories.objects.get(id=category)
-        prod_image = request.FILES.get("product_image", None)
-        prod_status = request.POST.get("status", "active")
+        prod_status = request.POST.get("product_status", "active")
 
         if AdmProducts.objects.filter(name=prod_name).exists():
             messages.error(
                 request, f'The product "{prod_name}" already exists.')
-            return render(request, "adm/add_adm_product.html", {'categories': categories})
+            return redirect("add_adm_product")
 
         product = AdmProducts(
             name=prod_name,
@@ -140,42 +138,10 @@ def add_adm_product(request):
             status=prod_status,
         )
         product.save()
-
-        prod_sizes = request.POST.getlist("sizes", [])
-        prod_colors = request.POST.getlist("colors", [])
-        print(prod_colors)
-        print(prod_sizes)
-        for color_id in prod_colors:
-            color_name="'"+color_id+"'"
-            print(color_name)
-            color = ProductColor.objects.get(name=color_name)
-            for size_id in prod_sizes:
-                size = ProductSize.objects.get(id=size_id)
-                price = request.POST.get(f"price_{color_id}_{size_id}", "")
-                offer_price = request.POST.get(
-                    f"offer_price_{color_id}_{size_id}", "")
-                stock = request.POST.get(f"stock_{color_id}_{size_id}", "")
-                discount = request.POST.get(
-                    f"discount_{color_id}_{size_id}", "")
-
-                variant = ProductVariant(
-                    product=product,
-                    color=color,
-                    size=size,
-                    price=price,
-                    offer_price=offer_price,
-                    stock=stock,
-                    discount=discount,
-                    status=prod_status,
-                )
-                variant.save()
-
-                # Add the many-to-many relations for colors and sizes
-                variant.colors.add(color)
-                variant.sizes.add(size)
-
         return redirect("adm_product")
+    
     else:
+        categories = AdmCategories.objects.all()
         return render(request, "adm/add_adm_product.html", {'categories': categories})
 
 def edit_adm_product(request, id):
@@ -186,54 +152,25 @@ def edit_adm_product(request, id):
 
     if request.method == "POST":
         edited_name = request.POST.get("edited_product_name", "")
+        edited_image = request.FILES.get("edited_product_image", None)
         edited_brand = request.POST.get("edited_brand", "")
         edited_category = request.POST.get("edited_category", "")
         editcat = AdmCategories.objects.get(id=edited_category)
-        edited_image = request.FILES.get("edited_product_image", None)
-        edited_price = request.POST.get("edited_price", "")
-        edited_offer_price = request.POST.get("edited_offer_price", "")
-        edited_stock = request.POST.get("edited_stock", "")
-        edited_discount = request.POST.get("edited_discount", "")
         edited_status = request.POST.get("edited_status", "active")
 
         product.name = edited_name
         product.brand = edited_brand
         product.category = editcat
         product.product_image = edited_image
-        product.price = edited_price
-        product.offer_price = edited_offer_price
-        product.stock = edited_stock
-        product.discount = edited_discount
         product.status = edited_status
 
         product.save()
-
-        # Handling ManyToManyField relationships (colors and sizes)
-        edited_colors = request.POST.getlist("edited_color")
-        edited_sizes = request.POST.getlist("edited_size")
-        product.colors.clear()
-        product.sizes.clear()
-
-        for color_id in edited_colors:
-            color = ProductColor.objects.get(id=color_id)
-            product.colors.add(color)
-
-        for size_id in edited_sizes:
-            size = ProductSize.objects.get(id=size_id)
-            product.sizes.add(size)
 
         return redirect("adm_product")
 
     else:
         categories = AdmCategories.objects.all()
-        colors = ProductColor.objects.all()
-        sizes = ProductSize.objects.all()
-        return render(request, "adm/edit_adm_product.html", {
-            'product': product,
-            'categories': categories,
-            'colors': colors,
-            'sizes': sizes,
-        })
+        return render(request, "adm/edit_adm_product.html", {'product': product, 'categories': categories,})
 
 def delete_adm_product(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
@@ -368,6 +305,10 @@ def delete_product_size(request, id):
     product_size = get_object_or_404(ProductSize, id=id)
     product_size.delete()
     return redirect("product_size")
+
+
+
+
 
 def product_variant(request):
     if not request.user.is_authenticated or not request.user.is_superuser:

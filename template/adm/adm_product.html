@@ -14,16 +14,11 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Image</th>
                         <th>Product Name</th>
+                        <th>Image</th>
                         <th>Brand</th>
                         <th>Category</th>
-                        <th>Size</th>
-                        <th>Color</th>
-                        <th>Price</th>
-                        <th>Offer Price</th>
-                        <th>Discount</th>
-                        <th>stock</th>
+                        <th>Variants</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -32,17 +27,14 @@
                     {% for prod in products %}
                     <tr>
                         <td>{{ prod.id }}</td>
+                        <td>{{ prod.name }}</td>
                         <td><img src="/media/{{prod.product_image}}" alt=" {{prod.product_image}}" class="img-fluid"
                                 style="max-width: 100px; height: auto;"></td>
-                        <td>{{ prod.name }}</td>
                         <td>{{ prod.brand }}</td>
                         <td>{{ prod.category }}</td>
-                        <td>{{ prod.size }}</td>
-                        <td>{{ prod.color }}</td>
-                        <td>₹{{ prod.price }}</td>
-                        <td>₹{{ prod.offer_price }}</td>
-                        <td>{{ prod.discount }}%</td>
-                        <td>{{ prod.stock }}</td>
+                        <td>
+                            <a href="{% url 'product_variant' prod.id %}" class="btn btn-primary btn-sm">Variants</a>
+                        </td>
                         <td>{{ prod.status }}</td>
                         <td>
                             <a href="{% url 'edit_adm_product' prod.id %}" class="btn btn-primary btn-sm">Edit</a>

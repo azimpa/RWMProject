@@ -1,7 +1,5 @@
 {% extends 'adm/base.html' %}
 
-{% load static %}
-
 {% block content %}
 <div class="card mb-4" style="width: 100%;">
     <div class="card-header">
@@ -18,58 +16,8 @@
                             value="{{ product.name }}" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="category">Category</label>
-                        <select class="form-control" id="category" name="edited_category" required>
-                            <option value="" disabled selected>Select a category</option>
-                            {% for category in categories %}
-                            <option value="{{ category.id }}" {% if product.category.id==category.id %}selected{% endif
-                                %}>{{ category.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        <label for="size">Size</label>
-                        <select class="form-control" id="size" name="edited_size" required>
-                            {% for size in sizes %}
-                            <option value="{{ size.id }}" {% if size in product.sizes.all %}selected{% endif %}>{{
-                                size.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="color">Color</label>
-                        <select class="form-control" id="color" name="edited_color" required>
-                            {% for color in colors %}
-                            <option value="{{ color.id }}" {% if color in product.colors.all %}selected{% endif %}>{{
-                                color.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        <label for="price">Price</label>
-                        <input type="text" class="form-control" id="price" name="edited_price"
-                            value="{{ product.price }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="offer_price">Offer Price</label>
-                        <input type="text" class="form-control" id="offer_price" name="edited_offer_price"
-                            value="{{ product.offer_price }}" required>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-md-6">
-                        <label for="quantity">Stock</label>
-                        <input type="text" class="form-control" id="stock" name="edited_stock"
-                            value="{{ product.stock }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="discount">Discount (%)</label>
-                        <input type="text" class="form-control" id="discount" name="edited_discount"
-                            value="{{ product.discount }}" required>
+                        <label for="product_image">Image</label>
+                        <input type="file" id="product_image" name="edited_product_image" accept="image/*" required>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -78,25 +26,29 @@
                         <input type="text" class="form-control" id="brand" name="edited_brand"
                             value="{{ product.brand }}" required>
                     </div>
+                    <div class="col-md-6">
+                        <label for="category">Category</label>
+                        <select class="form-control" id="category" name="edited_category" required>
+                            <option value="" disabled selected>Select a category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if product.category.id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>                            
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-md-6">
                         <label for="status">Status</label>
                         <select class="form-control" id="status" name="edited_status" required>
-                            <option value="active" {% if product.status=='active' %}selected{% endif %}>Active</option>
-                            <option value="inactive" {% if product.status=='inactive' %}selected{% endif %}>Inactive
-                            </option>
+                            <option value="active" {% if product.status == 'active' %}selected{% endif %}>Active</option>
+                            <option value="inactive" {% if product.status == 'inactive' %}selected{% endif %}>Inactive</option>
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label for="product_image" class="col-md-2 col-form-label">Image</label>
-                        <div class="col-md-10">
-                            <input type="file" id="product_image" name="edited_product_image" accept="image/*" required>
-                        </div>
-                    </div>
-                </div>
+                </div>                
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary">Save Edits</button>
                 </div>
             </form>
         </div>

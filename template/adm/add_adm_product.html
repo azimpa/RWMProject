@@ -13,11 +13,23 @@
       <div class="form-group row">
         <div class="col-md-6">
           <label for="name">Product Name</label>
-          <input type="text" class="form-control" id="name" name="product_name" required>
+          <input type="text" class="form-control" id="product_name" name="product_name" required>
+        </div>
+        <div class="col-md-6">
+          <label for="product_image" class="col-md-2 col-form-label">Image</label>
+          <div class="col-md-4">
+            <input type="file" id="product_image" name="product_image" accept="image/*" required>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-6">
+          <label for="brand">Brand</label>
+          <input type="text" class="form-control" id="product_brand" name="product_brand" required>
         </div>
         <div class="col-md-6">
           <label for="category">Category</label>
-          <select class="form-control" id="category" name="product_categories" required>
+          <select class="form-control" id="product_categories" name="product_categories" required>
             <option value="" disabled selected>Select a category</option>
             {% for category in categories %}
             <option value="{{ category.id }}">{{ category.name }}</option>
@@ -25,74 +37,13 @@
           </select>
         </div>
       </div>
-
-      <!-- Add the following code to select multiple sizes and colors -->
-      <div class="form-group row">
-        <div class="col-md-6">
-          <label for="size">Sizes</label>
-          <select class="form-control" id="size" name="sizes" multiple required>
-            <option value="3XS">3XS</option>
-            <option value="2XS">2XS</option>
-            <option value="XS">XS</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="2XL">2XL</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="color">Colors</label>
-          <select class="form-control" id="color" name="colors" multiple required>
-            <option value="Red">Red</option>
-            <option value="Blue">Blue</option>
-            <option value="Green">Green</option>
-            <option value="Yellow">Yellow</option>
-            <option value="Black">Black</option>
-            <option value="White">White</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <div class="col-md-6">
-          <label for="price">Price</label>
-          <input type="text" class="form-control" id="price" name="price" required>
-        </div>
-        <div class="col-md-6">
-          <label for="offer_price">Offer Price</label>
-          <input type="text" class="form-control" id="offer_price" name="offer_price" required>
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-md-6">
-          <label for="quantity">stock</label>
-          <input type="text" class="form-control" id="stock" name="stock" required>
-        </div>
-        <div class="col-md-6">
-          <label for="discount">Discount (%)</label>
-          <input type="text" class="form-control" id="discount" name="discount" required>
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-md-6">
-          <label for="brand">Brand</label>
-          <input type="text" class="form-control" id="brand" name="brand" required>
-        </div>
-      </div>
       <div class="form-group row">
         <div class="col-md-6">
           <label for="status">Status</label>
-          <select class="form-control" id="status" name="status" required>
+          <select class="form-control" id="product_status" name="product_status" required>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-        </div>
-        <div class="col-md-6">
-          <label for="product_image" class="col-md-2 col-form-label">Image</label>
-          <div class="col-md-4">
-            <input type="file" id="product_image" name="product_image" accept="image/*" required>
-          </div>
         </div>
       </div>
       <div class="text-center">
