@@ -74,7 +74,7 @@ def user_signup(request):
         my_user.set_password(pass1)
         my_user.save()
 
-        login(request, my_user)
+        # login(request, my_user)
         verify.send(my_user.phone_number)
         return redirect('otpcheck',phone_number,my_user.id)
     
@@ -134,7 +134,29 @@ def user_logout(request):
 
 def userprofile(request):
     user= request.user
-    return render(request,'auth/userprofile.html',{'username': username, 'email': email_address,'phone': mobile_number}) 
+
+    if 'first_name' in request.POST:
+        edited_fist_name = request.POST["first_name"]
+        user.first_name = edited_fist_name
+        user.save()
+    if 'last_name' in request.POST:
+        edited_last_name = request.POST["last_name"]
+        user.last_name = edited_last_name
+        user.save()  
+    if 'gender' in request.POST:
+        edited_gender = request.POST["gender"]
+        user.gender = edited_gender
+        user.save()  
+    if 'age' in request.POST:
+        edited_age = request.POST['age']
+        user.age = edited_age
+        user.save()       
+    if 'email' in request.POST:
+        edited_email = request.POST["email"]
+        user.email = edited_email
+        user.save()           
+
+    return render(request,'auth/userprofile.html',{'username': user.username, 'email': user.email,'phone': user.phone_number, 'age':user.age, 'gender': user.gender, 'first_name': user.first_name, 'last_name': user.last_name}) 
 
 
 def forgot_password(request):

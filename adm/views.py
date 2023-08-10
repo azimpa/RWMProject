@@ -7,7 +7,14 @@ from adm.models import AdmCategories, AdmProducts, ProductSize, ProductColor, Pr
 
 
 def index(request):
-    return render(request, "adm/index.html")
+    if request.user.is_anonymous:
+        return render(request, "adm/index.html")
+    elif not request.user.is_superuser:
+        logout(request)
+        return render(request, "adm/index.html")
+    else:
+        return render(request, "adm/index.html")
+    
 
 def adm_login(request):
     if request.method == "POST":
