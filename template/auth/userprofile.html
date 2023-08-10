@@ -1,13 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Hi, {{ username }}</h1>
-    <a href='/'>home</a>
-    <a href="useraddress">address</a>
-</body>
-</html>
+{% extends 'user/base_user.html' %}
+
+{% load static %}
+
+{% block title %}
+PROFILE
+{% endblock %}
+
+{% block content %}
+
+<section>
+    <div class="container-fluid" style="background-color: rgb(212, 219, 219);">
+        <div class="row d-inline-flex mb-5" style="margin-top: 100px;">
+            <div class="col-lg-3 col-md-12 ms-5">
+                <div class="d-inline-flex p-2 mt-5"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px; border: 0.3px solid rgb(235, 215, 215);box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <i class="bi bi-person ms-3" style="font-size: 28px;"></i>
+                    <h3 style="margin-left: 18px; margin-top: 7px;">Hello, {{username}}</h3>
+                </div>
+                <div class="d-inline-flex p-2 mt-3"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <i class="bi bi-gear ms-3" style="font-size: 28px; color: rgb(65, 65, 184);"></i>
+                    <h6 style="margin-left: 18px; margin-top: 10px; color: rgb(146, 149, 152);">ACCOUNT SETTINGS</h6>
+                </div>
+                <div class="d-inline-flex p-2 d-flex justify-content-center"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <a href="{% url 'useraddress' %}"
+                        style="margin-right: 15px; margin-top: 10px; color: rgb(146, 149, 152); text-decoration: none;">Personal
+                        Information</a>
+                </div>
+                <div class="d-inline-flex p-2 d-flex justify-content-center"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <a href="useraddress"
+                        style="margin-right: 45px; margin-top: 10px; color: rgb(146, 149, 152); text-decoration: none;">Manage Address</a>
+                </div>
+                <div class="d-inline-flex p-2"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px; border-top: 0.3px solid rgb(235, 215, 215);">
+                    <i class="bi bi-cart4 ms-3" style="font-size: 28px; color: rgb(65, 65, 184);"></i>
+                    <h6 style="margin-left: 17px; margin-top: 12px; color: rgb(146, 149, 152);">MY ORDERS</h6>
+                    <i class="bi bi-arrow-right-circle"
+                        style="font-size: 15px; margin-top: 12px; color: rgb(146, 149, 152); margin-left: 70px;"></i>
+                </div>
+                <div class="d-inline-flex p-2"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px; border-top: 0.3px solid rgb(235, 215, 215);">
+                    <i class="bi bi-credit-card ms-3" style="font-size: 28px; color: rgb(65, 65, 184);"></i>
+                    <h6 style="margin-left: 17px; margin-top: 10px; color: rgb(146, 149, 152);">PAYMENT METHODS</h6>
+                </div>
+                <div class="d-inline-flex p-2 d-flex justify-content-center"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <p style="margin-right: 33px; margin-top: 10px; color: rgb(146, 149, 152);">Debit/Credit Cards</p>
+                </div>
+                <div class="d-inline-flex p-2 d-flex justify-content-center"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <p style="margin-right: 130px; margin-top: 10px; color: rgb(146, 149, 152);">UPI</p>
+                </div>
+                <div class="d-inline-flex p-2 d-flex justify-content-center"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <p style="margin-right: 46px; margin-top: 10px; color: rgb(146, 149, 152);">Cash on Delivery</p>
+                </div>
+                <div class="d-inline-flex p-2"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px; border-top: 0.3px solid rgb(235, 215, 215);">
+                    <i class="bi bi-box ms-3" style="font-size: 28px; color: rgb(65, 65, 184);"></i>
+                    <h6 style="margin-left: 17px; margin-top: 10px; color: rgb(146, 149, 152);">MY STUFFS</h6>
+                </div>
+                <div class="d-inline-flex p-2 d-flex justify-content-center"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <p style="margin-right: 96px; margin-top: 10px; color: rgb(146, 149, 152);">Coupons</p>
+                </div>
+                <div class="d-inline-flex p-2 d-flex justify-content-center"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
+                    <p style="margin-right: 79px; margin-top: 10px; color: rgb(146, 149, 152);">My Wishlist</p>
+                </div>
+                <div class="d-inline-flex p-2"
+                    style="background-color: rgb(255, 255, 255); width: 260px; height: 60px; border: 0.3px solid rgb(235, 215, 215);box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <i class="bi bi-box-arrow-left ms-3" style="font-size: 28px; color: rgb(65, 65, 184);"></i>
+                    <a href="{% url 'user_logout' %}"><h6 style="margin-left: 17px; margin-top: 10px; color: rgb(146, 149, 152);">LOGOUT</h6></a>
+                </div>
+            </div>
+            {% block profile %}
+            <div class="col-lg-8 col-md-6 bg-white mt-5 pb-5"
+                style="border: 0.3px solid rgb(255, 255, 255);box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <form action="/User_profile" method="post"> {% csrf_token %}
+                    <div class="mt-5 ms-5">
+                        <h5 class="d-inline-flex me-5">Personal Information</h5><span><a href="">Edit</a></span>
+                        <div>
+                            <input type="text" class="form-control mt-3" style="width: 300px;" id="first_name"
+                                name="first_name" placeholder="First Name" required>
+                            <input type="text" class="form-control mt-3" style="width: 300px;" id="last_name"
+                                name="last_name" placeholder="Last Name" required>
+                        </div>
+                    </div>
+                    <div class="mt-5 ms-5">
+                        <p>Your Gender</p>
+                        <select name="gender" id="">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mt-5 ms-5">
+                        <p>Your Age</p>
+                        <div>
+                            <input type="text" class="form-control mt-3" style="width: 300px;" id="age" name="age"
+                                placeholder="Enter Your Age" required>
+                        </div>
+                    </div>
+                    <div class="mt-5 ms-5">
+                        <h5 class="d-inline-flex me-5">Email Address</h5><span><a href="">Edit</a></span>
+                        <div>
+                            <input type="email" class="form-control mt-3" style="width: 300px;" id="email" name="email"
+                                placeholder="{{email}}" required>
+                        </div>
+                    </div>
+                    <div class="mt-5 ms-5">
+                        <h5 class="d-inline-flex me-5">Phone Number</h5><span><a href="">Edit</a></span>
+                        <div>
+                            <input type="tel" class="form-control mt-3" style="width: 300px;" id="phone" name="phone"
+                                placeholder="{{phone}}" required>
+                        </div>
+                    </div>
+                    <div class="mt-4 ms-5">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

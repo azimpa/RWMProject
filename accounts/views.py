@@ -9,6 +9,10 @@ from . import verify
 
 def user_signup(request):
     if request.method == "POST":
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        age = request.POST["age"]
+        gender = request.POST["gender"]
         user_name = request.POST["username"]
         email = request.POST["email"]
         phone_number = request.POST["phone_number"]
@@ -26,6 +30,20 @@ def user_signup(request):
         if len(pass1) <2:
               return redirect(user_signup)
         
+        try:
+            if CustomUser.objects.get(first_name=first_name):
+                messages.error(request, 'First name already exists')
+                return redirect(user_signup)
+        except:
+            pass
+
+        try:
+            if CustomUser.objects.get(last_name=last_name):
+                messages.error(request, 'Last name already exists')
+                return redirect(user_signup)
+        except:
+            pass
+
         try:
             if CustomUser.objects.get(username=user_name):
                 return redirect(user_signup)
@@ -45,6 +63,10 @@ def user_signup(request):
             pass
 
         my_user = CustomUser.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            age=age,
+            gender=gender,
             username=user_name,
             email=email,
             phone_number=phone_number)
@@ -111,8 +133,8 @@ def user_logout(request):
     return redirect('home')    
 
 def userprofile(request):
-    username = request.user.username
-    return render(request,'auth/userprofile.html',{'username': username}) 
+    user= request.user
+    return render(request,'auth/userprofile.html',{'username': username, 'email': email_address,'phone': mobile_number}) 
 
 
 def forgot_password(request):

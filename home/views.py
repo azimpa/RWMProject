@@ -1,9 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from adm.models import AdmProducts
 from home.models import Address
-from accounts.models import CustomUser
 from django.contrib.auth import logout
-from django.views.decorators.cache import never_cache
 
 # Create your views here.
 
@@ -15,7 +12,6 @@ def home(request):
         return render(request, "user/home.html")
     else:
         return render(request, "user/home.html")
-
 
 def product(request):
     return render(request, "user/product.html")

@@ -12,4 +12,4 @@ class Address(models.Model):
     pin_code = models.CharField(max_length=10)
 
     def __str__(self):
-        return f"{self.house_name}, {self.street}, {self.postoffice}, {self.city}, {self.state}, {self.country}, {self.pin_code}"
+        return self.user
