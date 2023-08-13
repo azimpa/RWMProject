@@ -41,8 +41,22 @@
             <div class="form-group row">
                 <div class="col-md-6">
                     <label for="price">Price</label>
-                    <input type="text" class="form-control" id="price" name="price" required>
-                </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">&#8377;</span>
+                        </div>
+                        <input type="text" class="form-control" id="price" name="price" required>
+                    </div>
+                </div>   
+                <div class="col-md-6">
+                    <label for="offer_price">Offer Price</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">&#8377;</span>
+                        </div>
+                        <input type="text" class="form-control" id="offer_price" name="offer_price" required>
+                    </div>
+                </div>                   
                 <div class="col-md-6">
                     <label for="discount">Discount (%)</label>
                     <input type="text" class="form-control" id="discount" name="discount" required>

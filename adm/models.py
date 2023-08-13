@@ -36,6 +36,7 @@ class ProductVariant(models.Model):
     color = models.ForeignKey(ProductColor, on_delete=models.CASCADE)
     size = models.ForeignKey(ProductSize, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    offer_price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     stock = models.PositiveIntegerField(null=True, blank=True)
     is_available = models.BooleanField(default=True)

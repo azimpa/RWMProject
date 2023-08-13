@@ -38,7 +38,7 @@
             <div class="col-lg-7">
                 <div class="product_image">
                     <div class="product_image_large">
-                        <img src="{% static 'images/Ultimate cfr di2.jpg' %}" alt="" />
+                        <img src="{{products.product_image.url}}" alt="" />
                     </div>
                 </div>
                 <!-- Product Quantity -->
@@ -85,9 +85,10 @@
             <div class="col-lg-5">
                 <div class="product_content">
                     <div class="product_name">
-                        <h2>Ultimate CFR Di2</h2>
+                        <h2 style="font-weight: bold;">{{ products.name }}</h2>
                     </div>
-                    <div class="product_price">7,70,027.87 ₹</div>
+                    <div class="product_price">&#8377; {{ products.productvariant_set.first.offer_price }}</div>
+                    <div class="product_offer_price"><del>&#8377; {{ products.productvariant_set.first.price}} </del></div>
                     <div class="rating rating_4 mt-2" data-rating="4">
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -101,9 +102,7 @@
                         <span style="font-weight: bold;">in stock</span>
                     </div>
                     <div class="product_text mt-3">
-                        <p>
-                            Developed by industry-leading engineers, built with the finest materials: the Ultimate CFR Di2 is a pro-level bike that redefines the meaning of world-class racing performance.
-                        </p>
+                        <p>{{ products.description }}</p>
                     </div>
                 </div>
             </div>

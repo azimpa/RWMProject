@@ -31,41 +31,6 @@
 		</div>
 	</div>
 </div>
-
-<!-- Promo Bikes -->
-<div class="promo">
-	<div class="container">
-		<div class="row">
-			<div class="col">
-				<div class="section_title_container text-center">
-					<div class="section_subtitle">only the best</div>
-					<div class="section_title">Promo Bikes</div>
-				</div>
-			</div>
-		</div>
-		<div class="row promo_container">
-			{% for pr in prod %}
-			<div class="col-lg-4 promo_col">
-				<div class="promo_item">
-					{% if pr.product_image %}
-					<div class="promo_image">
-						<img src="{{pr.product_image.url}}" alt="{{pr.name}}">
-					</div>
-					{% else %}
-					<!-- Render a placeholder image if 'product_image' does not exist -->
-					<div class="promo_image">
-						<img src="{% static 'path_to_placeholder_image.jpg' %}" alt="{{pr.name}}">
-					</div>
-					{% endif %}
-					<div class="promo_title" style="color: rgb(0, 0, 0); text-align: center;">{{pr.name}}</div>
-					<div class="promo_link" style="text-align: center;"><a href="product">Shop Now</a></div>
-				</div>
-			</div>
-			{% endfor %}
-		</div>
-	</div>
-</div>
-
 <!-- New Arrivals -->
 <div class="arrivals">
 	<div class="container">
@@ -163,7 +128,7 @@
 				</div>
 			</div>
 			<div class="col text-center">
-				<div class="button arrivals_button"><a href="product">view more</a></div>
+				<div class="button arrivals_button"><a href="{% url 'total_products' %}">view more</a></div>
 			</div>
 		</div>
 	</div>

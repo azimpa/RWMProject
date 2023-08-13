@@ -1,61 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'user/base_user.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Address</title>
-    <!-- Add Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-
-<body>
-    <div class="container" style="padding-top: 120px;">
+{% block content %}
+<div style="margin-top: 150px;">
+    <div class="container my-5">
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'edit_address' address.id %}" method="post">{% csrf_token %}
-                    <div class="col-12 text-center">
-                        <h2>Address</h2>
+                <form action="{% url 'edit_address' edit_address.id %}" method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="form-row text-center mb-4">
+                        <div class="col">
+                            <h2>Edit Address</h2>
+                        </div>
                     </div>
-                    <div class="col-12">
-                        <label for="Edited_House_name">House Name:</label>
-                        <input type="text" class="form-control" id="Edited_House_name" name="Edited_House_name"
-                            value="{{address.house_name}}">
-
-                        <label for="Edited_Post_office">Post Office:</label>
-                        <input type="text" class="form-control" id="Edited_Post_office" name="Edited_Post_office"
-                        value="{{address.postoffice}}">
-
-                        <label for="Edited_Street">Street:</label>
-                        <input type="text" class="form-control" id="Edited_Street" name="Edited_Street"
-                        value="{{address.street}}">
-
-                        <label for="Edited_City">City:</label>
-                        <input type="text" class="form-control" id="Edited_City" name="Edited_City" value="{{address.city}}">
-
-                        <label for="Edited_State">State:</label>
-                        <input type="text" class="form-control" id="Edited_State" name="Edited_State"
-                        value="{{address.state}}">
-
-                        <label for="Edited_Country">Country:</label>
-                        <input type="text" class="form-control" id="Edited_Country" name="Edited_Country"
-                        value="{{address.country}}">
-
-                        <label for="Edited_Pin_code">Pin Code:</label>
-                        <input type="text" class="form-control" id="Edited_Pin_code" name="Edited_Pin_code"
-                        value="{{address.pin_code}}">
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="inputHouseName">House Name:</label>
+                            <input type="text" class="form-control" id="Edited_House_name" name="Edited_House_name"
+                                placeholder="House Name" value="{{ edit_address.house_name }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid House Name.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="inputPostOffice">Post Office:</label>
+                            <input type="text" class="form-control" id="Edited_Post_office" name="Edited_Post_office"
+                                placeholder="Post Office" value="{{ edit_address.postoffice }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid Post Office.
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-primary">Edit Address</button>
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="inputStreet">Street:</label>
+                            <input type="text" class="form-control" id="Edited_Street" name="Edited_Street" placeholder="Street"
+                                value="{{ edit_address.street }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid Street.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="inputCity">City:</label>
+                            <input type="text" class="form-control" id="Edited_City" name="Edited_City" placeholder="City"
+                                value="{{ edit_address.city }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid City.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="inputState">State:</label>
+                            <input type="text" class="form-control" id="Edited_State" name="Edited_State" placeholder="State"
+                                value="{{ edit_address.state }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid State.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="inputCountry">Country:</label>
+                            <input type="text" class="form-control" id="Edited_Country" name="Edited_Country"
+                                placeholder="Country" value="{{ edit_address.country }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid Country.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6 mb-3">
+                            <label for="inputPinCode">Pin Code:</label>
+                            <input type="text" class="form-control" id="Edited_Pin_code" name="Edited_Pin_code"
+                                placeholder="Pin Code" value="{{ edit_address.pin_code }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid Pin Code.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row text-center">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <!-- Add Bootstrap JS and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-
-</html>
+</div>
+{% endblock %}

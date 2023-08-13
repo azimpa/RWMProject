@@ -12,15 +12,16 @@
     <title>HOME</title>
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="{% static 'styles/bootstrap4/bootstrap.min.css' %}">
-    <link href="{% static 'plugins/font-awesome-4.7.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
     <link rel="stylesheet" type="text/css" href="{% static 'plugins/OwlCarousel2-2.2.1/owl.carousel.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'plugins/OwlCarousel2-2.2.1/owl.theme.default.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'plugins/OwlCarousel2-2.2.1/animate.css' %}">
     <link href="{% static 'plugins/colorbox/colorbox.css' %}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="{% static 'styles/main_styles.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'styles/responsive.css' %}">
+    <link href="{% static 'prolib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'procss/style.css' %}" rel="stylesheet">
 </head>
 
 <body>
@@ -31,11 +32,11 @@
                 <div class="logo"><a href="/">RWM</a></div>
                 <nav class="main_nav">
                     <ul>
-                        <li><a href="/product">Shop</a></li>
-                        <li><a href="/categories">Road Bikes</a></li>
-                        <li><a href="/categories">Gravel Bikes</a></li>
-                        <li><a href="/categories">Mountain Bikes</a></li>
-                        <li><a href="/categories">Hybrid Bikes</a></li>
+                        <li><a href="{% url 'total_products' %}">Shop</a></li>
+                        <li><a href="{% url 'roadbikes' %}">Road Bikes</a></li>
+                        <li><a href="{% url 'gravelbikes' %}">Gravel Bikes</a></li>
+                        <li><a href="{% url 'mountainbikes' %}">Mountain Bikes</a></li>
+                        <li><a href="{% url 'hybridbikes' %}">Hybrid Bikes</a></li>
                         {% if user.is_authenticated %}
                         <li><a href="{% url 'user_logout' %}">Logout</a></li>
                         {% else %}
@@ -116,7 +117,7 @@
             </div>
             <nav class="menu_nav">
                 <ul class="menu_mm">
-                    <li class="menu_mm"><a href="/product">Shop</a></li>
+                    <li class="menu_mm"><a href="{% url 'total_products' %}">Shop</a></li>
                     <li class="menu_mm"><a href="/contact">Wishlist</a></li>
                     <li class="menu_mm"><a href="/contact">Cart</a></li>
                     {% if user.is_authenticated %}
@@ -140,11 +141,11 @@
                         <div class="footer_logo"><a href="/">RWM</a></div>
                         <nav class="footer_nav">
                             <ul>
-                                <li><a href="/product">Shop</a></li>
-                                <li><a href="/categories">ROAD BIKES</a></li>
-                                <li><a href="/categories">GRAVEL BIKES</a></li>
-                                <li><a href="/categories">MOUNTAIN BIKES</a></li>
-                                <li><a href="/contact">HYBRID BIKES</a></li>
+                                <li><a href="{% url 'total_products' %}">Shop</a></li>
+                                <li><a href="{% url 'roadbikes' %}">ROAD BIKES</a></li>
+                                <li><a href="{% url 'gravelbikes' %}">GRAVEL BIKES</a></li>
+                                <li><a href="{% url 'mountainbikes' %}">MOUNTAIN BIKES</a></li>
+                                <li><a href="{% url 'hybridbikes' %}">HYBRID BIKES</a></li>
                                 {% if user.is_authenticated %}
                                 <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 {% else %}
@@ -169,15 +170,16 @@
                 </div>
             </div>
         </footer>
+    </div>
 
-        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
-        <script src="{% static 'styles/bootstrap4/popper.js' %}"></script>
-        <script src="{% static 'styles/bootstrap4/bootstrap.min.js' %}"></script>
-        <script src="{% static 'plugins/OwlCarousel2-2.2.1/owl.carousel.js' %}"></script>
-        <script src="{% static 'plugins/easing/easing.js' %}"></script>
-        <script src="{% static 'plugins/parallax-js-master/parallax.min.js' %}"></script>
-        <script src="{% static 'plugins/colorbox/jquery.colorbox-min.js' %}"></script>
-        <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'styles/bootstrap4/popper.js' %}"></script>
+    <script src="{% static 'styles/bootstrap4/bootstrap.min.js' %}"></script>
+    <script src="{% static 'plugins/OwlCarousel2-2.2.1/owl.carousel.js' %}"></script>
+    <script src="{% static 'plugins/easing/easing.js' %}"></script>
+    <script src="{% static 'plugins/parallax-js-master/parallax.min.js' %}"></script>
+    <script src="{% static 'plugins/colorbox/jquery.colorbox-min.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
 </body>
 
 </html>

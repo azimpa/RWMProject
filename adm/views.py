@@ -119,7 +119,8 @@ def adm_product(request):
         return redirect("adm_login")
 
     adm_products = AdmProducts.objects.all().order_by("id")
-    return render(request, "adm/adm_product.html", {"products": adm_products})
+    print(adm_products)
+    return render(request, "adm/adm_product.html", {'products': adm_products})
 
 def add_adm_product(request):
     if not request.user.is_authenticated or not request.user.is_superuser:
@@ -330,7 +331,7 @@ def product_variant(request, id):
             return render(request, "adm/product_variant.html", {"variants": variants, "product": product})
         else:
             messages.error(request, 'No variants found for this product')
-            return redirect('adm_product')
+            return render(request, "adm/product_variant.html", {"variants": variants, "product": product})
     except AdmProducts.DoesNotExist:
         messages.error(request, 'Product not found')
         return redirect('adm_product')
@@ -348,6 +349,7 @@ def add_product_variant(request, id):
             variant_size = request.POST.get('size')
             size = ProductSize.objects.get(id=variant_size)
             variant_price = request.POST.get('price')
+            variant_offer_price = request.POST.get('offer_price')
             variant_discount = request.POST.get('discount')
             variant_stock = request.POST.get('stock')
             variant_is_available = request.POST.get('is_available') 
@@ -358,6 +360,7 @@ def add_product_variant(request, id):
                 color=color,
                 size=size,
                 price=variant_price,
+                offer_price = variant_offer_price,
                 discount=variant_discount,
                 stock=variant_stock,
                 is_available=variant_is_available, 
@@ -399,6 +402,7 @@ def edit_product_variant(request, id):
         edited_color_id = request.POST.get('edited_color')
         edited_size_id = request.POST.get('edited_size')
         edited_price = request.POST.get('edited_price')
+        edited_offer_price = request.POST.get('edited_offer_price')
         edited_discount = request.POST.get('edited_discount')
         edited_stock = request.POST.get('edited_stock')
         edited_is_available = request.POST.get('edited_is_available')
@@ -411,6 +415,7 @@ def edit_product_variant(request, id):
             variant.color = edited_color
             variant.size = edited_size
             variant.price = edited_price
+            variant.offer_price = edited_offer_price
             variant.discount = edited_discount
             variant.stock = edited_stock
             variant.is_available = edited_is_available
