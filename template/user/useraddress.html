@@ -9,7 +9,7 @@
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark">
                     <tr>
-                        <th>House Name</th>
+                        <th>House Name or Company Name</th>
                         <th>Post Office</th>
                         <th>Street</th>
                         <th>City</th>
@@ -22,7 +22,7 @@
                 <tbody>
                     {% for address in addresses %}
                     <tr>
-                        <td>{{ address.house_name }}</td>
+                        <td>{{ address.name }}</td>
                         <td>{{ address.postoffice }}</td>
                         <td>{{ address.street }}</td>
                         <td>{{ address.city }}</td>

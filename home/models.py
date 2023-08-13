@@ -3,7 +3,7 @@ from accounts.models import CustomUser
 
 class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    house_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="House or Company Name")
     postoffice = models.CharField(max_length=100)
     street = models.CharField(max_length=100)
     city = models.CharField(max_length=50)

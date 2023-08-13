@@ -1,11 +1,12 @@
 {% extends 'user/base_user.html' %}
 
 {% block content %}
-<div style="margin-top: 150px;">
-    <div class="container my-5">
+
+<body>
+    <div class="container" style="padding-top: 120px;">
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'edit_address' edit_address.id %}" method="post" class="needs-validation" novalidate>
+                <form action="{% url 'edit_address' address.id %}" method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
                     <div class="form-row text-center mb-4">
                         <div class="col">
@@ -14,17 +15,17 @@
                     </div>
                     <div class="form-row">
                         <div class="col-md-6 mb-3">
-                            <label for="inputHouseName">House Name:</label>
-                            <input type="text" class="form-control" id="Edited_House_name" name="Edited_House_name"
-                                placeholder="House Name" value="{{ edit_address.house_name }}" required>
+                            <label for="Edited_Housename_companyname">House Name or Company Name:</label>
+                            <input type="text" class="form-control" id="Edited_Housename_companyname"
+                                name="Edited_Housename_companyname" value="{{address.name}}" required>
                             <div class="invalid-feedback">
-                                Please provide a valid House Name.
+                                Please provide a valid House Name or Company Name.
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="inputPostOffice">Post Office:</label>
+                            <label for="Edited_Post_office">Post Office:</label>
                             <input type="text" class="form-control" id="Edited_Post_office" name="Edited_Post_office"
-                                placeholder="Post Office" value="{{ edit_address.postoffice }}" required>
+                                value="{{address.postoffice}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid Post Office.
                             </div>
@@ -32,17 +33,17 @@
                     </div>
                     <div class="form-row">
                         <div class="col-md-6 mb-3">
-                            <label for="inputStreet">Street:</label>
-                            <input type="text" class="form-control" id="Edited_Street" name="Edited_Street" placeholder="Street"
-                                value="{{ edit_address.street }}" required>
+                            <label for="Edited_Street">Street:</label>
+                            <input type="text" class="form-control" id="Edited_Street" name="Edited_Street"
+                                value="{{address.street}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid Street.
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="inputCity">City:</label>
-                            <input type="text" class="form-control" id="Edited_City" name="Edited_City" placeholder="City"
-                                value="{{ edit_address.city }}" required>
+                            <label for="Edited_City">City:</label>
+                            <input type="text" class="form-control" id="Edited_City" name="Edited_City"
+                                value="{{address.city}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid City.
                             </div>
@@ -50,17 +51,17 @@
                     </div>
                     <div class="form-row">
                         <div class="col-md-6 mb-3">
-                            <label for="inputState">State:</label>
-                            <input type="text" class="form-control" id="Edited_State" name="Edited_State" placeholder="State"
-                                value="{{ edit_address.state }}" required>
+                            <label for="Edited_State">State:</label>
+                            <input type="text" class="form-control" id="Edited_State" name="Edited_State"
+                                value="{{address.state}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid State.
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="inputCountry">Country:</label>
+                            <label for="Edited_Country">Country:</label>
                             <input type="text" class="form-control" id="Edited_Country" name="Edited_Country"
-                                placeholder="Country" value="{{ edit_address.country }}" required>
+                                value="{{address.country}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid Country.
                             </div>
@@ -68,9 +69,9 @@
                     </div>
                     <div class="form-row">
                         <div class="col-md-6 mb-3">
-                            <label for="inputPinCode">Pin Code:</label>
+                            <label for="Edited_Pin_code">Pin Code:</label>
                             <input type="text" class="form-control" id="Edited_Pin_code" name="Edited_Pin_code"
-                                placeholder="Pin Code" value="{{ edit_address.pin_code }}" required>
+                                value="{{address.pin_code}}" required>
                             <div class="invalid-feedback">
                                 Please provide a valid Pin Code.
                             </div>
@@ -78,12 +79,13 @@
                     </div>
                     <div class="form-row text-center">
                         <div class="col">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Edit Address</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</body>
+
 {% endblock %}

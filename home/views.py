@@ -59,7 +59,7 @@ def useraddress(request):
 
 def add_address(request):
     if request.method == "POST":
-        house_name = request.POST.get("House_name")
+        housename_companyname = request.POST.get("Housename_companyname")
         post_office = request.POST.get("Post_office")
         street = request.POST.get("Street")
         city = request.POST.get("City")
@@ -69,7 +69,7 @@ def add_address(request):
 
         address = Address(
             user=request.user,
-            house_name=house_name,
+            name=housename_companyname,
             postoffice=post_office,
             street=street,
             city=city,
@@ -87,7 +87,7 @@ def edit_address(request, id):
     address = get_object_or_404(Address, id = id, user = request.user)
 
     if request.method == "POST":
-        house_name = request.POST.get("Edited_House_name")
+        housename_companyname = request.POST.get("Edited_Housename_companyname")
         post_office = request.POST.get("Edited_Post_office")
         street = request.POST.get("Edited_Street")
         city = request.POST.get("Edited_City")
@@ -95,7 +95,7 @@ def edit_address(request, id):
         country = request.POST.get("Edited_Country")
         pin_code = request.POST.get("Edited_Pin_code")
 
-        address.house_name = house_name
+        address.name = housename_companyname
         address.postoffice = post_office
         address.street = street
         address.city = city
@@ -106,9 +106,15 @@ def edit_address(request, id):
 
         return redirect('useraddress')
 
-    return render(request, "user/edit_address.html", {'edit_address': address})
+    return render(request, "user/edit_address.html", {'address': address})
 
 def delete_address(request, id):
     address = get_object_or_404(Address, id=id)
     address.delete()
     return redirect("useraddress")
+
+def cart(request):
+    return render(request, "user/cart.html")
+
+def checkout(request):
+    return render(request, "user/checkout.html")

@@ -13,4 +13,6 @@ urlpatterns = [
     path('hybridbikes', views.hybridbikes, name='hybridbikes'),
     path('mountainbikes', views.mountainbikes, name='mountainbikes'),
     path('product_description/<int:id>', views.product_description, name="product_description"),  
+    path('cart', views.cart, name="cart"), 
+    path('checkout', views.checkout, name="checkout"), 
 ]

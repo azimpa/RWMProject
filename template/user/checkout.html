@@ -1,0 +1,99 @@
+{% extends 'user/base_user.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="margin-top: 150px;">
+	<div class="row">
+		<div class="col-lg-6" style="margin-top: 50px;">
+			<div class="shipping">
+				<div class="checkout_title">Shipping Details</div>
+				<form action="#" id="checkout_form">
+					<div class="form-group mt-4">
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<input type="text" class="form-control" placeholder="First Name" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="text" class="form-control" placeholder="Last Name" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="email" class="form-control" placeholder="E-mail" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="tel" class="form-control" placeholder="Phone No" required>
+							</div>
+							<div class="col-md-12 mb-3">
+								<input type="text" id="Address" class="form-control"
+									placeholder="House Name or Company Name">
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="text" class="form-control" placeholder="Post Office" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="text" class="form-control" placeholder="Street" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="text" class="form-control" placeholder="City" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="text" class="form-control" placeholder="State" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="text" id="country" class="form-control" placeholder="Country">
+							</div>
+							<div class="col-md-6 mb-3">
+								<input type="text" class="form-control" placeholder="Zipcode" required>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!-- Cart Details -->
+		<div class="col-lg-6">
+			<div class="cart_details">
+				<div class="checkout_title" style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Cart Total
+				</div>
+				<div class="cart_total">
+					<ul class="list-group mt-3">
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span class="cart_total_title" style="font-weight: bold;">Product</span>
+							<span class="cart_total_price">$40.00</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span class="cart_total_title" style="font-weight: bold;">Subtotal</span>
+							<span class="cart_total_price">$35.00</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<span class="cart_total_title" style="font-weight: bold;">Shipping</span>
+							<span class="cart_total_price">$5.00</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center total_row">
+							<span class="cart_total_title" style="font-size: 18px; font-weight: bold;">Total</span>
+							<span class="cart_total_price" style="font-size: 18px; font-weight: bold;">$40.00</span>
+						</li>
+					</ul>
+				</div>
+				<div class="payment_options mt-3">
+					<div class="form-check">
+						<input type="radio" id="radio_payment_1" name="payment_radio" class="form-check-input">
+						<label for="radio_payment_1" class="form-check-label" style="font-weight: bold;">Cash on
+							Delivery</label>
+					</div>
+					<div class="form-check">
+						<input type="radio" id="radio_payment_2" name="payment_radio" class="form-check-input" checked>
+						<label for="radio_payment_2" class="form-check-label" style="font-weight: bold;">PayPal</label>
+					</div>
+					<div class="payment_option mt-2">
+						<a href="#"><img src="{% static 'images/visa.jpg' %}" alt="Visa"
+								style="margin-right: 10px;"></a>
+						<a href="#"><img src="{% static 'images/master.jpg' %}" alt="MasterCard"></a>
+					</div>
+					<button class="cart_total_button btn btn-primary mt-3"
+						style="padding: 5px 15px; font-weight: bold;">Place Order</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
