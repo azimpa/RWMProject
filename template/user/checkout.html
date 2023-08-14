@@ -1,4 +1,5 @@
 {% extends 'user/base_user.html' %}
+
 {% load static %}
 
 {% block content %}
@@ -89,8 +90,8 @@
 								style="margin-right: 10px;"></a>
 						<a href="#"><img src="{% static 'images/master.jpg' %}" alt="MasterCard"></a>
 					</div>
-					<button class="cart_total_button btn btn-primary mt-3"
-						style="padding: 5px 15px; font-weight: bold;">Place Order</button>
+					<a href="{% url 'order_summary' %}"><button class="cart_total_button btn btn-primary mt-3"
+						style="padding: 5px 15px; font-weight: bold;">Place Order</button></a>
 				</div>
 			</div>
 		</div>

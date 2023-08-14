@@ -3,8 +3,6 @@
 {% load static %}
 
 {% block content %}
-
-<body>
 <div style="margin-top: 150px;">
     <div class="container-fluid pt-5">
         <div class="row px-xl-5">
@@ -174,22 +172,23 @@
                     {% for pr in products %}
                     <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                            <div
+                                class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                                 <img class="img-fluid w-100" src="{{ pr.product_image.url }}" alt="">
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3">{{ pr.name }}</h6>
                                 <div class="d-flex justify-content-center">
                                     {% if pr.productvariant_set.exists %}
-                                        {% for variant in pr.productvariant_set.all %}
-                                            <h6>&#8377;{{ variant.offer_price }}</h6>
-                                            <h6 class="text-muted ml-2"><del>&#8377; {{ variant.price }}</del></h6>
-                                        {% endfor %}
+                                    {% for variant in pr.productvariant_set.all %}
+                                    <h6>&#8377;{{ variant.offer_price }}</h6>
+                                    <h6 class="text-muted ml-2"><del>&#8377; {{ variant.price }}</del></h6>
+                                    {% endfor %}
                                     {% else %}
-                                        <h6>Price not available</h6>
+                                    <h6>Price not available</h6>
                                     {% endif %}
                                 </div>
-                            </div>                            
+                            </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
                                 <a href="{% url 'product_description' pr.id %}" class="btn btn-sm text-dark p-0"><i
                                         class="fas fa-eye text-primary mr-1"></i>View Detail</a>
@@ -198,7 +197,7 @@
                             </div>
                         </div>
                     </div>
-                    {% endfor %}                                   
+                    {% endfor %}
                     <div class="col-12 pb-1">
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center mb-3">
@@ -227,5 +226,4 @@
     </div>
     <!-- Shop End -->
 </div>
-</body>
 {% endblock %}

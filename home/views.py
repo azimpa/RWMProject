@@ -14,19 +14,15 @@ def home(request):
         return render(request, "user/home.html", {'products': products})
     else:
         products = AdmProducts.objects.all()
-        print(products)
         return render(request, "user/home.html", {'products': products})
 
 def total_products(request):
     product = AdmProducts.objects.all()
-    print(product)
     return render(request, "user/total_products.html",{'products': product})    
-
 
 def roadbikes(request):
     category = AdmCategories.objects.get(name='road_bikes')
     products = AdmProducts.objects.filter(category=category)
-    print(products)
     return render(request, "user/roadbikes.html", {'products': products})
 
 def gravelbikes(request):
@@ -44,18 +40,18 @@ def hybridbikes(request):
 def mountainbikes(request):
     category = AdmCategories.objects.get(name='mountain_bikes')
     products = AdmProducts.objects.filter(category=category)
-    print(products)
     return render(request, "user/mountainbikes.html", {'products': products})
 
 def product_description(request,id):
     product = AdmProducts.objects.get(id=id)
-    print(product)
     return render(request, "user/product_description.html",{'products': product})
 
 def useraddress(request):
+    from_cart = request.GET.get('from_cart', False) == 'true'
     user = request.user
     address = Address.objects.filter(user=user)
-    return render(request, "user/useraddress.html", {"addresses": address})
+    show_checkout_button = from_cart
+    return render(request, "user/useraddress.html", {"addresses": address, 'show_checkout_button': show_checkout_button})
 
 def add_address(request):
     if request.method == "POST":
@@ -118,3 +114,6 @@ def cart(request):
 
 def checkout(request):
     return render(request, "user/checkout.html")
+
+def order_summary(request):
+    return render(request, "user/order_summary.html")
