@@ -5,34 +5,37 @@
 {% block content %}
 <div class="card mb-4">
     <div class="card-header">
-        <h2>Users</h2>
+        <h3 class="text-center">USERS</h3>
     </div>
     <div class="card-body">
-        <h5 class="mb-4">User List</h5>
+        <h6 class="mb-4 text-center">USERS LIST</h6>
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>User Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Actions</th>
+                        <th class="text-center">ID</th>
+                        <th class="text-center">USER NAME</th>
+                        <th class="text-center">EMAIL</th>
+                        <th class="text-center">PHONE</th>
+                        <th class="text-center">ACTION</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Loop through users here -->
                     {% for user in admin_users %}
                     <tr>
-                        <td>{{user.id}}</td>
-                        <td>{{user.username}}</td>
-                        <td>{{user.email}}</td>
-                        <td>{{user.phone_number}}</td>
-                        <td>
+                        <td class="text-center">{{user.id}}</td>
+                        <td class="text-center">{{user.username}}</td>
+                        <td class="text-center">{{user.email}}</td>
+                        <td class="text-center">{{user.phone_number}}</td>
+                        <td class="text-center"> <!-- Center align the cell -->
                             {% if user.is_active %}
-                            <a href="block_user/{{ user.id }}" class="btn btn-danger btn-sm">Block</a>
+                            <a href="block_user/{{ user.id }}" class="btn btn-danger btn-sm mx-auto d-block">BLOCK</a>
+                            <!-- Center align the button -->
                             {% else %}
-                            <a href="unblock_user/{{ user.id }}" class="btn btn-primary btn-sm">Unblock</a>
+                            <a href="unblock_user/{{ user.id }}"
+                                class="btn btn-success btn-sm mx-auto d-block">UNBLOCK</a>
+                            <!-- Center align the button -->
                             {% endif %}
                         </td>
                     </tr>
@@ -42,10 +45,4 @@
         </div>
     </div>
 </div>
-
-<!-- Include Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 {% endblock %}
