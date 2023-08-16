@@ -1,5 +1,8 @@
 from django.db import models
+from django.core.validators import MinValueValidator
+from django.utils import timezone
 from accounts.models import CustomUser
+from adm.models import AdmProducts
 
 class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -13,3 +16,19 @@ class Address(models.Model):
 
     def __str__(self):
         return self.user
+
+class Cart(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"cart for {self.user.username}"
+
+class Cartitem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(AdmProducts, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} in cart for {self.cart.user.username}"

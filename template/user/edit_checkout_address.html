@@ -4,11 +4,11 @@
 <div class="container" style="padding-top: 120px;">
     <div class="card">
         <div class="card-body">
-            <form action="{% url 'edit_address' address.id %}" method="post">
+            <form action="{% url 'edit_checkout_address' address.id %}" method="post">
                 {% csrf_token %}
                 <div class="form-row text-center mb-4">
                     <div class="col">
-                        <h2>Edit Address</h2>
+                        <h2>EDIT CHECKOUT ADDRESS</h2>
                     </div>
                 </div>
                 <div class="form-row">
