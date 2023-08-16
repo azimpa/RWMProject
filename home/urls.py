@@ -22,5 +22,5 @@ urlpatterns = [
     path("add_checkout_address", views.add_checkout_address, name="add_checkout_address"),
     path('delete_checkout_address/<int:id>', views.delete_checkout_address, name='delete_checkout_address'),
     path('edit_checkout_address/<int:id>', views.edit_checkout_address, name='edit_checkout_address'),
-    path('order_summary', views.order_summary, name="order_summary"), 
+    path('order_summary/<int:address_id>', views.order_summary, name="order_summary"),
 ]

@@ -11,6 +11,7 @@ from home.models import Cartitem, Cart
 
 def home(request):
     products = AdmProducts.objects.all()
+
     if request.user.is_anonymous:
         return render(request, "user/home.html", {"products": products})
     elif request.user.is_superuser:
@@ -24,7 +25,6 @@ def home(request):
 def useraddress(request):
     user = request.user
     address = Address.objects.filter(user=user)
-
     return render(request, "user/useraddress.html", {"addresses": address})
 
 
@@ -101,14 +101,12 @@ def roadbikes(request):
 def gravelbikes(request):
     category = AdmCategories.objects.get(name="gravel_bikes")
     products = AdmProducts.objects.filter(category=category)
-    print(products)
     return render(request, "user/gravelbikes.html", {"products": products})
 
 
 def hybridbikes(request):
     category = AdmCategories.objects.get(name="hybrid_bikes")
     products = AdmProducts.objects.filter(category=category)
-    print(products)
     return render(request, "user/hybridbikes.html", {"products": products})
 
 
@@ -120,20 +118,18 @@ def mountainbikes(request):
 
 def product_description(request, id):
     product = AdmProducts.objects.get(id=id)
-    return render(request, "user/product_description.html", {"products": product})
+    return render(request, "user/product_description.html", {"product": product})
 
 
 def add_to_cart(request, id):
     user = request.user
     product = AdmProducts.objects.get(id=id)
 
-    # Check if the user already has a cart, if not create one
     cart, created = Cart.objects.get_or_create(user=user)
 
-    # Check if the product is already in the cart
     try:
         cart_item = Cartitem.objects.get(cart=cart, product=product)
-        cart_item.quantity += 1  # Increment the quantity if already in the cart
+        cart_item.quantity += 1
         cart_item.save()
         messages.success(request, f"{product.name} quantity updated in your cart.")
     except Cartitem.DoesNotExist:
@@ -149,19 +145,13 @@ def cart(request):
     cart_items = Cartitem.objects.filter(cart__user=user)
 
     total_price = 0
-    final_total = 0  # Initialize final_total with a default value
+    final_total = 0
 
     for item in cart_items:
-        # Calculate offer price for the product
         item.offer_price = item.product.productvariant_set.first().offer_price
-
-        # Calculate total price for the item (product * quantity)
         item.total_price_each = item.offer_price * item.quantity
-
-        # Add the item's total price to the overall total price
         total_price += item.total_price_each
 
-    # Calculate the final total after the loop
     final_total = total_price + 1000
 
     context = {
@@ -184,6 +174,7 @@ def update_cart_item(request, id):
                 cart_item.quantity += 1
             else:
                 messages.warning(request, "Out of stock")
+
         elif action == "decrease":
             cart_item.quantity = max(cart_item.quantity - 1, 1)
 
@@ -195,10 +186,7 @@ def update_cart_item(request, id):
 def clear_cart_item(request):
     user = request.user
     cart = Cart.objects.get(user=user)
-
-    # Delete all cart items associated with the user's cart
     Cartitem.objects.filter(cart=cart).delete()
-
     messages.success(request, "Your cart has been cleared.")
     return redirect("cart")
 
@@ -221,45 +209,49 @@ def delete_cart_item(request, id):
 
 def checkout(request):
     user = request.user
-    address = Address.objects.filter(user=user)
+    addresses = Address.objects.filter(user=user)
     cart_items_param = request.GET.get("cart_items")
 
+    selected_address_id = None
+
+    if request.method == "POST":
+        selected_address_id = request.POST.get("selected_address")
+        return redirect("order_summary", address_id=selected_address_id)
+
     if cart_items_param == "true":
-        cart = Cart.objects.get(user=user)  # Query the cart for the current user
+        cart = Cart.objects.get(user=user)
         cart_items = Cartitem.objects.filter(cart=cart)
 
         total_price = 0
-        final_total = 0  # Initialize final_total with a default value
-
         for item in cart_items:
-            # Calculate offer price for the product
             item.offer_price = item.product.productvariant_set.first().offer_price
-
-            # Calculate total price for the item (product * quantity)
             item.total_price_each = item.offer_price * item.quantity
-
-            # Add the item's total price to the overall total price
             total_price += item.total_price_each
 
-        # Calculate the final total after the loop
         final_total = total_price + 1000
 
         return render(
             request,
             "user/checkout.html",
             {
-                "addresses": address,
+                "addresses": addresses,
                 "cart_items": cart_items,
                 "total_price": total_price,
                 "final_total": final_total,
+                "address_id": selected_address_id,
             },
         )
 
-    return render(request, "user/checkout.html", {"addresses": address})
+    return render(
+        request,
+        "user/checkout.html",
+        {"addresses": addresses, "address_id": selected_address_id},
+    )
 
 
 def add_checkout_address(request):
     if request.method == "POST":
+        # Extract data from the form
         housename_companyname = request.POST.get("Housename_companyname")
         post_office = request.POST.get("Post_office")
         street = request.POST.get("Street")
@@ -268,6 +260,7 @@ def add_checkout_address(request):
         country = request.POST.get("Country")
         pin_code = request.POST.get("Pin_code")
 
+        # Create a new Address object
         address = Address(
             user=request.user,
             name=housename_companyname,
@@ -317,5 +310,10 @@ def delete_checkout_address(request, id):
     return redirect("checkout")
 
 
-def order_summary(request):
-    return render(request, "user/order_summary.html")
+def order_summary(request, address_id):
+    user = request.user
+    address = Address.objects.get(id=address_id)
+    username = user.username
+    return render(
+        request, "user/order_summary.html", {"address": address, "username": username}
+    )

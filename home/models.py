@@ -15,7 +15,7 @@ class Address(models.Model):
     pin_code = models.CharField(max_length=10)
 
     def __str__(self):
-        return self.user
+        return self.name
 
 class Cart(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -32,3 +32,26 @@ class Cartitem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in cart for {self.cart.user.username}"
+
+class Order(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE) 
+    payment_method = models.CharField(max_length=50)
+    order_date = models.DateTimeField(default=timezone.now)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
+    # Add more fields as needed
+
+    def __str__(self):
+        return f"Order #{self.id} by {self.user.username} on {self.order_date}"
+    
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(AdmProducts, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} in order {self.order.id}"
+
+
