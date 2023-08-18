@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from accounts.models import CustomUser
-from adm.models import AdmProducts
+from adm.models import ProductVariant,AdmProducts
 
 class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -37,8 +37,10 @@ class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE) 
     payment_method = models.CharField(max_length=50)
-    order_date = models.DateTimeField(default=timezone.now)
+    order_date = models.DateTimeField(default=timezone.now) 
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_price_shipping = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
     
     # Add more fields as needed
 

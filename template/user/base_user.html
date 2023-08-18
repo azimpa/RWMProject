@@ -62,16 +62,15 @@
                     </div>
                     <div class="shopping" style="display: flex; align-items: center;">
                         <!-- Cart -->
-                        <a href="{% url 'cart' %}" style="margin-right: 10px;">
-                            <div class="cart">
-                                <img src="{% static 'images/shopping-bag.svg' %}" alt="">
-                                <div class="cart_num_container">
-                                    <div class="cart_num_inner">
-                                        <div class="cart_num">1</div>
-                                    </div>
-                                </div>
-                            </div>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'cart' %}">
+                            <img src="{% static 'images/shopping-bag.svg' %}" alt="">
                         </a>
+                        {% else %}
+                        <a href="{% url 'user_login' %}">
+                            <img src="{% static 'images/shopping-bag.svg' %}" alt="">
+                        </a>
+                        {% endif %}
                         <!-- Star container -->
                         <div style="margin-right: 10px;">
                             <div class="star">
@@ -126,7 +125,13 @@
                 <ul class="menu_mm">
                     <li class="menu_mm"><a href="{% url 'total_products' %}">Shop</a></li>
                     <li class="menu_mm"><a href="/contact">Wishlist</a></li>
-                    <li class="menu_mm"><a href="{% url 'cart' %}">Cart</a></li>
+
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'cart' %}">Cart</a></li>
+                    {% else %}
+                    <li><a href="{% url 'user_login' %}">Cart</a></li>
+                    {% endif %}
+
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'user_logout' %}">Logout</a></li>
                     {% else %}
@@ -179,7 +184,7 @@
         </footer>
     </div>
 
-    <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>    
+    <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'styles/bootstrap4/popper.js' %}"></script>
     <script src="{% static 'styles/bootstrap4/bootstrap.min.js' %}"></script>
     <script src="{% static 'plugins/OwlCarousel2-2.2.1/owl.carousel.js' %}"></script>

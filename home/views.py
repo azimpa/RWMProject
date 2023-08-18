@@ -4,7 +4,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from urllib.parse import unquote
 from adm.models import AdmProducts, AdmCategories
-from home.models import Cartitem, Cart
+from home.models import Cartitem, Cart, Order, OrderItem
 
 # Create your views here.
 
@@ -213,10 +213,59 @@ def checkout(request):
     cart_items_param = request.GET.get("cart_items")
 
     selected_address_id = None
+    order = None
 
     if request.method == "POST":
+        cart = Cart.objects.get(user=user)
+        cart_items = Cartitem.objects.filter(cart=cart)
         selected_address_id = request.POST.get("selected_address")
-        return redirect("order_summary", address_id=selected_address_id)
+
+        if selected_address_id:
+            address = Address.objects.get(id=selected_address_id)
+            payment_method = "Cash On Delivery"
+
+            total_price = 0
+
+            for item in cart_items:
+                item.offer_price = item.product.productvariant_set.first().offer_price
+                item.total_price_each = item.offer_price * item.quantity
+                print(item.total_price_each)
+
+                total_price += item.total_price_each
+
+            total_price_shipping = total_price + 1000
+
+            order = Order.objects.create(
+                user=user,
+                address=address,
+                payment_method=payment_method,
+                total_price=total_price,
+                total_price_shipping=total_price_shipping,
+            )
+
+            for item in cart_items:
+                product = item.product
+                quantity = item.quantity
+
+                product_variant = product.productvariant_set.first()
+
+                if product_variant.stock >= quantity:
+                    product_variant.stock -= quantity
+                    product_variant.save()
+
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                    )
+                else:
+                    pass
+
+            cart_items.delete()
+
+            return redirect(
+                "order_summary", address_id=selected_address_id, order_id=order.id
+            )
 
     if cart_items_param == "true":
         cart = Cart.objects.get(user=user)
@@ -310,10 +359,19 @@ def delete_checkout_address(request, id):
     return redirect("checkout")
 
 
-def order_summary(request, address_id):
+def order_summary(request, address_id, order_id):
     user = request.user
     address = Address.objects.get(id=address_id)
     username = user.username
-    return render(
-        request, "user/order_summary.html", {"address": address, "username": username}
-    )
+
+    orders = Order.objects.filter(id=order_id, address=address)
+    order_items = OrderItem.objects.filter(order=order_id)
+
+    context = {
+        "address": address,
+        "username": username,
+        "orders": orders,
+        "order_items": order_items,
+    }
+
+    return render(request, "user/order_summary.html", context)
