@@ -24,20 +24,22 @@
                 <div class="col-lg-2">
                     <div class="order-item-status" style="color: #333; margin-top: 17px; font-weight: bold;">Order
                         Status:<br>
-                        {{item.order.order_status }}</div>
+                        {{item.order_status }}</div>
                 </div>
                 <div class="col-lg-2">
-                    <div class="order-item-date" style="color: #333; font-weight: bold;">Ordered Date:<br> {{item.order.order_date }}
+                    <div class="order-item-date" style="color: #333; font-weight: bold;">Ordered Date:<br>
+                        {{item.order.order_date }}
                     </div>
                 </div>
                 <div class="col-lg-2">
-                    <div class="order-item-date" style="color: #333; margin-top: 25px; font-weight: bold;">Quantity: {{item.quantity }}
+                    <div class="order-item-date" style="color: #333; margin-top: 25px; font-weight: bold;">Quantity:
+                        {{item.quantity }}
                     </div>
                 </div>
                 <div class="col-lg-2">
                     <div style="margin-top: 20px;">
-                        {% if item.order.order_status == 'Order Placed' or item.order.order_status == 'Shipped' %}
-                        <form method="post" action="{% url 'cancel_order' item.order.id %}">
+                        {% if item.order_status == 'Order Placed' or item.order.order_status == 'Shipped' %}
+                        <form method="post" action="{% url 'cancel_order' item.order.id item.product.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-dark btn-cancel">CANCEL</button>
                         </form>

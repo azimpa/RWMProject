@@ -38,16 +38,6 @@ class Order(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE) 
     payment_method = models.CharField(max_length=50)
     order_date = models.DateTimeField(default=timezone.now) 
-    order_status = models.CharField(
-        max_length=20,
-        choices=[
-            ('Order Placed', 'Order Placed'),
-            ('Shipped', 'Shipped'),
-            ('Delivered', 'Delivered'),
-            ('Cancelled', 'Cancelled'),
-        ],
-        default='Order Placed'  
-    )
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_price_shipping = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     
@@ -60,6 +50,16 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(AdmProducts, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    order_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('Order Placed', 'Order Placed'),
+            ('Shipped', 'Shipped'),
+            ('Delivered', 'Delivered'),
+            ('Cancelled', 'Cancelled'),
+        ],
+        default='Order Placed'  
+    )
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in order {self.order.id}"

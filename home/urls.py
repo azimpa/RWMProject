@@ -24,5 +24,5 @@ urlpatterns = [
     path('edit_checkout_address/<int:id>', views.edit_checkout_address, name='edit_checkout_address'),
     path('order_summary/<int:address_id>/<int:order_id>', views.order_summary, name='order_summary'),
     path('my_orders', views.my_orders, name='my_orders'),
-    path('cancel_order/<int:id>', views.cancel_order, name='cancel_order'),
+    path('cancel_order/<int:order_id>/<int:product_id>', views.cancel_order, name='cancel_order'),
 ]

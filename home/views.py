@@ -433,11 +433,12 @@ def my_orders(request):
     return render(request, "user/my_orders.html", {"order_items": order_items})
 
 
-def cancel_order(request, id):
-    order = get_object_or_404(Order, id=id)
+def cancel_order(request, order_id, product_id):
+    order = get_object_or_404(Order, id=order_id)
+    order_item = OrderItem.objects.filter(order=order, product_id=product_id).first()
 
-    if order.order_status in ["Order Placed", "Shipped"]:
-        order.order_status = "Cancelled"
-        order.save()
+    if order_item:
+        order_item.order_status = "Cancelled"
+        order_item.save()
 
     return redirect("my_orders")
