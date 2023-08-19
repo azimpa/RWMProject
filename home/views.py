@@ -3,7 +3,7 @@ from home.models import Address
 from django.contrib.auth import logout
 from django.contrib import messages
 from urllib.parse import unquote
-from adm.models import AdmProducts, AdmCategories
+from adm.models import AdmProducts, AdmCategories, ProductVariant
 from home.models import Cartitem, Cart, Order, OrderItem
 
 # Create your views here.
@@ -23,12 +23,18 @@ def home(request):
 
 
 def useraddress(request):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     user = request.user
     address = Address.objects.filter(user=user)
     return render(request, "user/useraddress.html", {"addresses": address})
 
 
 def add_address(request):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     if request.method == "POST":
         housename_companyname = request.POST.get("Housename_companyname")
         post_office = request.POST.get("Post_office")
@@ -56,6 +62,9 @@ def add_address(request):
 
 
 def edit_address(request, id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     address = get_object_or_404(Address, id=id, user=request.user)
 
     if request.method == "POST":
@@ -118,29 +127,52 @@ def mountainbikes(request):
 
 def product_description(request, id):
     product = AdmProducts.objects.get(id=id)
-    return render(request, "user/product_description.html", {"product": product})
+    variants = ProductVariant.objects.filter(product=product)
+    return render(
+        request,
+        "user/product_description.html",
+        {"products": product, "variants": variants},
+    )
 
 
 def add_to_cart(request, id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     user = request.user
     product = AdmProducts.objects.get(id=id)
 
-    cart, created = Cart.objects.get_or_create(user=user)
-
     try:
-        cart_item = Cartitem.objects.get(cart=cart, product=product)
-        cart_item.quantity += 1
-        cart_item.save()
-        messages.success(request, f"{product.name} quantity updated in your cart.")
-    except Cartitem.DoesNotExist:
-        cart_item = Cartitem(cart=cart, product=product)
-        cart_item.save()
-        messages.success(request, f"{product.name} added to your cart.")
+        product_variant = product.productvariant_set.first()
+
+        if product_variant.stock > 0:
+            cart, created = Cart.objects.get_or_create(user=user)
+
+            try:
+                cart_item = Cartitem.objects.get(cart=cart, product=product)
+                cart_item.quantity += 1
+                cart_item.save()
+                messages.success(
+                    request, f"{product.name} quantity updated in your cart."
+                )
+            except Cartitem.DoesNotExist:
+                cart_item = Cartitem(cart=cart, product=product)
+                cart_item.save()
+                messages.success(request, f"{product.name} added to your cart.")
+        else:
+            messages.error(request, f"{product.name} is out of stock.")
+            return redirect("total_products")
+
+    except ProductVariant.DoesNotExist:
+        messages.error(request, f"Product variant not available.")
 
     return redirect("cart")
 
 
 def cart(request):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     user = request.user
     cart_items = Cartitem.objects.filter(cart__user=user)
 
@@ -208,6 +240,9 @@ def delete_cart_item(request, id):
 
 
 def checkout(request):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     user = request.user
     addresses = Address.objects.filter(user=user)
     cart_items_param = request.GET.get("cart_items")
@@ -229,7 +264,6 @@ def checkout(request):
             for item in cart_items:
                 item.offer_price = item.product.productvariant_set.first().offer_price
                 item.total_price_each = item.offer_price * item.quantity
-                print(item.total_price_each)
 
                 total_price += item.total_price_each
 
@@ -245,9 +279,12 @@ def checkout(request):
 
             for item in cart_items:
                 product = item.product
+                print(product, "eee")
                 quantity = item.quantity
+                print(quantity, "www")
 
                 product_variant = product.productvariant_set.first()
+                print(product_variant, "rrrr")
 
                 if product_variant.stock >= quantity:
                     product_variant.stock -= quantity
@@ -259,6 +296,7 @@ def checkout(request):
                         quantity=quantity,
                     )
                 else:
+                    print("nooooo")
                     pass
 
             cart_items.delete()
@@ -299,8 +337,10 @@ def checkout(request):
 
 
 def add_checkout_address(request):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     if request.method == "POST":
-        # Extract data from the form
         housename_companyname = request.POST.get("Housename_companyname")
         post_office = request.POST.get("Post_office")
         street = request.POST.get("Street")
@@ -309,7 +349,6 @@ def add_checkout_address(request):
         country = request.POST.get("Country")
         pin_code = request.POST.get("Pin_code")
 
-        # Create a new Address object
         address = Address(
             user=request.user,
             name=housename_companyname,
@@ -328,6 +367,9 @@ def add_checkout_address(request):
 
 
 def edit_checkout_address(request, id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     address = get_object_or_404(Address, id=id, user=request.user)
 
     if request.method == "POST":
@@ -360,6 +402,9 @@ def delete_checkout_address(request, id):
 
 
 def order_summary(request, address_id, order_id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
     user = request.user
     address = Address.objects.get(id=address_id)
     username = user.username
@@ -375,3 +420,24 @@ def order_summary(request, address_id, order_id):
     }
 
     return render(request, "user/order_summary.html", context)
+
+
+def my_orders(request):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
+    user = request.user
+    order = Order.objects.filter(user=user)
+    order_items = OrderItem.objects.filter(order__in=order)
+
+    return render(request, "user/my_orders.html", {"order_items": order_items})
+
+
+def cancel_order(request, id):
+    order = get_object_or_404(Order, id=id)
+
+    if order.order_status in ["Order Placed", "Shipped"]:
+        order.order_status = "Cancelled"
+        order.save()
+
+    return redirect("my_orders")

@@ -1,4 +1,4 @@
-{% extends 'user/base_user.html' %} 
+{% extends 'user/base_user.html' %}
 
 {% block content %}
 <div style="margin-top: 180px">
@@ -22,7 +22,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <img src="{{ item.product.productvariant_set.first.image.url }}"
+                                        <img src="{{item.product.productvariant_set.first.image.url}}"
                                             style="height: 70px; width: 100px" alt="" />
                                     </div>
                                     <div class="col-md-3 d-flex align-items-center" style="margin-left: 100px;">
@@ -58,7 +58,7 @@
                             <div class="d-flex justify-content-between mt-4">
                                 <h6 class="mb-0 font-weight-bold">SHIPPING ADDRESS</h6>
                                 <p style="margin-top: -5px">
-                                    {{ address.name }}, {{ address.postoffice }}, {{ address.street}}, {{ address.city }}, {{ address.state }},<br />
+                                    {{ address.name }}, {{ address.postoffice }}, {{ address.street}}, {{address.city}}, {{ address.state }},<br />
                                     {{ address.country }}, {{ address.pin_code }}.
                                 </p>
                             </div>
