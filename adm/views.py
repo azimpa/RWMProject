@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import CustomUser
+from django.http import JsonResponse
 from home.models import Order, OrderItem
 from adm.models import (
     AdmCategories,
@@ -9,6 +10,7 @@ from adm.models import (
     ProductSize,
     ProductColor,
     ProductVariant,
+    VariantImage,
 )
 
 
@@ -49,7 +51,6 @@ def user_details(request):
         return redirect("adm_login")
 
     adm_users = CustomUser.objects.all().order_by("id")
-    print(adm_users)
     return render(request, "adm/user_details.html", {"admin_users": adm_users})
 
 
@@ -89,7 +90,6 @@ def add_adm_categories(request):
 
             category = AdmCategories(name=cat_name)
             category.save()
-            print("New category saved:", category.name)
             return redirect("adm_categories")
         else:
             messages.error(request, "Category name cannot be empty.")
@@ -124,7 +124,6 @@ def adm_product(request):
         return redirect("adm_login")
 
     adm_products = AdmProducts.objects.all().order_by("id")
-    print(adm_products)
     return render(request, "adm/adm_product.html", {"products": adm_products})
 
 
@@ -134,9 +133,9 @@ def add_adm_product(request):
 
     if request.method == "POST":
         prod_name = request.POST.get("product_name", "")
-        prod_image = request.FILES.get("product_image", None)
         prod_brand = request.POST.get("product_brand", "")
         category = request.POST.get("product_categories", "")
+        image = request.FILES.get("product_images")
         cat = AdmCategories.objects.get(id=category)
         product_description = request.POST.get("product_description")
         prod_status = request.POST.get("product_status", "active")
@@ -148,8 +147,8 @@ def add_adm_product(request):
         product = AdmProducts(
             name=prod_name,
             brand=prod_brand,
+            images=image,
             category=cat,
-            product_image=prod_image,
             status=prod_status,
             description=product_description,
         )
@@ -169,20 +168,19 @@ def edit_adm_product(request, id):
 
     if request.method == "POST":
         edited_name = request.POST.get("edited_product_name", "")
-        edited_image = request.FILES.get("edited_product_image", None)
         edited_brand = request.POST.get("edited_brand", "")
+        edited_image = request.FILES.get("edited_existing_image")
         edited_category = request.POST.get("edited_category", "")
         editcat = AdmCategories.objects.get(id=edited_category)
         edited_description = request.POST.get("edited_description")
         edited_status = request.POST.get("edited_status", "active")
 
         product.name = edited_name
+        product.images = edited_image
         product.brand = edited_brand
         product.category = editcat
-        product.product_image = edited_image
         product.description = edited_description
         product.status = edited_status
-
         product.save()
 
         return redirect("adm_product")
@@ -234,7 +232,6 @@ def add_product_color(request):
             else:
                 color = ProductColor(name=color_name)
                 color.save()
-                print("New color saved:", color.name)
                 messages.success(
                     request, f'The color "{color_name}" was added successfully.'
                 )
@@ -301,7 +298,6 @@ def add_product_size(request):
             else:
                 size = ProductSize(name=size_name)
                 size.save()
-                print("New size saved:", size.name)
                 messages.success(
                     request, f'The size "{size_name}" was added successfully.'
                 )
@@ -346,6 +342,7 @@ def product_variant(request, id):
         variants = ProductVariant.objects.filter(product=product)
 
         if variants.exists():
+            variants = variants.order_by("id")
             return render(
                 request,
                 "adm/product_variant.html",
@@ -379,7 +376,8 @@ def add_product_variant(request, id):
             variant_discount = request.POST.get("discount")
             variant_stock = request.POST.get("stock")
             variant_is_available = request.POST.get("is_available")
-            variant_image = request.FILES.get("image")
+
+            variant_images = request.FILES.getlist("images")
 
             variant = ProductVariant.objects.create(
                 product=product,
@@ -390,8 +388,10 @@ def add_product_variant(request, id):
                 discount=variant_discount,
                 stock=variant_stock,
                 is_available=variant_is_available,
-                image=variant_image,
             )
+
+            for image in variant_images:
+                variant.images.create(image=image)
 
             messages.success(request, "Product variant added successfully")
             return redirect("product_variant", id=product.id)
@@ -401,7 +401,6 @@ def add_product_variant(request, id):
             return redirect("add_product_variant", id=id)
 
         except Exception as e:
-            print("An error occurred:", str(e))
             messages.error(
                 request, "An error occurred while adding the product variant"
             )
@@ -415,7 +414,7 @@ def add_product_variant(request, id):
         return render(
             request,
             "adm/add_product_variant.html",
-            {"products": product, "colors": colors, "sizes": sizes},
+            {"product": product, "colors": colors, "sizes": sizes},
         )
 
 
@@ -430,15 +429,15 @@ def edit_product_variant(request, id):
         return redirect("adm_product")
 
     if request.method == "POST":
-        edited_color_id = request.POST.get("edited_color")
-        edited_size_id = request.POST.get("edited_size")
-        edited_price = request.POST.get("edited_price")
-        edited_offer_price = request.POST.get("edited_offer_price")
-        edited_discount = request.POST.get("edited_discount")
-        edited_stock = request.POST.get("edited_stock")
-        edited_is_available = request.POST.get("edited_is_available")
-
         try:
+            edited_color_id = request.POST.get("edited_color")
+            edited_size_id = request.POST.get("edited_size")
+            edited_price = request.POST.get("edited_price")
+            edited_offer_price = request.POST.get("edited_offer_price")
+            edited_discount = request.POST.get("edited_discount")
+            edited_stock = request.POST.get("edited_stock")
+            edited_is_available = request.POST.get("edited_is_available")
+
             edited_color = ProductColor.objects.get(pk=edited_color_id)
             edited_size = ProductSize.objects.get(pk=edited_size_id)
 
@@ -451,41 +450,68 @@ def edit_product_variant(request, id):
             variant.is_available = edited_is_available
             variant.save()
 
+            selected_image_id = request.POST.get("selected_image")
+
+            new_image = request.FILES.get("new_images")
+
+            removed_image_id = request.POST.get("selected_image")
+
+            if selected_image_id and new_image:
+                try:
+                    selected = VariantImage.objects.get(id=selected_image_id)
+                    selected.image.delete()  # Delete the old image
+                    selected.image = new_image
+                    selected.save()
+                except VariantImage.DoesNotExist:
+                    pass
+
+            # Handling deletion of images
+            elif removed_image_id:
+                try:
+                    image = VariantImage.objects.get(id=removed_image_id)
+                    image.image.delete()
+                    image.delete()
+                    messages.success(request, "Image removed successfully")
+                except VariantImage.DoesNotExist:
+                    messages.error(request, "Failed to remove image")
+
+            # Handling addition of new images
+            new_variant_images = request.FILES.getlist("images")
+            if new_variant_images:
+                for image in new_variant_images:
+                    if image:
+                        variant.images.create(image=image)
+
             messages.success(request, "Product variant updated successfully")
-            product_variant = get_object_or_404(ProductVariant, id=id)
-            product_id = product_variant.product.id
-            print(product_id)
+            product_id = variant.product.id
             return redirect("product_variant", id=product_id)
 
         except (ProductColor.DoesNotExist, ProductSize.DoesNotExist):
             messages.error(request, "Invalid color or size selection")
-            return render(
-                request, "adm/edit_product_variant.html", {"variants": variant}
-            )
-
         except Exception as e:
-            print("An error occurred:", str(e))
             messages.error(
                 request, "An error occurred while updating the product variant"
             )
-            return render(
-                request, "adm/edit_product_variant.html", {"variants": variant}
-            )
-    else:
-        colors = ProductColor.objects.all()
-        sizes = ProductSize.objects.all()
 
-        return render(
-            request,
-            "adm/edit_product_variant.html",
-            {"variants": variant, "colors": colors, "sizes": sizes},
-        )
+    colors = ProductColor.objects.all()
+    sizes = ProductSize.objects.all()
+
+    return render(
+        request,
+        "adm/edit_product_variant.html",
+        {
+            "variants": variant,
+            "colors": colors,
+            "sizes": sizes,
+            "selected_color": variant.color,
+            "selected_size": variant.size,
+        },
+    )
 
 
 def delete_product_variant(request, id):
     product_variant = get_object_or_404(ProductVariant, id=id)
     product_id = product_variant.product.id
-    print(product_id)
     product_variant.delete()
     return redirect("product_variant", id=product_id)
 
@@ -508,10 +534,11 @@ def adm_order_items(request, id):
 
     return render(request, "adm/adm_order_items.html", {"order_items": order_items})
 
-def edit_order_status(request,id):
+
+def edit_order_status(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
-    
+
     order_items = get_object_or_404(OrderItem, id=id)
 
     if request.method == "POST":
@@ -520,6 +547,5 @@ def edit_order_status(request,id):
             order_items.order_status = order_status
             order_items.save()
             return redirect("adm_order")
-    
-    return render(request, "adm/edit_order_status.html",{"order_items":order_items}) 
 
+    return render(request, "adm/edit_order_status.html", {"order_items": order_items})

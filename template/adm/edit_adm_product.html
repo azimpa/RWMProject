@@ -1,57 +1,74 @@
 {% extends 'adm/base.html' %}
 
 {% block content %}
-<div class="card mb-4" style="width: 100%;">
-    <div class="card-header">
-        <h2>Edit Product</h2>
+<div class="card mb-4">
+    <div class="card-header text-center">
+        <h3 class="card-title">Edit Product</h3>
     </div>
     <div class="card-body">
-        <div class="container-fluid mt-4" style="padding: 20px;">
+        <div class="container-fluid mt-4">
             <form method="post" action="{% url 'edit_adm_product' product.id %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-group row">
+                <div class="row">
                     <div class="col-md-6">
-                        <label for="name">Product Name</label>
-                        <input type="text" class="form-control" id="name" name="edited_product_name"
-                            value="{{ product.name }}" required>
+                        <div class="form-group">
+                            <label for="edited_product_name">Product Name</label>
+                            <input type="text" class="form-control" id="edited_product_name" name="edited_product_name"
+                                value="{{ product.name }}" required>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="product_image">Image</label>
-                        <input type="file" id="product_image" name="edited_product_image" accept="image/*" required>
+                        <div class="form-group">
+                            <label for="edited_product_image" class="form-label">Images</label>
+                            <input type="file" class="form-control" id="edited_product_image" name="edited_existing_image" accept="image/*">
+                            {% if product.images %}
+                                <img src="{{ product.images.url }}" width="100" class="mt-2">
+                            {% else %}
+                                <p class="mt-2">No Image</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="row">
                     <div class="col-md-6">
-                        <label for="brand">Brand</label>
-                        <input type="text" class="form-control" id="brand" name="edited_brand"
-                            value="{{ product.brand }}" required>
+                        <div class="form-group">
+                            <label for="edited_brand">Brand</label>
+                            <input type="text" class="form-control" id="edited_brand" name="edited_brand"
+                                value="{{ product.brand }}" required>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="brand">Description</label>
-                        <textarea class="form-control" id="edited_description" name="edited_description" rows="4" required></textarea>
-                    </div>                    
-                    <div class="col-md-6">
-                        <label for="category">Category</label>
-                        <select class="form-control" id="category" name="edited_category" required>
-                            <option value="" disabled selected>Select a category</option>
-                            {% for category in categories %}
-                            <option value="{{ category.id }}" {% if product.category.id == category.id %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>                    
+                        <div class="form-group">
+                            <label for="edited_category">Category</label>
+                            <select class="form-control" id="edited_category" name="edited_category" required>
+                                <option value="" disabled>Select a category</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category.id == product.category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group row">
+                <div class="row">
                     <div class="col-md-6">
-                        <label for="status">Status</label>
-                        <select class="form-control" id="status" name="edited_status" required>
-                            <option value="active" {% if product.status == 'active' %}selected{% endif %}>Active</option>
-                            <option value="inactive" {% if product.status == 'inactive' %}selected{% endif %}>Inactive</option>
-                        </select>
-                    </div>                    
+                        <div class="form-group">
+                            <label for="edited_status">Status</label>
+                            <select class="form-control" id="edited_status" name="edited_status" required>
+                                <option value="active" {% if product.status == 'active' %}selected{% endif %}>Active</option>
+                                <option value="inactive" {% if product.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="edited_description">Description</label>
+                            <textarea class="form-control" id="edited_description" name="edited_description" rows="4" required>{{ product.description }}</textarea>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
+                <div class="text-center">
                     <button type="submit" class="btn btn-primary">Save Edits</button>
                 </div>
             </form>
