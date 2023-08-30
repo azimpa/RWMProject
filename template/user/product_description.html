@@ -1,162 +1,86 @@
 {% extends 'user/base_user.html' %}
 
-{% load static %}
-
 {% block content %}
-<div class="home">
-    <div class="home_slider_container">
-        <div class="owl-carousel owl-theme home_slider">
-            <div class="owl-item">
-                <div class="home_slider_background" style="background-image: url('{% static 'images/3.png' %}');"></div>
-                <div class="home_slider_content">
-                    <div class="home_slider_content_inner">
-                        <div class="home_slider_subtitle">RWM</div>
-                        <div class="home_slider_title">RIDE WITH ME</div>
-                    </div>
-                </div>
-            </div>
-            <div class="owl-item">
-                <div class="home_slider_background" style="background-image: url('{% static 'images/4.png' %}');"></div>
-                <div class="home_slider_content">
-                    <div class="home_slider_content_inner">
-                        <div class="home_slider_subtitle">RWM</div>
-                        <div class="home_slider_title">RIDE WITH ME</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="content_wrapper mt-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-7">
-                <div class="product_image">
-                    <div class="product_image_large">
-                        <img src="{{products.product_image.url}}" alt="" />
-                    </div>
-                </div>
-                <div class="product_quantity_container" style="margin-top: 15px; margin-left: -23px;">
-                    <span class="font-weight-bold">Quantity</span>
-                    <div class="product_quantity clearfix">
-                            <input id="quantity_input" type="number" min="1" value="1"
-                                style="width: 60px; font-size: 16px; text-align: center;"/>
-                        <div class="quantity_buttons ml-2">
-                            <div id="quantity_inc_button" class="quantity_inc quantity_control">
-                                <i class="fa fa-caret-up" aria-hidden="true"></i>
+<div style="margin-top: 200px;">
+    <div class="content_wrapper mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div id="productImageCarousel" class="carousel slide product_image_large" data-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for image in variants.0.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ image.image.url }}" class="d-block w-100" alt="" />
                             </div>
-                            <div id="quantity_dec_button" class="quantity_dec quantity_control">
-                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                            {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#productImageCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#productImageCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="product_content">
+                        <h2 class="font-weight-bold" id="product_name">{{ variants.0.product.name }}</h2>
+                        <div class="product_price" id="product_price">&#8377; {{ variants.0.offer_price }}</div>
+                        <div class="product_offer_price" id="product_offer_price"><del>&#8377; {{variants.0.price}}</del></div>
+                        <div class="rating rating_4 mt-2" data-rating="4">
+                            {% for _ in "12345" %}
+                            <i class="fa fa-star"></i>
+                            {% endfor %}
+                        </div>
+                        <div class="in_stock_container mt-2">
+                            <div class="in_stock in_stock_true"></div>
+                            <span class="font-weight-bold">in stock</span>
+                        </div>
+                        <div class="product_text mt-3">
+                            <p>{{ products.description }}</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="dropdown mr-3">
+                                <button class="btn btn-outline-dark" type="button" id="sizeDropdown"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Select Size
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="sizeDropdown">
+                                    <div class="dropdown-header">Select Size</div>
+                                    {% for size in sizes %}
+                                    <a class="dropdown-item" href="#">
+                                        <input type="radio" id="size_radio_{{ size.id }}" name="selected_size"
+                                            class="regular_radio radio_size" value="{{ size.id }}" />
+                                        <label for="size_radio_{{ size.id }}">{{ size.name }}</label>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <button class="btn btn-outline-dark" type="button" id="colorDropdown"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Select Color
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="colorDropdown">
+                                    <div class="dropdown-header">Select Color</div>
+                                    {% for color in colors %}
+                                    <a class="dropdown-item" href="#">
+                                        <input type="radio" id="color_radio_{{ color.id }}" name="selected_color"
+                                            class="regular_radio radio_color" value="{{ color.id }}" />
+                                        <label for="color_radio_{{ color.id }}">{{ color.name }}</label>
+                                    </a>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>                
-                <div class="product_size_container mt-3">
-                    <span class="font-weight-bold">Size</span>
-                    <div class="product_size mt-2">
-                        <ul class="d-flex flex-row align-items-center" style="list-style-type: none; padding: 0;">
-                            <li class="mr-3">
-                                <input type="radio" id="radio_1" name="product_radio" class="regular_radio radio_1" />
-                                <label for="radio_1">XS</label>
-                            </li>
-                            <li class="mr-3">
-                                <input type="radio" id="radio_2" name="product_radio" class="regular_radio radio_2"
-                                    checked />
-                                <label for="radio_2">S</label>
-                            </li>
-                            <li class="mr-3">
-                                <input type="radio" id="radio_3" name="product_radio" class="regular_radio radio_3" />
-                                <label for="radio_3">M</label>
-                            </li>
-                            <li class="mr-3">
-                                <input type="radio" id="radio_4" name="product_radio" class="regular_radio radio_4" />
-                                <label for="radio_4">L</label>
-                            </li>
-                            <li>
-                                <input type="radio" id="radio_5" name="product_radio" class="regular_radio radio_5" />
-                                <label for="radio_5">XL</label>
-                            </li>
-                        </ul>
-                    </div>
-                    <button class="button cart_button mt-3 text-center" style="padding: 1px 15px;"><a href="#">add to cart</a></button>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="product_content">
-                    <div class="product_name">
-                        <h2 class="font-weight-bold">{{ products.name }}</h2>
-                    </div>
-                    <div class="product_price">&#8377; {{ products.productvariant_set.first.offer_price }}</div>
-                    <div class="product_offer_price"><del>&#8377; {{ products.productvariant_set.first.price}} </del>
-                    </div>
-                    <div class="rating rating_4 mt-2" data-rating="4">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                    </div>
-                    <div class="in_stock_container mt-2">
-                        <div class="in_stock in_stock_true"></div>
-                        <span class="font-weight-bold">in stock</span>
-                    </div>
-                    <div class="product_text mt-3">
-                        <p>{{ products.description }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-5">
-            <div class="col-lg-3">
-                <div class="card h-100 mt-4" style="width: 100%;">
-                    <img src="{% static 'images\Grizl CF SLX 8 Di2.png' %}" class="card-img-top" alt=" ">
-                    <div class="card-body">
-                        <h5 class="card-title font-weight-bold">Grizl CF SLX 8 Di2</h5>
-                        <p class="card-text text-justify">Cover big distances at record speed. This bike combines the
-                            superlight, adventure-ready Grizl CF SLX frame with top-end components like electronic
-                            Shimano shifting and carbon wheels.</p>
-                        <h5 class="font-weight-bold">&#8377;3,85,106.89</h5>
-                        <button class="button cart_button mt-3 text-center" style="padding: 1px 15px;"><a href="">add to cart</a></button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="card h-100 mt-4" style="width: 100%;">
-                    <img src="{% static 'images\Sender CFR Mullet.jpg' %}" class="card-img-top" alt=" ">
-                    <div class="card-body">
-                        <h5 class="card-title" style="font-weight: bold;">Sender CFR Mullet</h5>
-                        <p class="card-text text-justify">World Cup proven: whether it's rough rooty sections, huge
-                            freeride lines, or rapid downhill tracks, when things get fast and techy, get over the line
-                            in record time with the Sender CFR.</p>
-                        <h5 style="font-weight: bold; margin-top: 45px;">₹4,84,536.42</h5>
-                        <button class="button cart_button mt-3 text-center" style="padding: 1px 15px;"><a href="#">add to cart</a></button>
-                    </div>
-                </div>
-            </div>                       
-            <div class="col-lg-3">
-                <div class="card h-100 mt-4" style="width: 100%;">
-                    <img src="{% static 'images\Roadlite 4.jpg' %}" class="card-img-top" alt=" ">
-                    <div class="card-body">
-                        <h5 class="card-title" style="font-weight: bold;">Roadlite 4</h5>
-                        <p class="card-text text-justify">Lightweight, sporty, and agile. The Roadlite 4 is a fitness
-                            bike perfect for zippy movement and heart-pumping workouts. It turns heads in the city with
-                            its stunning design, too.</p>
-                        <h5 style="font-weight: bold; margin-top: 45px;">₹53,749.21</h5>
-                        <button class="button cart_button mt-3 text-center" style="padding: 1px 15px;"><a href="#">add to cart</a></button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3">
-                <div class="card h-100 mt-4" style="width: 100%;">
-                    <img src="{% static 'images\Dude CF 9.png' %}" class="card-img-top" alt=" ">
-                    <div class="card-body">
-                        <h5 class="card-title" style="font-weight: bold;">Dude CF 9</h5>
-                        <p class="card-text text-justify">The Dude CF 9 is the ultimate all-round fatbike. With a range
-                            of premium components, it's ready for adventure anywhere, any time, on any terrain. What
-                            about you?</p>
-                        <h5 style="font-weight: bold; margin-top: 45px;">₹1,77,984.48</h5>
-                        <button class="button cart_button mt-3 text-center" style="padding: 1px 15px;"><a href="#">add to cart</a></button>
+                        <div class="product_size_container mt-3">
+                            <button class="button cart_button mt-3 text-center" style="padding: 1px 15px;"><a
+                                    href="#">add to cart</a></button>
+                        </div>
                     </div>
                 </div>
             </div>

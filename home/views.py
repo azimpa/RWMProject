@@ -2,8 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from home.models import Address
 from django.contrib.auth import logout
 from django.contrib import messages
-from urllib.parse import unquote
-from adm.models import AdmProducts, AdmCategories, ProductVariant
+from adm.models import (
+    AdmProducts,
+    AdmCategories,
+    ProductVariant,
+    ProductColor,
+    ProductSize,
+)
 from home.models import Cartitem, Cart, Order, OrderItem
 
 # Create your views here.
@@ -95,11 +100,10 @@ def delete_address(request, id):
     address.delete()
     return redirect("useraddress")
 
-
 def total_products(request):
-    product = AdmProducts.objects.all()
-    return render(request, "user/total_products.html", {"products": product})
-
+    products = AdmProducts.objects.all()
+    variants = ProductVariant.objects.filter(product__in=products)
+    return render(request, "user/total_products.html", {"products": products, "variants": variants})
 
 def roadbikes(request):
     category = AdmCategories.objects.get(name="road_bikes")
@@ -127,11 +131,18 @@ def mountainbikes(request):
 
 def product_description(request, id):
     product = AdmProducts.objects.get(id=id)
+    print(product, "qaz")
     variants = ProductVariant.objects.filter(product=product)
+    print(variants, "wsx")
+    colors = ProductColor.objects.filter(productvariant__in=variants).distinct()
+    print(colors, "edc")
+    sizes = ProductSize.objects.filter(productvariant__in=variants).distinct()
+    print(sizes, "rfv")
+
     return render(
         request,
         "user/product_description.html",
-        {"products": product, "variants": variants},
+        {"products": product, "variants": variants, "colors": colors, "sizes": sizes},
     )
 
 
@@ -145,7 +156,7 @@ def add_to_cart(request, id):
     try:
         product_variant = product.productvariant_set.first()
 
-        if product_variant.stock > 0:
+        if product_variant is not None and product_variant.stock > 0:
             cart, created = Cart.objects.get_or_create(user=user)
 
             try:

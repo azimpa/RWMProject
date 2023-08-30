@@ -19,6 +19,8 @@
                         <th class="text-center">BRAND</th>
                         <th class="text-center">CATEGORY</th>
                         <th class="text-center">VARIANTS</th>
+                        <th class="text-center">PRICE</th>
+                        <th class="text-center">OFFER PRICE</th>
                         <th class="text-center">STATUS</th>
                         <th class="text-center">ACTIONS</th>
                     </tr>
@@ -41,6 +43,8 @@
                         <td class="text-center">
                             <a href="{% url 'product_variant' prod.id %}" class="btn btn-primary btn-sm">Variants</a>
                         </td>
+                        <td class="text-center">{{ prod.price }}</td>
+                        <td class="text-center">{{ prod.offer_price }}</td>
                         <td class="text-center">{{ prod.status }}</td>
                         <td class="text-center">
                             <a href="{% url 'edit_adm_product' prod.id %}" class="btn btn-primary btn-sm">Edit</a>

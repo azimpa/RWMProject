@@ -138,6 +138,8 @@ def add_adm_product(request):
         image = request.FILES.get("product_images")
         cat = AdmCategories.objects.get(id=category)
         product_description = request.POST.get("product_description")
+        price = request.POST.get("price", "")
+        offer_price = request.POST.get("offer_price", "")
         prod_status = request.POST.get("product_status", "active")
 
         if AdmProducts.objects.filter(name=prod_name).exists():
@@ -150,6 +152,8 @@ def add_adm_product(request):
             images=image,
             category=cat,
             status=prod_status,
+            price=price,
+            offer_price=offer_price,
             description=product_description,
         )
         product.save()
@@ -165,36 +169,54 @@ def edit_adm_product(request, id):
         return redirect("adm_login")
 
     product = get_object_or_404(AdmProducts, id=id)
+    categories = AdmCategories.objects.all()
 
     if request.method == "POST":
-        edited_name = request.POST.get("edited_product_name", "")
-        edited_brand = request.POST.get("edited_brand", "")
-        edited_image = request.FILES.get("edited_existing_image")
-        edited_category = request.POST.get("edited_category", "")
-        editcat = AdmCategories.objects.get(id=edited_category)
-        edited_description = request.POST.get("edited_description")
-        edited_status = request.POST.get("edited_status", "active")
+        if "edited_product_name" in request.POST:
+            edited_name = request.POST.get("edited_product_name")
+            product.name = edited_name
 
-        product.name = edited_name
-        product.images = edited_image
-        product.brand = edited_brand
-        product.category = editcat
-        product.description = edited_description
-        product.status = edited_status
+        if "edited_brand" in request.POST:
+            edited_brand = request.POST.get("edited_brand")
+            product.brand = edited_brand
+
+        if "edited_category" in request.POST:
+            edited_category = request.POST.get("edited_category")
+            editcat = AdmCategories.objects.get(id=edited_category)
+            product.category = editcat
+
+        if "edited_price" in request.POST:
+            editprice = request.POST.get("edited_price")
+            product.price = editprice
+
+        if "new_images" in request.FILES:
+            editimages = request.FILES.get("new_images")
+            product.images = editimages
+
+        if "edited_offer_price" in request.POST:
+            editoffer_price = request.POST.get("edited_offer_price")
+            product.offer_price = editoffer_price
+
+        if "edited_description" in request.POST:
+            edited_description = request.POST.get("edited_description")
+            product.description = edited_description
+
+        if "edited_status" in request.POST:
+            edited_status = request.POST.get("edited_status", "active")
+            product.status = edited_status
+
         product.save()
 
         return redirect("adm_product")
 
-    else:
-        categories = AdmCategories.objects.all()
-        return render(
-            request,
-            "adm/edit_adm_product.html",
-            {
-                "product": product,
-                "categories": categories,
-            },
-        )
+    return render(
+        request,
+        "adm/edit_adm_product.html",
+        {
+            "product": product,
+            "categories": categories,
+        },
+    )
 
 
 def delete_adm_product(request, id):
@@ -430,30 +452,40 @@ def edit_product_variant(request, id):
 
     if request.method == "POST":
         try:
-            edited_color_id = request.POST.get("edited_color")
-            edited_size_id = request.POST.get("edited_size")
-            edited_price = request.POST.get("edited_price")
-            edited_offer_price = request.POST.get("edited_offer_price")
-            edited_discount = request.POST.get("edited_discount")
-            edited_stock = request.POST.get("edited_stock")
-            edited_is_available = request.POST.get("edited_is_available")
+            if "edited_color" in request.POST:
+                edited_color_id = request.POST.get("edited_color")
+                edited_color = ProductColor.objects.get(pk=edited_color_id)
+                variant.color = edited_color
 
-            edited_color = ProductColor.objects.get(pk=edited_color_id)
-            edited_size = ProductSize.objects.get(pk=edited_size_id)
+            if "edited_size" in request.POST:
+                edited_size_id = request.POST.get("edited_size")
+                edited_size = ProductSize.objects.get(pk=edited_size_id)
+                variant.size = edited_size
 
-            variant.color = edited_color
-            variant.size = edited_size
-            variant.price = edited_price
-            variant.offer_price = edited_offer_price
-            variant.discount = edited_discount
-            variant.stock = edited_stock
-            variant.is_available = edited_is_available
+            if "edited_price" in request.POST:
+                edited_price = request.POST.get("edited_price")
+                variant.price = edited_price
+
+            if "edited_offer_price" in request.POST:
+                edited_offer_price = request.POST.get("edited_offer_price")
+                variant.offer_price = edited_offer_price
+
+            if "edited_discount" in request.POST:
+                edited_discount = request.POST.get("edited_discount")
+                variant.discount = edited_discount
+
+            if "edited_stock" in request.POST:
+                edited_stock = request.POST.get("edited_stock")
+                variant.stock = edited_stock
+
+            if "edited_is_available" in request.POST:
+                edited_is_available = request.POST.get("edited_is_available")
+                variant.is_available = edited_is_available
+
             variant.save()
 
             selected_image_id = request.POST.get("selected_image")
-
             new_image = request.FILES.get("new_images")
-
             removed_image_id = request.POST.get("selected_image")
 
             if selected_image_id and new_image:

@@ -16,25 +16,20 @@
                             <input type="text" class="form-control" id="edited_product_name" name="edited_product_name"
                                 value="{{ product.name }}" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="edited_product_image" class="form-label">Images</label>
-                            <input type="file" class="form-control" id="edited_product_image" name="edited_existing_image" accept="image/*">
-                            {% if product.images %}
-                                <img src="{{ product.images.url }}" width="100" class="mt-2">
-                            {% else %}
-                                <p class="mt-2">No Image</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="edited_brand">Brand</label>
                             <input type="text" class="form-control" id="edited_brand" name="edited_brand"
                                 value="{{ product.brand }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edited_price">Price</label>
+                            <input type="text" class="form-control" id="edited_price" name="edited_price"
+                                value="{{ product.price }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edited_offer_price">Offer Price</label>
+                            <input type="text" class="form-control" id="edited_offer_price" name="edited_offer_price"
+                                value="{{ product.offer_price }}" required>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -43,32 +38,47 @@
                             <select class="form-control" id="edited_category" name="edited_category" required>
                                 <option value="" disabled>Select a category</option>
                                 {% for category in categories %}
-                                <option value="{{ category.id }}" {% if category.id == product.category.id %}selected{% endif %}>
+                                <option value="{{ category.id }}" {% if category.id == product.category.id %} selected {% endif %}>
                                     {{ category.name }}
                                 </option>
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="edited_status">Status</label>
                             <select class="form-control" id="edited_status" name="edited_status" required>
-                                <option value="active" {% if product.status == 'active' %}selected{% endif %}>Active</option>
-                                <option value="inactive" {% if product.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                                <option value="active" {% if product.status == 'active' %}selected{% endif %}>Active
+                                </option>
+                                <option value="inactive" {% if product.status == 'inactive' %}selected{% endif %}>Inactive
+                                </option>
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="edited_description">Description</label>
-                            <textarea class="form-control" id="edited_description" name="edited_description" rows="4" required>{{ product.description }}</textarea>
+                            <textarea class="form-control" id="edited_description" name="edited_description" rows="4"
+                                required>{{ product.description }}</textarea>
                         </div>
                     </div>
                 </div>
-                <div class="text-center">
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Images</label>
+                            <div class="d-flex align-items-center">
+                                {% if product.images %}
+                                <img src="{{ product.images.url }}" width="100" class="mr-2">
+                                <div class="mb-2">
+                                    <input type="file" class="form-control" name="new_images" id="add_images">
+                                </div>
+                                {% else %}
+                                <p class="mr-2">No Image</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary">Save Edits</button>
                 </div>
             </form>

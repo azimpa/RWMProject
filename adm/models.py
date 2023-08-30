@@ -27,6 +27,8 @@ class AdmProducts(models.Model):
     images = models.ImageField(upload_to="product_images/")
     brand = models.CharField(max_length=50, null=True, blank=True)
     category = models.ForeignKey(AdmCategories, on_delete=models.CASCADE)
+    offer_price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=500)
     status = models.CharField(
         max_length=20,

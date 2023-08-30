@@ -35,16 +35,35 @@
       </div>
       <div class="row mb-3">
         <div class="col-md-6">
-          <label for="product_description" class="form-label">DESCRIPTION</label>
-          <textarea class="form-control" id="product_description" name="product_description" rows="4"
-            required></textarea>
+          <label for="price">Price</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">&#8377;</span>
+            </div>
+            <input type="text" class="form-control" id="price" name="price" required>
+          </div>
         </div>
+        <div class="col-md-6">
+          <label for="offer_price">Offer Price</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">&#8377;</span>
+            </div>
+            <input type="text" class="form-control" id="offer_price" name="offer_price" required>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3">
         <div class="col-md-6">
           <label for="product_status" class="form-label">STATUS</label>
           <select class="form-select" id="product_status" name="product_status" required>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+        </div>
+        <div class="col-md-6">
+          <label for="product_description" class="form-label">DESCRIPTION</label>
+          <textarea class="form-control" id="product_description" name="product_description" rows="4" required></textarea>
         </div>
       </div>
       <div class="text-center">
