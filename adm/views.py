@@ -69,11 +69,15 @@ def Admin_unblock_user(request, id):
 
 
 def adm_categories(request):
+    # Check if the user is authenticated and is a superuser
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    category = AdmCategories.objects.all().order_by("id")
-    return render(request, "adm/adm_categories.html", {"categories": category})
+    # Retrieve active categories and order them by ID
+    categories = AdmCategories.objects.filter(is_active=True).order_by("id")
+    
+    # Render the template with the active categories
+    return render(request, "adm/adm_categories.html", {"categories": categories})
 
 
 def add_adm_categories(request):
@@ -102,7 +106,7 @@ def edit_adm_categories(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    category = get_object_or_404(AdmCategories, id=id)
+    category = get_object_or_404(AdmCategories, id=id, is_active=True)
 
     if request.method == "POST":
         new_name = request.POST.get("edited_category_name", "")
@@ -114,8 +118,9 @@ def edit_adm_categories(request, id):
 
 
 def delete_adm_categories(request, id):
-    category = get_object_or_404(AdmCategories, id=id)
-    category.delete()
+    category = get_object_or_404(AdmCategories, id=id, is_active=True)
+    category.is_active = False
+    category.save()
     return redirect("adm_categories")
 
 
@@ -123,7 +128,7 @@ def adm_product(request):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    adm_products = AdmProducts.objects.all().order_by("id")
+    adm_products = AdmProducts.objects.filter(is_active=True).order_by("id")
     return render(request, "adm/adm_product.html", {"products": adm_products})
 
 
@@ -136,7 +141,7 @@ def add_adm_product(request):
         prod_brand = request.POST.get("product_brand", "")
         category = request.POST.get("product_categories", "")
         image = request.FILES.get("product_images")
-        cat = AdmCategories.objects.get(id=category)
+        cat = AdmCategories.objects.get(id=category, is_active=True)
         product_description = request.POST.get("product_description")
         price = request.POST.get("price", "")
         offer_price = request.POST.get("offer_price", "")
@@ -160,7 +165,7 @@ def add_adm_product(request):
         return redirect("adm_product")
 
     else:
-        categories = AdmCategories.objects.all()
+        categories = AdmCategories.objects.filter(is_active=True).order_by("id")
         return render(request, "adm/add_adm_product.html", {"categories": categories})
 
 
@@ -168,8 +173,8 @@ def edit_adm_product(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    product = get_object_or_404(AdmProducts, id=id)
-    categories = AdmCategories.objects.all()
+    product = get_object_or_404(AdmProducts, id=id, is_active=True)
+    categories = AdmCategories.objects.filter(is_active=True).order_by("id")
 
     if request.method == "POST":
         if "edited_product_name" in request.POST:
@@ -182,7 +187,7 @@ def edit_adm_product(request, id):
 
         if "edited_category" in request.POST:
             edited_category = request.POST.get("edited_category")
-            editcat = AdmCategories.objects.get(id=edited_category)
+            editcat = AdmCategories.objects.get(id=edited_category, is_active=True)
             product.category = editcat
 
         if "edited_price" in request.POST:
@@ -220,8 +225,9 @@ def edit_adm_product(request, id):
 
 
 def delete_adm_product(request, id):
-    product = get_object_or_404(AdmProducts, id=id)
-    product.delete()
+    product = get_object_or_404(AdmProducts, id=id, is_active=True)
+    product.is_active = False
+    product.save()
     return redirect("adm_product")
 
 
@@ -229,7 +235,7 @@ def product_color(request):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    product_color = ProductColor.objects.all().order_by("id")
+    product_color = ProductColor.objects.filter(is_active=True).order_by("id")
     return render(request, "adm/product_color.html", {"product_color": product_color})
 
 
@@ -271,7 +277,7 @@ def edit_product_color(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    product_color = get_object_or_404(ProductColor, id=id)
+    product_color = get_object_or_404(ProductColor, id=id, is_active=True)
 
     if request.method == "POST":
         new_name = request.POST.get("edited_color", "")
@@ -288,8 +294,9 @@ def edit_product_color(request, id):
 
 
 def delete_product_color(request, id):
-    product_color = get_object_or_404(ProductColor, id=id)
-    product_color.delete()
+    product_color = get_object_or_404(ProductColor, id=id, is_active=True)
+    product_color.is_active = False
+    product_color.save()
     return redirect("product_color")
 
 
@@ -297,7 +304,7 @@ def product_size(request):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    product_size = ProductSize.objects.all().order_by("id")
+    product_size = ProductSize.objects.filter(is_active=True).order_by("id")
     return render(request, "adm/product_size.html", {"product_size": product_size})
 
 
@@ -305,7 +312,7 @@ def add_product_size(request):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    product_size = ProductSize.objects.all()
+    product_size = ProductSize.objects.filter(is_active=True).order_by("id")
 
     if request.method == "POST":
         size_name = request.POST.get("name", "")
@@ -335,7 +342,7 @@ def edit_product_size(request, id):
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    product_size = get_object_or_404(ProductSize, id=id)
+    product_size = get_object_or_404(ProductSize, id=id, is_active=True)
 
     if request.method == "POST":
         new_name = request.POST.get("edited_size", "")
@@ -351,7 +358,8 @@ def edit_product_size(request, id):
 
 def delete_product_size(request, id):
     product_size = get_object_or_404(ProductSize, id=id)
-    product_size.delete()
+    product_size.is_active = False
+    product_size.save()
     return redirect("product_size")
 
 
@@ -360,9 +368,8 @@ def product_variant(request, id):
         return redirect("adm_login")
 
     try:
-        product = AdmProducts.objects.get(id=id)
-        variants = ProductVariant.objects.filter(product=product)
-
+        product = AdmProducts.objects.get(id=id, is_active=True)
+        variants = ProductVariant.objects.filter(product=product, is_active=True).order_by("id")
         if variants.exists():
             variants = variants.order_by("id")
             return render(
@@ -430,8 +437,8 @@ def add_product_variant(request, id):
 
     else:
         product = AdmProducts.objects.get(id=id)
-        colors = ProductColor.objects.all()
-        sizes = ProductSize.objects.all()
+        colors = ProductColor.objects.filter(is_active=True).order_by("id")
+        sizes = ProductSize.objects.filter(is_active=True).order_by("id")
 
         return render(
             request,
@@ -525,8 +532,8 @@ def edit_product_variant(request, id):
                 request, "An error occurred while updating the product variant"
             )
 
-    colors = ProductColor.objects.all()
-    sizes = ProductSize.objects.all()
+    colors = ProductColor.objects.filter(is_active=True).order_by("id")
+    sizes = ProductSize.objects.filter(is_active=True).order_by("id")
 
     return render(
         request,
@@ -542,9 +549,10 @@ def edit_product_variant(request, id):
 
 
 def delete_product_variant(request, id):
-    product_variant = get_object_or_404(ProductVariant, id=id)
+    product_variant = get_object_or_404(ProductVariant, id=id, is_active=True)
     product_id = product_variant.product.id
-    product_variant.delete()
+    product_variant.is_active = False
+    product_variant.save()
     return redirect("product_variant", id=product_id)
 
 

@@ -3,6 +3,7 @@ from django.db import models
 
 class AdmCategories(models.Model):
     name = models.CharField(max_length=50, unique=True)
+    is_active = models.BooleanField(default=True)  # New field for soft delete
 
     def __str__(self):
         return self.name
@@ -10,6 +11,7 @@ class AdmCategories(models.Model):
 
 class ProductColor(models.Model):
     name = models.CharField(max_length=30)
+    is_active = models.BooleanField(default=True)  # New field for soft delete
 
     def __str__(self):
         return self.name
@@ -17,6 +19,7 @@ class ProductColor(models.Model):
 
 class ProductSize(models.Model):
     name = models.CharField(max_length=20)
+    is_active = models.BooleanField(default=True)  # New field for soft delete
 
     def __str__(self):
         return self.name
@@ -35,6 +38,7 @@ class AdmProducts(models.Model):
         choices=[("active", "Active"), ("inactive", "Inactive")],
         default="active",
     )
+    is_active = models.BooleanField(default=True)  # New field for soft delete
 
     def __str__(self):
         return self.name
@@ -42,6 +46,7 @@ class AdmProducts(models.Model):
 
 class VariantImage(models.Model):
     image = models.ImageField(upload_to="variant_images/")
+    is_active = models.BooleanField(default=True)  # New field for soft delete
 
 
 class ProductVariant(models.Model):
@@ -56,6 +61,7 @@ class ProductVariant(models.Model):
     )
     stock = models.PositiveIntegerField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)  # New field for soft delete
 
     def __str__(self):
         return f"{self.product.name} - {self.color.name} - {self.size.name}"

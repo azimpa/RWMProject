@@ -174,19 +174,13 @@
                     <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="{{ pr.product_image.url }}" alt="">
+                                <img class="img-fluid w-100" src="{{ pr.images.url }}" alt="">
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3">{{ pr.name }}</h6>
                                 <div class="d-flex justify-content-center">
-                                    {% if pr.productvariant_set.exists %}
-                                        {% for variant in pr.productvariant_set.all %}
-                                            <h6>&#8377;{{ variant.offer_price }}</h6>
-                                            <h6 class="text-muted ml-2"><del>&#8377; {{ variant.price }}</del></h6>
-                                        {% endfor %}
-                                    {% else %}
-                                        <h6>Price not available</h6>
-                                    {% endif %}
+                                            <h6>&#8377;{{ pr.offer_price }}</h6>
+                                            <h6 class="text-muted ml-2"><del>&#8377; {{ pr.price }}</del></h6>
                                 </div>
                             </div>                            
                             <div class="card-footer d-flex justify-content-between bg-light border">

@@ -15,7 +15,7 @@ from home.models import Cartitem, Cart, Order, OrderItem
 
 
 def home(request):
-    products = AdmProducts.objects.all()
+    products = AdmProducts.objects.filter(is_active=True).order_by("id")
 
     if request.user.is_anonymous:
         return render(request, "user/home.html", {"products": products})
@@ -23,7 +23,7 @@ def home(request):
         logout(request)
         return render(request, "user/home.html", {"products": products})
     else:
-        products = AdmProducts.objects.all()
+        products = AdmProducts.objects.filter(is_active=True).order_by("id")
         return render(request, "user/home.html", {"products": products})
 
 
@@ -101,50 +101,62 @@ def delete_address(request, id):
     return redirect("useraddress")
 
 def total_products(request):
-    products = AdmProducts.objects.all()
-    variants = ProductVariant.objects.filter(product__in=products)
+    products = AdmProducts.objects.filter(is_active=True).order_by("id")
+    variants = ProductVariant.objects.filter(product__in=products, is_active=True)
     return render(request, "user/total_products.html", {"products": products, "variants": variants})
 
 def roadbikes(request):
-    category = AdmCategories.objects.get(name="road_bikes")
-    products = AdmProducts.objects.filter(category=category)
+    category = AdmCategories.objects.get(name="road_bikes", is_active=True)
+    products = AdmProducts.objects.filter(category=category, is_active=True)
     return render(request, "user/roadbikes.html", {"products": products})
 
 
 def gravelbikes(request):
-    category = AdmCategories.objects.get(name="gravel_bikes")
-    products = AdmProducts.objects.filter(category=category)
+    category = AdmCategories.objects.get(name="gravel_bikes", is_active=True)
+    products = AdmProducts.objects.filter(category=category, is_active=True)
     return render(request, "user/gravelbikes.html", {"products": products})
 
 
 def hybridbikes(request):
-    category = AdmCategories.objects.get(name="hybrid_bikes")
-    products = AdmProducts.objects.filter(category=category)
+    category = AdmCategories.objects.get(name="hybrid_bikes", is_active=True)
+    products = AdmProducts.objects.filter(category=category, is_active=True)
     return render(request, "user/hybridbikes.html", {"products": products})
 
 
 def mountainbikes(request):
-    category = AdmCategories.objects.get(name="mountain_bikes")
-    products = AdmProducts.objects.filter(category=category)
+    category = AdmCategories.objects.get(name="mountain_bikes", is_active=True)
+    products = AdmProducts.objects.filter(category=category, is_active=True)
     return render(request, "user/mountainbikes.html", {"products": products})
 
 
 def product_description(request, id):
     product = AdmProducts.objects.get(id=id)
-    print(product, "qaz")
-    variants = ProductVariant.objects.filter(product=product)
-    print(variants, "wsx")
-    colors = ProductColor.objects.filter(productvariant__in=variants).distinct()
-    print(colors, "edc")
-    sizes = ProductSize.objects.filter(productvariant__in=variants).distinct()
-    print(sizes, "rfv")
+    variants = ProductVariant.objects.filter(product=product, is_available=True)
+    colors = variants.values_list("color", flat=True).distinct()
+    sizes = variants.values_list("size", flat=True).distinct()
+
+    available_colors = ProductColor.objects.filter(id__in=colors, is_active=True)
+    available_sizes = ProductSize.objects.filter(id__in=sizes, is_active=True)
+
+    selected_color_id = request.GET.get("selected_color")
+    selected_size_id = request.GET.get("selected_size")
+
+
+    if selected_color_id:
+        variants = variants.filter(color_id=selected_color_id)
+    if selected_size_id:
+        variants = variants.filter(size_id=selected_size_id)
 
     return render(
         request,
         "user/product_description.html",
-        {"products": product, "variants": variants, "colors": colors, "sizes": sizes},
+        {
+            "products": product,
+            "variants": variants,
+            "colors": available_colors,
+            "sizes": available_sizes,
+        },
     )
-
 
 def add_to_cart(request, id):
     if not request.user.is_authenticated:
