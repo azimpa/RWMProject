@@ -13,22 +13,26 @@
             <div class="form-group row">
                 <div class="col-md-12">
                     <label for="image" class="col-form-label">Images</label>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); grid-gap: 10px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); grid-gap: 10px;">
                         {% for image in variants.images.all %}
                         <div class="image-container">
                             <img src="{{ image.image.url }}" alt=""
                                 style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
                             <input type="radio" name="selected_image" value="{{ image.id }}" class="mt-2">
                         </div>
+                        {% empty %}
+                        <div class="no-image-text">No image</div>
                         {% endfor %}
+                        {% if variants.images.all %}
                         <input type="file" class="form-control mt-2" name="new_images"
                             style="border-radius: 8px; border: 1px solid #ddd;">
-                        <span><button type="submit" name="remove_image" value="{{ image.id }}"
+                        <span>
+                            <button type="submit" name="remove_image" value="{{ image.id }}"
                                 class="btn btn-danger btn-sm mt-2"
                                 style="height: 38px; width: 110px; margin-left: 10px; border-radius: 8px; border: 1px solid">Remove</button>
                         </span>
-                    </div>
+                        {% endif %}
+                    </div>                    
                     <br>
                     <div class="col-md-6" style="margin-left: -15px;">
                         <label for="images" class="col-form-label">Add Images</label>

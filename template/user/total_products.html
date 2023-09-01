@@ -3,6 +3,20 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .card {
+        height: 300px;
+        /* Set the card's height */
+    }
+
+    .card-image {
+        width: 100%;
+        height: 150px;
+        /* Set the image's height to match the card's height */
+        object-fit: cover;
+        /* Ensure the image fits within the specified height */
+    }
+</style>
 <div style="margin-top: 150px;">
     <div class="container-fluid pt-5">
         <div class="row px-xl-5">
@@ -181,10 +195,10 @@
                         <div class="card product-item border-0 mb-4">
                             <div
                                 class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="{{ pr.images.url }}" alt="">
+                                <img class="img-fluid card-image" src="{{ pr.images.url }}" alt="">
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">{{ pr.name }}</h6>   
+                                <h6 class="text-truncate mb-3">{{ pr.name }}</h6>
                                 <div class="d-flex justify-content-center">
                                     <h6>&#8377;{{ pr.offer_price }}</h6>
                                     <h6 class="text-muted ml-2"><del>&#8377;{{ pr.price }}</del></h6>

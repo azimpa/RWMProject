@@ -1,6 +1,14 @@
 {% extends 'user/base_user.html' %}
 
 {% block content %}
+<style>
+    .carousel-image {
+        object-fit: cover;
+        width: auto;
+        /* Change this value to the desired width */
+        height: 360px;
+    }
+</style>
 <div style="margin-top: 200px;">
     <div class="content_wrapper mt-5">
         <div class="container">
@@ -10,7 +18,7 @@
                         <div class="carousel-inner">
                             {% for image in variants.0.images.all %}
                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <img src="{{ image.image.url }}" class="d-block w-100" alt="" />
+                                <img src="{{ image.image.url }}" class="d-block w-100 carousel-image" alt="" />
                             </div>
                             {% endfor %}
                         </div>
@@ -29,7 +37,8 @@
                     <div class="product_content">
                         <h2 class="font-weight-bold" id="product_name">{{ variants.0.product.name }}</h2>
                         <div class="product_price" id="product_price">&#8377; {{ variants.0.offer_price }}</div>
-                        <div class="product_offer_price" id="product_offer_price"><del>&#8377; {{variants.0.price}}</del></div>
+                        <div class="product_offer_price" id="product_offer_price"><del>&#8377;
+                                {{variants.0.price}}</del></div>
                         <div class="rating rating_4 mt-2" data-rating="4">
                             {% for _ in "12345" %}
                             <i class="fa fa-star"></i>

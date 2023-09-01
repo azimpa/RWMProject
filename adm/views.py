@@ -15,13 +15,16 @@ from adm.models import (
 
 
 def index(request):
-    if request.user.is_anonymous:
-        return render(request, "adm/index.html")
-    elif not request.user.is_superuser:
-        logout(request)
-        return render(request, "adm/index.html")
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect("adm_login")
     else:
-        return render(request, "adm/index.html")
+        if request.user.is_anonymous:
+            return render(request, "adm/index.html")
+        elif not request.user.is_superuser:
+            logout(request)
+            return render(request, "adm/index.html")
+        else:
+            return render(request, "adm/index.html")
 
 
 def adm_login(request):
