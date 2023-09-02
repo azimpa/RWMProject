@@ -32,18 +32,12 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="col-lg-5">
                     <div class="product_content">
                         <h2 class="font-weight-bold" id="product_name">{{ variants.0.product.name }}</h2>
                         <div class="product_price" id="product_price">&#8377; {{ variants.0.offer_price }}</div>
                         <div class="product_offer_price" id="product_offer_price"><del>&#8377;
                                 {{variants.0.price}}</del></div>
-                        <div class="rating rating_4 mt-2" data-rating="4">
-                            {% for _ in "12345" %}
-                            <i class="fa fa-star"></i>
-                            {% endfor %}
-                        </div>
                         <div class="in_stock_container mt-2">
                             <div class="in_stock in_stock_true"></div>
                             <span class="font-weight-bold">in stock</span>
@@ -95,4 +89,38 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        // Function to update product details based on selected size and color
+        function updateProductDetails() {
+            var selectedSize = $("input[name='selected_size']:checked").val();
+            var selectedColor = $("input[name='selected_color']:checked").val();
+
+            // Make an AJAX request to your view function with the selected size and color
+            $.ajax({
+                type: "GET",
+                url: "{% url 'product_description' products.id %}",
+                data: {
+                    selected_size: selectedSize,
+                    selected_color: selectedColor
+                },
+                success: function (data) {
+                    // Update the product details on the page
+                    $("#product_name").text(data.products.name);
+                    $("#product_price").text("₹ " + data.variants[0].offer_price);
+                    $("#product_offer_price").html("<del>₹ " + data.variants[0].price + "</del>");
+                    // Update other product details as needed
+                }
+            });
+        }
+
+        // Attach change event handlers to the radio buttons
+        $("input[name='selected_size'], input[name='selected_color']").change(function () {
+            updateProductDetails();
+        });
+
+        // Initialize product details
+        updateProductDetails();
+    });
+</script>
 {% endblock %}

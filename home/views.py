@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from home.models import Address
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.http import JsonResponse
 from adm.models import (
     AdmProducts,
     AdmCategories,
@@ -100,10 +101,16 @@ def delete_address(request, id):
     address.delete()
     return redirect("useraddress")
 
+
 def total_products(request):
     products = AdmProducts.objects.filter(is_active=True).order_by("id")
     variants = ProductVariant.objects.filter(product__in=products, is_active=True)
-    return render(request, "user/total_products.html", {"products": products, "variants": variants})
+    return render(
+        request,
+        "user/total_products.html",
+        {"products": products, "variants": variants},
+    )
+
 
 def roadbikes(request):
     category = AdmCategories.objects.get(name="road_bikes", is_active=True)
@@ -131,7 +138,7 @@ def mountainbikes(request):
 
 def product_description(request, id):
     product = AdmProducts.objects.get(id=id)
-    variants = ProductVariant.objects.filter(product=product, is_available=True)
+    variants = ProductVariant.objects.filter(product=product, is_active=True)
     colors = variants.values_list("color", flat=True).distinct()
     sizes = variants.values_list("size", flat=True).distinct()
 
@@ -141,12 +148,26 @@ def product_description(request, id):
     selected_color_id = request.GET.get("selected_color")
     selected_size_id = request.GET.get("selected_size")
 
-
     if selected_color_id:
         variants = variants.filter(color_id=selected_color_id)
+
     if selected_size_id:
         variants = variants.filter(size_id=selected_size_id)
 
+    # Create a dictionary with the data you want to send back
+    response_data = {
+        "products": {
+            "name": product.name,
+            # Add other product details here
+        },
+        "variants": list(variants.values()),  # Convert QuerySet to a list
+    }
+
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        # If it's an AJAX request, return JSON response
+        return JsonResponse(response_data)
+
+    # If it's not an AJAX request, render the HTML template
     return render(
         request,
         "user/product_description.html",
@@ -157,6 +178,7 @@ def product_description(request, id):
             "sizes": available_sizes,
         },
     )
+
 
 def add_to_cart(request, id):
     if not request.user.is_authenticated:
