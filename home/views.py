@@ -154,13 +154,36 @@ def product_description(request, id):
     if selected_size_id:
         variants = variants.filter(size_id=selected_size_id)
 
+    # Create a list of dictionaries containing variant data, including color image URLs
+    variants_data = []
+    for variant in variants:
+        color_images = variant.images.all()  # Get all associated VariantImage objects
+        color_image_urls = [
+            image.image.url for image in color_images
+        ]  # Get URLs for each image
+        variants_data.append(
+            {
+                "id": variant.id,
+                "product_id": variant.product_id,
+                "color_id": variant.color_id,
+                "size_id": variant.size_id,
+                "price": str(variant.price),
+                "offer_price": str(variant.offer_price),
+                "discount": str(variant.discount),
+                "stock": variant.stock,
+                "is_available": variant.is_available,
+                "is_active": variant.is_active,
+                "color_image_urls": color_image_urls,  # Add the list of color image URLs
+            }
+        )
+
     # Create a dictionary with the data you want to send back
     response_data = {
         "products": {
             "name": product.name,
             # Add other product details here
         },
-        "variants": list(variants.values()),  # Convert QuerySet to a list
+        "variants": variants_data,  # Use the list of dictionaries
     }
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":

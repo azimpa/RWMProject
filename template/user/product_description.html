@@ -110,8 +110,31 @@
                     $("#product_price").text("₹ " + data.variants[0].offer_price);
                     $("#product_offer_price").html("<del>₹ " + data.variants[0].price + "</del>");
                     // Update other product details as needed
+
+                    // Update the carousel images based on the selected color
+                    updateCarouselImages(data.variants[0].color_image_urls);
                 }
             });
+        }
+
+        // Function to update carousel images
+        function updateCarouselImages(imageUrls) {
+            var carouselInner = $("#productImageCarousel .carousel-inner");
+            carouselInner.empty(); // Clear existing images
+
+            // Append new images based on the selected color
+            for (var i = 0; i < imageUrls.length; i++) {
+                var image = $("<img>").addClass("d-block w-100 carousel-image");
+                image.attr("src", imageUrls[i]);
+
+                var carouselItem = $("<div>").addClass("carousel-item");
+                if (i === 0) {
+                    carouselItem.addClass("active");
+                }
+
+                carouselItem.append(image);
+                carouselInner.append(carouselItem);
+            }
         }
 
         // Attach change event handlers to the radio buttons
