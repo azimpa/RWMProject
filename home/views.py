@@ -161,12 +161,18 @@ def product_description(request, id):
         color_image_urls = [
             image.image.url for image in color_images
         ]  # Get URLs for each image
+        color = ProductColor.objects.get(id=variant.color_id)
+        color_name = color.name
+        size = ProductSize.objects.get(id=variant.size_id)
+        size_name = size.name
         variants_data.append(
             {
                 "id": variant.id,
                 "product_id": variant.product_id,
                 "color_id": variant.color_id,
                 "size_id": variant.size_id,
+                "size_name": size_name,
+                "color_name": color_name,
                 "price": str(variant.price),
                 "offer_price": str(variant.offer_price),
                 "discount": str(variant.discount),
@@ -495,8 +501,9 @@ def my_orders(request):
         return redirect("user_login")
 
     user = request.user
-    order = Order.objects.filter(user=user)
-    order_items = OrderItem.objects.filter(order__in=order)
+    orders = Order.objects.filter(user=user)
+
+    order_items = OrderItem.objects.filter(order__in=orders).order_by("-id")
 
     return render(request, "user/my_orders.html", {"order_items": order_items})
 

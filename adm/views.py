@@ -564,7 +564,7 @@ def adm_order(request):
         return redirect("adm_login")
 
     users = CustomUser.objects.filter(is_superuser=False)
-    orders = Order.objects.filter(user__in=users).order_by("id")
+    orders = Order.objects.filter(user__in=users).order_by('-id')
 
     return render(request, "adm/adm_order.html", {"orders": orders})
 
