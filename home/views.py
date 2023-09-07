@@ -141,8 +141,8 @@ def mountainbikes(request):
 
 
 def product_description(request, id):
-    product = AdmProducts.objects.get(id=id)
-    variants = ProductVariant.objects.filter(product=product, is_active=True)
+    var = ProductVariant.objects.get(id=id)
+    variants = ProductVariant.objects.filter(product=var.product, is_active=True)
 
     colors = variants.values_list("color", flat=True).distinct()
     sizes = variants.values_list("size", flat=True).distinct()
@@ -173,7 +173,6 @@ def product_description(request, id):
         variants_data.append(
             {
                 "id": variant.id,
-                "product_id": variant.product_id,
                 "color_id": variant.color_id,
                 "size_id": variant.size_id,
                 "size_name": size_name,
@@ -191,7 +190,7 @@ def product_description(request, id):
     # Create a dictionary with the data you want to send back
     response_data = {
         "products": {
-            "name": product.name,
+            "name": var.product.name,
             # Add other product details here
         },
         "variants": variants_data,  # Use the list of dictionaries
@@ -206,7 +205,7 @@ def product_description(request, id):
         request,
         "user/product_description.html",
         {
-            "products": product,
+            "products": var,
             "variants": variants,
             "colors": available_colors,
             "sizes": available_sizes,

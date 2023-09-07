@@ -4,7 +4,6 @@ from django.utils import timezone
 from accounts.models import CustomUser
 from adm.models import ProductVariant
 
-
 class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name="House or Company Name")
