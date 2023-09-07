@@ -14,8 +14,12 @@
             style="border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; background-color: #f9f9f9; border-radius: 8px;">
             <div class="row">
                 <div class="col-lg-2">
-                    <img src="{{ item.product.images.url }}"
-                        style="height: 80px; width: 125px; border-radius: 6px;" alt="" class="order-item-image">
+                    {% for img in item.product.images.all %}
+                    {% if forloop.first %}
+                    <img src="{{ img.image.url }}" style="height: 80px; width: 125px; border-radius: 6px;"
+                        alt="" class="order-item-image">
+                    {% endif %}
+                    {% endfor %}
                 </div>
                 <div class="col-lg-2">
                     <div class="order-item-title" style="color: #333; margin-top: 17px; font-weight: bold;">Product:<br>

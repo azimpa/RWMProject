@@ -104,7 +104,11 @@ def delete_address(request, id):
 
 def total_products(request):
     products = AdmProducts.objects.filter(is_active=True).order_by("id")
-    variants = ProductVariant.objects.filter(product__in=products, is_active=True)
+    variants = (
+        ProductVariant.objects.filter(product__in=products, is_active=True)
+        .order_by("product", "id")
+        .distinct("product")
+    )
     return render(
         request,
         "user/total_products.html",
@@ -139,6 +143,7 @@ def mountainbikes(request):
 def product_description(request, id):
     product = AdmProducts.objects.get(id=id)
     variants = ProductVariant.objects.filter(product=product, is_active=True)
+
     colors = variants.values_list("color", flat=True).distinct()
     sizes = variants.values_list("size", flat=True).distinct()
 
@@ -214,29 +219,28 @@ def add_to_cart(request, id):
         return redirect("user_login")
 
     user = request.user
-    product = AdmProducts.objects.get(id=id)
 
     try:
-        product_variant = product.productvariant_set.first()
+        product_variant = ProductVariant.objects.get(id=id)
 
-        if product_variant is not None and product_variant.stock > 0:
+        if product_variant.stock > 0:
             cart, created = Cart.objects.get_or_create(user=user)
 
             try:
-                cart_item = Cartitem.objects.get(cart=cart, product=product)
+                cart_item = Cartitem.objects.get(cart=cart, product=product_variant)
                 cart_item.quantity += 1
                 cart_item.save()
                 messages.success(
-                    request, f"{product.name} quantity updated in your cart."
+                    request, f"{product_variant.product} quantity updated in your cart."
                 )
             except Cartitem.DoesNotExist:
-                cart_item = Cartitem(cart=cart, product=product)
+                cart_item = Cartitem(cart=cart, product=product_variant)
                 cart_item.save()
-                messages.success(request, f"{product.name} added to your cart.")
+                messages.success(
+                    request, f"{product_variant.product} added to your cart."
+                )
         else:
-            messages.error(request, f"{product.name} is out of stock.")
-            return redirect("total_products")
-
+            messages.error(request, f"{product_variant.product} is out of stock.")
     except ProductVariant.DoesNotExist:
         messages.error(request, f"Product variant not available.")
 
@@ -254,7 +258,7 @@ def cart(request):
     final_total = 0
 
     for item in cart_items:
-        item.offer_price = item.product.productvariant_set.first().offer_price
+        item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
 
@@ -276,7 +280,7 @@ def update_cart_item(request, id):
         action = request.POST.get("action")
 
         if action == "increase":
-            if cart_item.quantity < cart_item.product.productvariant_set.first().stock:
+            if cart_item.quantity < cart_item.product.stock:
                 cart_item.quantity += 1
             else:
                 messages.warning(request, "Out of stock")
@@ -305,7 +309,7 @@ def delete_cart_item(request, id):
         cart_item = Cartitem.objects.get(cart=cart, id=id)
         cart_item.delete()
         messages.success(
-            request, f"{cart_item.product.name} has been removed from your cart."
+            request, f"{cart_item.product} has been removed from your cart."
         )
     except Cartitem.DoesNotExist:
         messages.error(request, "Cart item not found.")
@@ -336,7 +340,7 @@ def checkout(request):
             total_price = 0
 
             for item in cart_items:
-                item.offer_price = item.product.productvariant_set.first().offer_price
+                item.offer_price = item.product.offer_price
                 item.total_price_each = item.offer_price * item.quantity
 
                 total_price += item.total_price_each
@@ -353,12 +357,8 @@ def checkout(request):
 
             for item in cart_items:
                 product = item.product
-                print(product, "eee")
                 quantity = item.quantity
-                print(quantity, "www")
-
-                product_variant = product.productvariant_set.first()
-                print(product_variant, "rrrr")
+                product_variant = product
 
                 if product_variant.stock >= quantity:
                     product_variant.stock -= quantity
@@ -370,7 +370,6 @@ def checkout(request):
                         quantity=quantity,
                     )
                 else:
-                    print("nooooo")
                     pass
 
             cart_items.delete()
@@ -385,7 +384,7 @@ def checkout(request):
 
         total_price = 0
         for item in cart_items:
-            item.offer_price = item.product.productvariant_set.first().offer_price
+            item.offer_price = item.product.offer_price
             item.total_price_each = item.offer_price * item.quantity
             total_price += item.total_price_each
 

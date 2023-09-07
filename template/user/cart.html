@@ -27,6 +27,7 @@
             <div class="col">
                 <div class="cart_bar d-flex flex-row align-items-center justify-content-start">
                     <div class="cart_bar_title_name">PRODUCT</div>
+                    <div class="cart_bar_title_price">PRODUCT DETAILS</div>
                     <div class="cart_bar_title_content ml-auto">
                         <div
                             class="cart_bar_title_content_inner d-flex flex-row align-items-center justify-content-end">
@@ -42,30 +43,31 @@
         <div class="row">
             <div class="col">
                 <div class="cart_products">
-                    {% for i in cart_items %}
+                    {% for cart in cart_items %}
                     <ul>
                         <li
                             class="cart_product d-flex flex-md-row flex-column align-items-md-center align-items-start justify-content-start">
                             <div class="cart_product_image">
-                                <a href="{% url 'product_description' id=i.product.id %}">
-                                    <img src="{{ i.product.product_image.url }}" alt=""
-                                        style="max-width: 150px; max-height: 150px" />
+                                <a href="{% url 'product_description' id=cart.product.id %}">
+                                    {% for img in cart.product.images.all %}
+                                    {% if forloop.first %}
+                                    <img src="{{ img.image.url }}" alt="" style="max-width: 150px; max-height: 150px" />
+                                    {% endif %}
+                                    {% endfor %}
                                 </a>
                             </div>
                             <div class="cart_product_name">
-                                <a href="{% url 'product_description' id=i.product.id %}">
-                                    {{ i.product.name }}
-                                </a>
+                                <a href="{% url 'product_description' id=cart.product.id %}">{{ cart.product}}</a>
                             </div>
                             <div class="cart_product_info ml-auto">
                                 <div
                                     class="cart_product_info_inner d-flex flex-row align-items-center justify-content-md-end justify-content-start">
-                                    <div class="cart_product_price">₹ {{ i.offer_price }}</div>
+                                    <div class="cart_product_price">₹ {{ cart.offer_price }}</div>
                                     <div class="product_quantity_container">
-                                        <form method="post" action="{% url 'update_cart_item' i.id %}">
+                                        <form method="post" action="{% url 'update_cart_item' cart.id %}">
                                             {% csrf_token %}
                                             <div class="product_quantity clearfix">
-                                                <input type="number" name="quantity" min="1" value="{{ i.quantity }}"
+                                                <input name="quantity" min="1" value="{{ cart.quantity }}"
                                                     style="width: 60px; font-size: 16px; text-align: center;" />
                                                 <div class="quantity_buttons">
                                                     <div class="quantity_inc quantity_control">
@@ -84,9 +86,9 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="cart_product_total">₹ {{ i.total_price_each}}</div>
+                                    <div class="cart_product_total">₹ {{ cart.total_price_each}}</div>
                                     <div class="cart_product_button">
-                                        <a href="{% url 'delete_cart_item' i.id %}">
+                                        <a href="{% url 'delete_cart_item' cart.id %}">
                                             <button class="cart_product_remove">
                                                 <img src="{% static 'images/trash.png' %}" alt="" />
                                             </button>
@@ -153,7 +155,7 @@
                     </ul>
                     <a href="{% url 'checkout' %}?cart_items=true">
                         <button class="cart_total_button btn btn-success">Proceed to Checkout</button>
-                    </a>                                                                        
+                    </a>
                 </div>
             </div>
         </div>

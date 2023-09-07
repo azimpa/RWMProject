@@ -150,7 +150,7 @@
                 <div class="col-lg-7">
                     <div id="productImageCarousel" class="carousel slide product_image_large" data-ride="carousel">
                         <div class="carousel-inner">
-                            {% for image in variants.0.images.all %}
+                            {% for image in products.images.all %}
                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                 <img src="{{ image.image.url }}" class="d-block w-100 carousel-image" alt="" />
                             </div>
@@ -168,17 +168,17 @@
                 </div>
                 <div class="col-lg-5" style="margin-top: -10px">
                     <div class="product_content">
-                        <h2 class="font-weight-bold product_name" id="product_name">{{ variants.0.product.name }}</h2>
+                        <h2 class="font-weight-bold product_name" id="product_name">{{ products.product }}</h2>
                         <div class="mb-3"> <!-- Added margin-bottom -->
                             <span class="font-weight-bold product_price" id="product_price">&#8377;
-                                {{variants.0.offer_price }}</span>
+                                {{products.offer_price }}</span>
                             <span class="product_offer_price" id="product_offer_price"><del>&#8377;
-                                    {{variants.0.price}}</del></span>
+                                    {{products.price}}</del></span>
                         </div>
                         <div class="d-flex flex-wrap align-items-center mb-3">
                             <!-- Improved alignment and added margin-bottom -->
-                            <span class="product_size" id="product_size">{{ variants.0.size }}</span>
-                            <span class="product_color ml-3" id="product_color">Color: {{ variants.0.color }}</span>
+                            <span class="product_size" id="product_size">{{ products.size }}</span>
+                            <span class="product_color ml-3" id="product_color">Color: {{ products.color }}</span>
                             <!-- Improved margin -->
                         </div>
                         <div class="product_text">

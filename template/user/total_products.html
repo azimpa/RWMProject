@@ -5,9 +5,12 @@
 {% block content %}
 <style>
     .card {
-        height: 300px;
+        height: 380px;
         /* Set the card's height */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease-in-out;
     }
+
 
     .card-image {
         width: 100%;
@@ -15,6 +18,7 @@
         /* Set the image's height to match the card's height */
         object-fit: cover;
         /* Ensure the image fits within the specified height */
+        border-bottom: 1px solid #ccc;
     }
 </style>
 <div style="margin-top: 150px;">
@@ -190,24 +194,43 @@
                             </div>
                         </div>
                     </div>
-                    {% for pr in products %}
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                    {% for variant in variants %}
+                    <div class="col-lg-4 col-md-6 col-sm-12 pb-3">
                         <div class="card product-item border-0 mb-4">
+                            {% for var in variant.images.all %}
+                            {% if forloop.first %}
                             <div
                                 class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid card-image" src="{{ pr.images.url }}" alt="">
+                                <img class="img-fluid card-image" src="{{ var.image.url }}" alt="">
                             </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">{{ pr.name }}</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>&#8377;{{ pr.offer_price }}</h6>
-                                    <h6 class="text-muted ml-2"><del>&#8377;{{ pr.price }}</del></h6>
+                            {% endif %}
+                            {% endfor %}
+                            <div class="card-body border-left border-right text-center p-3">
+                                <h6 class="text-truncate mb-2">{{ variant.product }}</h6>
+                                <div class="d-flex flex-column align-items-center mb-2">
+                                    <div class="card-body text-center p-1">
+                                        <div class="d-flex justify-content-center">
+                                            <span class="text-success fixed-price">&#8377;{{variant.offer_price}}</span>
+                                            <span class="text-muted fixed-price"><del>&#8377;{{variant.price}}</del></span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center p-1">
+                                        <span class="text-muted">Color:</span>
+                                        <span class="fixed-color">{{ variant.color }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted">Size:</span>
+                                        <span class="fixed-size">{{ variant.size }}</span>
+                                    </div>
+                                    <div>
+                                        <h6 class="fixed-size">{{ products.description }}</h6>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="{% url 'product_description' pr.id %}" class="btn btn-sm text-dark p-0"><i
+                                <a href="{% url 'product_description' id=variant.product.id %}" class="btn btn-sm text-dark p-0"><i
                                         class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <a href="{% url 'add_to_cart' id=pr.id %}" class="btn btn-sm text-dark p-0"><i
+                                <a href="{% url 'add_to_cart' id=variant.id %}" class="btn btn-sm text-dark p-0"><i
                                         class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                             </div>
                         </div>

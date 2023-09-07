@@ -22,19 +22,22 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <img src="{{item.product.images.url}}"
-                                            style="height: 70px; width: 100px" alt="" />
+                                        {% for img in item.product.images.all %}
+                                        {% if forloop.first %}
+                                        <img src="{{img.image.url}}" style="height: 70px; width: 100px"
+                                            alt="" />
+                                        {% endif %}
+                                        {% endfor %}
                                     </div>
                                     <div class="col-md-3 d-flex align-items-center" style="margin-left: 100px;">
                                         <p class="mb-0">
-                                            PRODUCT: <br />
-                                            {{item.product.name}}
+                                            PRODUCT:<br>{{item.product}}
                                         </p>
                                     </div>
                                     <div class="col-md-2 d-flex align-items-center">
                                         <p class="mb-0 small">
                                             PRICE: <br />
-                                            ₹{{ item.product.productvariant_set.first.offer_price }}
+                                            ₹{{ item.product.offer_price }}
                                         </p>
                                     </div>
                                     <div class="col-md-2 d-flex align-items-center">
@@ -58,7 +61,8 @@
                             <div class="d-flex justify-content-between mt-4">
                                 <h6 class="mb-0 font-weight-bold">SHIPPING ADDRESS</h6>
                                 <p style="margin-top: -5px">
-                                    {{ address.name }}, {{ address.postoffice }}, {{ address.street}}, {{address.city}}, {{ address.state }},<br />
+                                    {{ address.name }}, {{ address.postoffice }}, {{ address.street}}, {{address.city}},
+                                    {{ address.state }},<br />
                                     {{ address.country }}, {{ address.pin_code }}.
                                 </p>
                             </div>
