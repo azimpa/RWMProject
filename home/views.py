@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from home.models import Address
 from django.contrib.auth import logout
 from django.contrib import messages
+from decimal import Decimal, ROUND_HALF_UP
 from django.http import JsonResponse
 from adm.models import (
     AdmProducts,
@@ -481,14 +482,31 @@ def order_summary(request, address_id, order_id):
     address = Address.objects.get(id=address_id)
     username = user.username
 
-    orders = Order.objects.filter(id=order_id, address=address)
-    order_items = OrderItem.objects.filter(order=order_id)
+    orders = Order.objects.get(id=order_id, address=address)
+    order_items = OrderItem.objects.filter(order=orders)
+
+    total_price = 0
+    final_total = 0
+
+    for item in order_items:
+        item.offer_price = item.product.offer_price
+        item.total_price_each = item.offer_price * item.quantity
+        total_price += item.total_price_each
+
+    final_total = total_price + 1000
+
+    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+        Decimal("1"), rounding=ROUND_HALF_UP
+    )
 
     context = {
         "address": address,
         "username": username,
         "orders": orders,
         "order_items": order_items,
+        "total_price": total_price,
+        "final_total": final_total,
+        "after_tax_amount": after_tax_amount,
     }
 
     return render(request, "user/order_summary.html", context)
@@ -515,3 +533,41 @@ def cancel_order(request, order_id, product_id):
         order_item.save()
 
     return redirect("my_orders")
+
+
+def invoice(request, address_id, order_id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
+    user = request.user
+    address = Address.objects.get(id=address_id)
+    username = user.username
+
+    orders = Order.objects.get(id=order_id, address=address)
+    order_items = OrderItem.objects.filter(order=orders)
+
+    total_price = 0
+    final_total = 0
+
+    for item in order_items:
+        item.offer_price = item.product.offer_price
+        item.total_price_each = item.offer_price * item.quantity
+        total_price += item.total_price_each
+
+    final_total = total_price + 1000
+
+    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+        Decimal("1"), rounding=ROUND_HALF_UP
+    )
+
+    context = {
+        "address": address,
+        "username": username,
+        "orders": orders,
+        "order_items": order_items,
+        "total_price": total_price,
+        "final_total": final_total,
+        "after_tax_amount": after_tax_amount,
+    }
+
+    return render(request, "user/invoice.html", context)
