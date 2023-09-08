@@ -219,7 +219,8 @@
                             </div>
                         </div>
                         <div class="product_size_container mt-3 text-center">
-                            <button class="btn btn-success btn-lg add-to-cart" data-variant-id="{{ variants.0.id }}"
+                            <button class="btn btn-success btn-lg add-to-cart mx-auto"
+                                data-variant-id="{{ default_variant_id }}"
                                 style="background-color: #000000; border-color: #000000;">
                                 ADD TO CART
                             </button>
@@ -274,6 +275,9 @@
 
                         // Update the carousel images based on the selected color
                         updateCarouselImages(data.variants[0].color_image_urls);
+
+                        // Update the data-variant-id attribute of the "ADD TO CART" button
+                        $(".add-to-cart").data("variant-id", data.variants[0].id);
                     },
                     error: function (xhr, status, error) {
                         // Handle AJAX errors here (e.g., display an error message)
@@ -281,6 +285,7 @@
                     }
                 });
             }
+
 
             // Function to update carousel images
             function updateCarouselImages(imageUrls) {
