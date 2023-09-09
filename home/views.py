@@ -3,6 +3,7 @@ from home.models import Address
 from django.contrib.auth import logout
 from django.contrib import messages
 from decimal import Decimal, ROUND_HALF_UP
+from django.utils import timezone
 from django.http import JsonResponse
 from adm.models import (
     AdmProducts,
@@ -351,6 +352,7 @@ def checkout(request):
                 user=user,
                 address=address,
                 payment_method=payment_method,
+                order_date=timezone.now(),
                 total_price=total_price,
                 total_price_shipping=total_price_shipping,
             )
