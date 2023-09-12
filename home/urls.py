@@ -27,5 +27,6 @@ urlpatterns = [
     path('cancel_order/<int:order_id>/<int:product_id>', views.cancel_order, name='cancel_order'),
     path('invoice/<int:address_id>/<int:order_id>', views.invoice, name="invoice"),
     path('payment/<int:address_id>', views.payment, name='payment'),
-    path('razorpay/<int:address_id>/<str:after_tax_amount>', views.razor, name="razorpay")
+    path('razorpay/<int:address_id>/<str:after_tax_amount>', views.razor, name="razorpay"),
+    path('single_order/<int:order_id>/<int:product_id>', views.single_order, name="single_order")
 ]

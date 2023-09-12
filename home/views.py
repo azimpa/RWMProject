@@ -573,7 +573,7 @@ def my_orders(request):
 
 def cancel_order(request, order_id, product_id):
     order = get_object_or_404(Order, id=order_id)
-    order_item = OrderItem.objects.filter(order=order, product_id=product_id).first()
+    order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
 
     if order_item:
         order_item.order_status = "Cancelled"
@@ -689,3 +689,13 @@ def razor(request, address_id, after_tax_amount):
     except Cart.DoesNotExist:
         print("hhhhh")
         pass
+
+
+def single_order(request, order_id, product_id):
+    order = get_object_or_404(Order, id=order_id)
+    print(order, "jjjj")
+    order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
+
+    return render(
+        request, "user/single_order.html", {"order": order, "order_item": order_item}
+    )

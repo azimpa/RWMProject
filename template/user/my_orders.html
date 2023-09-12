@@ -16,8 +16,8 @@
                 <div class="col-lg-2">
                     {% for img in item.product.images.all %}
                     {% if forloop.first %}
-                    <img src="{{ img.image.url }}" style="height: 80px; width: 125px; border-radius: 6px;"
-                        alt="" class="order-item-image">
+                    <a href="{% url 'single_order' item.order.id item.product.id %}"><img src="{{ img.image.url }}"
+                            style="height: 80px; width: 125px; border-radius: 6px;" alt="" class="order-item-image"></a>
                     {% endif %}
                     {% endfor %}
                 </div>
