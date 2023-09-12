@@ -2,7 +2,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import CustomUser
-from django.http import JsonResponse
+from datetime import datetime
+from django.utils import timezone
+from django.db.models import Sum, F
 from home.models import Order, OrderItem
 from adm.models import (
     AdmCategories,
@@ -19,12 +21,75 @@ def index(request):
         return redirect("adm_login")
     else:
         if request.user.is_anonymous:
-            return render(request, "adm/index.html")
+            return redirect("adm_login")
         elif not request.user.is_superuser:
             logout(request)
-            return render(request, "adm/index.html")
+            return redirect("adm_login")
         else:
-            return render(request, "adm/index.html")
+            today_start = timezone.make_aware(
+                timezone.datetime.combine(
+                    timezone.now().date(), timezone.datetime.min.time()
+                )
+            )
+            today_end = timezone.make_aware(
+                timezone.datetime.combine(
+                    timezone.now().date(), timezone.datetime.max.time()
+                )
+            )
+            today_sales = (
+                Order.objects.filter(
+                    order_date__range=(today_start, today_end),
+                    user__is_superuser=False,
+                    orderitem__order_status="Delivered",
+                ).aggregate(today_sales=Sum("total_price"))["today_sales"]
+                or 0
+            )
+
+            today_revenue = (
+                Order.objects.filter(
+                    order_date__range=(today_start, today_end),
+                    user__is_superuser=False,
+                    orderitem__order_status="Delivered",
+                ).aggregate(today_revenue=Sum("total_price_tax"))["today_revenue"]
+                or 0
+            )
+
+            # Calculate total sale and revenue
+            total_sales = (
+                Order.objects.filter(
+                    orderitem__order_status="Delivered",
+                )
+                .annotate(total_price_sum=Sum("orderitem__order__total_price"))
+                .aggregate(total_sales=Sum(F("total_price_sum")))["total_sales"]
+                or 0
+            )
+
+            total_revenue = (
+                Order.objects.filter(
+                    orderitem__order_status="Delivered",
+                )
+                .annotate(total_price_tax_sum=Sum("orderitem__order__total_price_tax"))
+                .aggregate(total_revenue=Sum(F("total_price_tax_sum")))["total_revenue"]
+                or 0
+            )
+
+            orders = Order.objects.all().order_by("-id")
+
+            for order in orders:
+                order_time = order.order_date
+
+            return render(
+                request,
+                "adm/index.html",
+                {
+                    "today_sales": today_sales,
+                    "today_revenue": today_revenue,
+                    "total_sales": total_sales,
+                    "total_revenue": total_revenue,
+                    "orders": orders,
+                    "order_time":order_time,
+                },
+            )
 
 
 def adm_login(request):
@@ -78,7 +143,7 @@ def adm_categories(request):
 
     # Retrieve active categories and order them by ID
     categories = AdmCategories.objects.filter(is_active=True).order_by("id")
-    
+
     # Render the template with the active categories
     return render(request, "adm/adm_categories.html", {"categories": categories})
 
@@ -372,7 +437,9 @@ def product_variant(request, id):
 
     try:
         product = AdmProducts.objects.get(id=id, is_active=True)
-        variants = ProductVariant.objects.filter(product=product, is_active=True).order_by("id")
+        variants = ProductVariant.objects.filter(
+            product=product, is_active=True
+        ).order_by("id")
         if variants.exists():
             variants = variants.order_by("id")
             return render(
@@ -564,7 +631,7 @@ def adm_order(request):
         return redirect("adm_login")
 
     users = CustomUser.objects.filter(is_superuser=False)
-    orders = Order.objects.filter(user__in=users).order_by('-id')
+    orders = Order.objects.filter(user__in=users).order_by("-id")
 
     return render(request, "adm/adm_order.html", {"orders": orders})
 

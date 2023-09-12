@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from django.utils import timezone
 from datetime import datetime
 from accounts.models import CustomUser
 from adm.models import ProductVariant
