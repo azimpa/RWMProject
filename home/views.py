@@ -4,6 +4,8 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
+import razorpay
+import os
 from django.http import JsonResponse
 from adm.models import (
     AdmProducts,
@@ -228,15 +230,15 @@ def add_to_cart(request, id):
             cart, created = Cart.objects.get_or_create(user=user)
 
             try:
-                cart_item = Cartitem.objects.get(cart=cart, product=product_variant)
-                cart_item.quantity += 1
-                cart_item.save()
+                item = Cartitem.objects.get(cart=cart, product=product_variant)
+                item.quantity += 1
+                item.save()
                 messages.success(
                     request, f"{product_variant.product} quantity updated in your cart."
                 )
             except Cartitem.DoesNotExist:
-                cart_item = Cartitem(cart=cart, product=product_variant)
-                cart_item.save()
+                item = Cartitem(cart=cart, product=product_variant)
+                item.save()
                 messages.success(
                     request, f"{product_variant.product} added to your cart."
                 )
@@ -263,7 +265,7 @@ def cart(request):
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
 
-    final_total = total_price + 1000
+    final_total = total_price + 50
 
     context = {
         "cart_items": cart_items,
@@ -275,21 +277,21 @@ def cart(request):
 
 
 def update_cart_item(request, id):
-    cart_item = get_object_or_404(Cartitem, pk=id)
+    item = get_object_or_404(Cartitem, pk=id)
 
     if request.method == "POST":
         action = request.POST.get("action")
 
         if action == "increase":
-            if cart_item.quantity < cart_item.product.stock:
-                cart_item.quantity += 1
+            if item.quantity < item.product.stock:
+                item.quantity += 1
             else:
                 messages.warning(request, "Out of stock")
 
         elif action == "decrease":
-            cart_item.quantity = max(cart_item.quantity - 1, 1)
+            item.quantity = max(item.quantity - 1, 1)
 
-        cart_item.save()
+        item.save()
 
     return redirect("cart")
 
@@ -307,11 +309,9 @@ def delete_cart_item(request, id):
     cart = Cart.objects.get(user=user)
 
     try:
-        cart_item = Cartitem.objects.get(cart=cart, id=id)
-        cart_item.delete()
-        messages.success(
-            request, f"{cart_item.product} has been removed from your cart."
-        )
+        item = Cartitem.objects.get(cart=cart, id=id)
+        item.delete()
+        messages.success(request, f"{item.product} has been removed from your cart.")
     except Cartitem.DoesNotExist:
         messages.error(request, "Cart item not found.")
 
@@ -327,88 +327,32 @@ def checkout(request):
     cart_items_param = request.GET.get("cart_items")
 
     selected_address_id = None
-    order = None
 
     if request.method == "POST":
-        cart = Cart.objects.get(user=user)
-        cart_items = Cartitem.objects.filter(cart=cart)
         selected_address_id = request.POST.get("selected_address")
 
-        if selected_address_id:
-            address = Address.objects.get(id=selected_address_id)
-            payment_method = "Cash On Delivery"
-
-            total_price = 0
-
-            for item in cart_items:
-                item.offer_price = item.product.offer_price
-                item.total_price_each = item.offer_price * item.quantity
-
-                total_price += item.total_price_each
-
-            total_price_shipping = total_price + 1000
-
-            order = Order.objects.create(
-                user=user,
-                address=address,
-                payment_method=payment_method,
-                order_date=timezone.now(),
-                total_price=total_price,
-                total_price_shipping=total_price_shipping,
-            )
-
-            for item in cart_items:
-                product = item.product
-                quantity = item.quantity
-                product_variant = product
-
-                if product_variant.stock >= quantity:
-                    product_variant.stock -= quantity
-                    product_variant.save()
-
-                    OrderItem.objects.create(
-                        order=order,
-                        product=product,
-                        quantity=quantity,
-                    )
-                else:
-                    pass
-
-            cart_items.delete()
-
-            return redirect(
-                "order_summary", address_id=selected_address_id, order_id=order.id
-            )
+        return redirect(
+            "payment",
+            address_id=selected_address_id,
+        )
 
     if cart_items_param == "true":
-        cart = Cart.objects.get(user=user)
-        cart_items = Cartitem.objects.filter(cart=cart)
-
-        total_price = 0
-        for item in cart_items:
-            item.offer_price = item.product.offer_price
-            item.total_price_each = item.offer_price * item.quantity
-            total_price += item.total_price_each
-
-        final_total = total_price + 1000
-
         return render(
             request,
             "user/checkout.html",
             {
                 "addresses": addresses,
-                "cart_items": cart_items,
-                "total_price": total_price,
-                "final_total": final_total,
-                "address_id": selected_address_id,
             },
         )
 
-    return render(
-        request,
-        "user/checkout.html",
-        {"addresses": addresses, "address_id": selected_address_id},
-    )
+    else:
+        return render(
+            request,
+            "user/checkout.html",
+            {
+                "addresses": addresses,
+            },
+        )
 
 
 def add_checkout_address(request):
@@ -476,6 +420,107 @@ def delete_checkout_address(request, id):
     return redirect("checkout")
 
 
+def payment(request, address_id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
+    user = request.user
+    address = Address.objects.get(id=address_id)
+    address_id = address.id
+
+    cart = Cart.objects.get(user=user)
+    cart_items = Cartitem.objects.filter(cart=cart)
+
+    total_price = 0
+    final_total = 0
+
+    for item in cart_items:
+        item.offer_price = item.product.offer_price
+        item.total_price_each = item.offer_price * item.quantity
+        total_price += item.total_price_each
+
+    final_total = total_price + 50
+
+    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+        Decimal("1"), rounding=ROUND_HALF_UP
+    )
+
+    if request.method == "GET":
+        print("Processing Razorpay payment...")
+        razorpay_client = razorpay.Client(
+            auth=(
+                os.environ.get("RAZORPAY_KEY_ID"),
+                os.environ.get("RAZORPAY_KEY_SECRET"),
+            )
+        )
+
+        order_data = {
+            "amount": int(after_tax_amount * 100),  # Amount in paise
+            "currency": "INR",
+            "payment_capture": 1,  # Auto-capture the payment
+        }
+
+        try:
+            payment = razorpay_client.order.create(data=order_data)
+            print(payment)
+        except Exception as e:
+            # Handle Razorpay API error
+            print(f"Razorpay API error: {str(e)}")
+
+        context = {
+            "address_id": address_id,
+            "total_price": total_price,
+            "after_tax_amount": after_tax_amount,
+        }
+        return render(request, "user/payment.html", context)
+
+    if request.method == "POST":
+        print("qqqq")
+        if "cash_on_delivery" in request.POST:
+            payment_method_id_1 = request.POST.get("cash_on_delivery")
+            print(payment_method_id_1, "qqqq")
+
+            if address and payment_method_id_1:
+                print("iiii")
+                payment_method = "Cash On Delivery"
+
+                order = Order.objects.create(
+                    user=user,
+                    address=address,
+                    payment_method=payment_method,
+                    order_date=timezone.now(),
+                    total_price=total_price,
+                    total_price_tax=after_tax_amount,
+                )
+
+                for item in cart_items:
+                    product = item.product
+                    quantity = item.quantity
+                    product_variant = product
+
+                    if product_variant.stock >= quantity:
+                        product_variant.stock -= quantity
+                        product_variant.save()
+
+                        OrderItem.objects.create(
+                            order=order,
+                            product=product,
+                            quantity=quantity,
+                        )
+                    else:
+                        print("Insufficient stock...")
+                        pass
+
+                cart_items.delete()
+                print("ffff")
+
+                return redirect(
+                    "order_summary",
+                    address_id=address_id,
+                    order_id=order.id,
+                )
+
+
 def order_summary(request, address_id, order_id):
     if not request.user.is_authenticated:
         return redirect("user_login")
@@ -495,7 +540,7 @@ def order_summary(request, address_id, order_id):
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
 
-    final_total = total_price + 1000
+    final_total = total_price + 50
 
     after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
@@ -556,7 +601,7 @@ def invoice(request, address_id, order_id):
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
 
-    final_total = total_price + 1000
+    final_total = total_price + 50
 
     after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
@@ -573,3 +618,74 @@ def invoice(request, address_id, order_id):
     }
 
     return render(request, "user/invoice.html", context)
+
+
+def razor(request, address_id, after_tax_amount):
+    try:
+        user = request.user
+        print(user, "qqqq")
+        address = Address.objects.get(id=address_id)
+        print(address, "aaa")
+        cart = Cart.objects.get(user=user)
+        print(cart, "zzz")
+
+        cart_items = Cartitem.objects.filter(cart=cart)
+        total_price = 0  # Initialize total_price
+        final_total = 0  # Initialize final_total
+
+        for item in cart_items:
+            item.offer_price = item.product.offer_price
+            item.total_price_each = item.offer_price * item.quantity
+            total_price += item.total_price_each
+
+        final_total = total_price + 50
+        after_tax_amount = float(after_tax_amount)
+
+        if address:
+            print("wwww")
+            order = Order.objects.create(
+                user=user,
+                address=address,
+                payment_method="Razor Pay",
+                order_date=timezone.now(),
+                total_price=final_total,
+                total_price_tax=after_tax_amount,
+            )
+            for item in cart_items:
+                product = item.product
+                quantity = item.quantity
+                product_variant = product
+
+                if product_variant.stock >= quantity:
+                    print("eeee")
+                    product_variant.stock -= quantity
+                    product_variant.save()
+
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                    )
+                else:
+                    print("Insufficient stock...")
+                    pass
+
+            cart_items.delete()
+
+            print("cccc")
+
+            return redirect(
+                "order_summary",
+                address_id=address.id,
+                order_id=order.id,
+            )
+        else:
+            # Handle the case where address is not found
+            # You can return an error response or redirect as needed
+            pass
+    except Address.DoesNotExist:
+        print("bbb")
+        pass
+    except Cart.DoesNotExist:
+        print("hhhhh")
+        pass

@@ -43,7 +43,7 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=50)
     order_date = models.DateTimeField(default=datetime.now())
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    total_price_shipping = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_price_tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username} on {self.order_date}"

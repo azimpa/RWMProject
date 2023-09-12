@@ -19,7 +19,7 @@
                         <th class="text-center">PAYMENT METHOD</th>
                         <th class="text-center">ORDER DATE</th>
                         <th class="text-center">TOTAL PRICE</th>
-                        <th class="text-center">PRICE<br>(INCLUDING SHIPPING)</th>
+                        <th class="text-center">PRICE<br>(INCLUDING SHIPPING AND TAX)</th>
                         <th class="text-center">ORDER ITEMS</th>
                     </tr>
                 </thead>
@@ -32,7 +32,7 @@
                         <td class="text-center">{{ order.payment_method }}</td>
                         <td class="text-center">{{ order.order_date }}</td>
                         <td class="text-center">{{ order.total_price }}</td>
-                        <td class="text-center">{{ order.total_price_shipping }}</td>
+                        <td class="text-center">{{ order.total_price_tax }}</td>
                         <td class="text-center">
                             <a href="{% url 'adm_order_items' order.id %}" class="btn btn-primary btn-sm">ORDER
                                 ITEMS</a>

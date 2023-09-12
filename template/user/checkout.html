@@ -3,45 +3,148 @@
 {% load static %}
 
 {% block content %}
-<div style="margin-top: 150px;">
-	<form method="post" action="{% url 'checkout' %}">
-		{% csrf_token %}
-		<div class="container mt-5">
-			<h3 class="mb-4" style="font-weight: bold; font-family: 'Helvetica Neue', sans-serif;">SELECT ADDRESS</h3>
+<style>
+	/* Container styling */
+	.container {
+		margin-top: 50px;
+	}
+
+	/* Card styling */
+	.card {
+		background-color: #fff;
+		padding: 20px;
+		border-radius: 10px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	}
+
+	/* Heading styling */
+	h3 {
+		font-weight: bold;
+		font-family: 'Helvetica Neue', sans-serif;
+		text-align: center;
+		margin-bottom: 20px;
+	}
+
+	/* Table styling */
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		border: 1px solid #ddd;
+	}
+
+	th,
+	td {
+		padding: 12px;
+		text-align: center;
+		border: 1px solid #ddd;
+	}
+
+	th {
+		background-color: #333;
+		color: #fff;
+	}
+
+	tbody tr:nth-child(even) {
+		background-color: #f2f2f2;
+	}
+
+	.form-check-input {
+		margin: 0 auto;
+		display: block;
+	}
+
+	/* Button styling */
+	.btn-group {
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+	}
+
+	.btn {
+		padding: 10px 20px;
+		font-size: 14px;
+		border: none;
+		cursor: pointer;
+	}
+
+	.btn-primary {
+		background-color: #007bff;
+		color: #fff;
+		border: none;
+	}
+
+	.btn-primary:hover {
+		background-color: #0056b3;
+	}
+
+	.btn-danger {
+		background-color: #dc3545;
+		color: #fff;
+		border: none;
+	}
+
+	.btn-danger:hover {
+		background-color: #c82333;
+	}
+
+	/* Add address button styling */
+	.add-address-btn {
+		text-align: center;
+		margin-top: 20px;
+	}
+
+	/* Submit button styling */
+	.cart_total_button {
+		background-color: #007bff;
+		color: #fff;
+		padding: 15px 30px;
+		font-size: 16px;
+		border: none;
+		cursor: pointer;
+		width: 250px;
+	}
+
+	.cart_total_button:hover {
+		background-color: #0056b3;
+	}
+</style>
+
+<div style="margin-top: 150px;" class="container">
+	<div class="card">
+		<form action="{% url 'checkout' %}" method="post">
+			{% csrf_token %}
+			<h3>SELECT ADDRESS</h3>
 			<div class="row">
 				<div class="col">
-
 					<table class="table table-bordered table-hover">
 						<thead class="thead-dark">
 							<tr>
-								<th class="text-center">SELECT</th>
-								<th class="text-center">ID</th>
-								<th class="text-center">ADDRESS DETAILS</th>
-								<th class="text-center">ACTIONS</th>
+								<th>SELECT</th>
+								<th>ID</th>
+								<th>ADDRESS DETAILS</th>
+								<th>ACTIONS</th>
 							</tr>
 						</thead>
 						<tbody>
 							{% for address in addresses %}
 							<tr>
 								<td>
-									<div class="form-check text-center">
-										<input type="radio" class="form-check-input" name="selected_address"
-											value="{{ address.id }}">
+									<div class="form-check">
+										<input type="radio" class="form-check-input" name="selected_address" value="{{address.id}}">
 									</div>
 								</td>
-								<td class="text-center">{{ address.id }}</td>
+								<td>{{ address.id }}</td>
 								<td>
-									<p class="text-center"><strong>{{ address.name }}</strong></p>
-									<p class="text-center">{{ address.postoffice }}, {{ address.street }},
-										{{address.city}},{{ address.state }}, {{ address.country }},
-										{{address.pin_code}}</p>
+									<p><strong>{{ address.name }}</strong></p>
+									<p>{{ address.postoffice }}, {{ address.street }}, {{ address.city }}, {{address.state }},
+										{{ address.country }}, {{ address.pin_code }}</p>
 								</td>
-								<td class="text-center">
+								<td>
 									<div class="btn-group">
 										<a href="{% url 'edit_checkout_address' address.id %}"
-											class="btn btn-sm btn-primary mr-1">Edit</a>
+											class="btn btn-primary">Edit</a>
 										<a href="{% url 'delete_checkout_address' address.id %}"
-											class="btn btn-sm btn-danger">Delete</a>
+											class="btn btn-danger">Delete</a>
 									</div>
 								</td>
 							</tr>
@@ -50,62 +153,17 @@
 					</table>
 				</div>
 			</div>
-			<div class="row mt-4">
-				<div class="col text-center">
+			<div class="row add-address-btn">
+				<div class="col">
 					<a href="{% url 'add_checkout_address' %}" class="btn btn-primary">
 						<h4>ADD ADDRESS</h4>
 					</a>
 				</div>
 			</div>
-		</div>
-		<div class="container" style="margin-top: 20px;">
-			<div class="row justify-content-center"> <!-- Center the entire row -->
-				<div class="col-lg-6">
-					<div class="cart_details text-center mx-auto"> <!-- Center-align the content within the column -->
-						<div class="checkout_title" style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">
-							Cart Total
-						</div>
-						<div class="cart_total">
-							<ul class="list-group mt-3">
-								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<span class="cart_total_title" style="font-weight: bold;">SUBTOTAL</span>
-									<span class="cart_total_price">{{total_price}}</span>
-								</li>
-								<li class="list-group-item d-flex justify-content-between align-items-center">
-									<span class="cart_total_title" style="font-weight: bold;">SHIPPING</span>
-									<span class="cart_total_price">₹ 1000</span>
-								</li>
-								<li class="list-group-item d-flex justify-content-between align-items-center total_row">
-									<span class="cart_total_title"
-										style="font-size: 18px; font-weight: bold;">TOTAL</span>
-									<span class="cart_total_price" style="font-size: 18px; font-weight: bold;">₹{{final_total }}</span>
-								</li>
-							</ul>
-						</div>
-						<div class="payment_options mt-3">
-							<div class="form-check">
-								<input type="radio" id="radio_payment_1" name="payment_radio" class="form-check-input">
-								<label for="radio_payment_1" class="form-check-label" style="font-weight: bold;">Cash on
-									Delivery</label>
-							</div>
-							<div class="form-check">
-								<input type="radio" id="radio_payment_2" name="payment_radio" class="form-check-input"
-									checked>
-								<label for="radio_payment_2" class="form-check-label"
-									style="font-weight: bold;">PayPal</label>
-							</div>
-							<div class="payment_option mt-2">
-								<a href="#"><img src="{% static 'images/visa.jpg' %}" alt="Visa"
-										style="margin-right: 10px;"></a>
-								<a href="#"><img src="{% static 'images/master.jpg' %}" alt="MasterCard"></a>
-							</div>
-							<button type="submit" class="cart_total_button btn btn-primary mt-3"
-								style="padding: 5px 15px; font-weight: bold;">Place Order</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</form>
+	</div>
+	<div style="display: flex; justify-content: center; margin-top: 30px;">
+		<button type="submit" class="cart_total_button btn-sm mt-3">Submit</button>
+	</div>
+</form>
 </div>
 {% endblock %}
