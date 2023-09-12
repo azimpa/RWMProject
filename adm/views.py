@@ -75,9 +75,6 @@ def index(request):
 
             orders = Order.objects.all().order_by("-id")
 
-            for order in orders:
-                order_time = order.order_date
-
             return render(
                 request,
                 "adm/index.html",
@@ -87,7 +84,6 @@ def index(request):
                     "total_sales": total_sales,
                     "total_revenue": total_revenue,
                     "orders": orders,
-                    "order_time":order_time,
                 },
             )
 
