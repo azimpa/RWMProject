@@ -4,6 +4,7 @@ from datetime import datetime
 from accounts.models import CustomUser
 from adm.models import ProductVariant
 
+
 class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name="House or Company Name")
@@ -52,15 +53,18 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    order_status = models.CharField(max_length=20,
+    order_status = models.CharField(
+        max_length=20,
         choices=[
             ("Order Placed", "Order Placed"),
             ("Shipped", "Shipped"),
             ("Delivered", "Delivered"),
             ("Cancelled", "Cancelled"),
+            ("Return Requested", "Return Requested"),
         ],
         default="Order Placed",
     )
+    return_reason = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in order {self.order.id}"

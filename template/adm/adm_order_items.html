@@ -30,7 +30,7 @@
                         <td class="text-center">{{ item.quantity }}</td>
                         <td class="text-center" style="color: #FF5733;">{{ item.order_status }}</td>
                         <td class="text-center">
-                            {% if item.order_status != 'Cancelled' %}
+                            {% if item.order_status != 'Cancelled' and item.order_status != 'Return Requested' %}
                                 <a href="{% url 'edit_order_status' item.id %}" class="btn btn-primary btn-sm">EDIT STATUS</a>
                             {% else %}
                                 <p>Unalterable</p>

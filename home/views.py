@@ -446,7 +446,6 @@ def payment(request, address_id):
     )
 
     if request.method == "GET":
-        print("Processing Razorpay payment...")
         razorpay_client = razorpay.Client(
             auth=(
                 os.environ.get("RAZORPAY_KEY_ID"),
@@ -462,9 +461,7 @@ def payment(request, address_id):
 
         try:
             payment = razorpay_client.order.create(data=order_data)
-            print(payment)
         except Exception as e:
-            # Handle Razorpay API error
             print(f"Razorpay API error: {str(e)}")
 
         context = {
@@ -475,13 +472,10 @@ def payment(request, address_id):
         return render(request, "user/payment.html", context)
 
     if request.method == "POST":
-        print("qqqq")
         if "cash_on_delivery" in request.POST:
             payment_method_id_1 = request.POST.get("cash_on_delivery")
-            print(payment_method_id_1, "qqqq")
 
             if address and payment_method_id_1:
-                print("iiii")
                 payment_method = "Cash On Delivery"
 
                 order = Order.objects.create(
@@ -512,7 +506,6 @@ def payment(request, address_id):
                         pass
 
                 cart_items.delete()
-                print("ffff")
 
                 return redirect(
                     "order_summary",
@@ -623,11 +616,8 @@ def invoice(request, address_id, order_id):
 def razor(request, address_id, after_tax_amount):
     try:
         user = request.user
-        print(user, "qqqq")
         address = Address.objects.get(id=address_id)
-        print(address, "aaa")
         cart = Cart.objects.get(user=user)
-        print(cart, "zzz")
 
         cart_items = Cartitem.objects.filter(cart=cart)
         total_price = 0  # Initialize total_price
@@ -642,7 +632,6 @@ def razor(request, address_id, after_tax_amount):
         after_tax_amount = float(after_tax_amount)
 
         if address:
-            print("wwww")
             order = Order.objects.create(
                 user=user,
                 address=address,
@@ -657,7 +646,6 @@ def razor(request, address_id, after_tax_amount):
                 product_variant = product
 
                 if product_variant.stock >= quantity:
-                    print("eeee")
                     product_variant.stock -= quantity
                     product_variant.save()
 
@@ -672,30 +660,39 @@ def razor(request, address_id, after_tax_amount):
 
             cart_items.delete()
 
-            print("cccc")
-
             return redirect(
                 "order_summary",
                 address_id=address.id,
                 order_id=order.id,
             )
         else:
-            # Handle the case where address is not found
-            # You can return an error response or redirect as needed
             pass
     except Address.DoesNotExist:
-        print("bbb")
+        print("Address DoesNotExist...")
         pass
     except Cart.DoesNotExist:
-        print("hhhhh")
+        print("Cart DoesNotExist...")
         pass
 
 
 def single_order(request, order_id, product_id):
     order = get_object_or_404(Order, id=order_id)
-    print(order, "jjjj")
     order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
 
     return render(
         request, "user/single_order.html", {"order": order, "order_item": order_item}
     )
+
+
+def return_order(request, order_id, product_id):
+    if request.method == "POST":
+        order = get_object_or_404(Order, id=order_id)
+        order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
+        return_reason = request.POST.get("return_reason")
+
+        if order_item:
+            order_item.order_status = "Return Requested"
+            order_item.return_reason = return_reason
+            order_item.save()
+
+    return redirect("my_orders")

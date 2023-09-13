@@ -8,6 +8,7 @@ Order Details
 
 {% block content %}
 <style>
+    /* General Styles */
     .card {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
         transition: 0.3s;
@@ -51,7 +52,7 @@ Order Details
         padding-left: 40px;
     }
 
-    /* Additional styling for product card */
+    /* Product Card Styles */
     .product-card .product-img {
         overflow: hidden;
         position: relative;
@@ -64,14 +65,15 @@ Order Details
     }
 
     .product-card .card-body {
-        border-left: none;
-        border-right: none;
         text-align: center;
         padding: 15px;
     }
 
     .product-card h6 {
         font-size: 18px;
+        margin: 10px 0;
+        color: #333;
+        /* Darker text color */
     }
 
     .product-card .fixed-price {
@@ -85,18 +87,82 @@ Order Details
         font-weight: normal;
     }
 
-    /* Shipping address style */
+    /* Shipping Address Styles */
     .shipping-address ul {
         list-style: none;
         padding: 0;
+        margin: 0;
     }
 
     .shipping-address li {
-        margin-bottom: 5px;
+        margin-bottom: 10px;
+        font-size: 16px;
+        color: #444;
     }
 
     .shipping-address strong {
         font-weight: bold;
+        color: #000;
+    }
+
+    /* Cancel Button Styles */
+    .btn-cancel {
+        background-color: #ff2020;
+        /* Red background */
+        color: white;
+        /* White text */
+        border: none;
+        padding: 5px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+        background-color: #d60000;
+        /* Darker red on hover */
+    }
+
+    /* Style for the Return Button */
+    .btn-return {
+        background-color: #007bff;
+        /* Blue background color */
+        color: white;
+        /* White text color */
+        border: none;
+        /* Remove border */
+        padding: 8px 16px;
+        /* Add padding */
+        border-radius: 5px;
+        /* Add border radius */
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        /* Smooth hover transition */
+    }
+
+    .btn-return:hover {
+        background-color: #0056b3;
+        /* Darker blue on hover */
+    }
+
+    /* Style for the Textarea Field */
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        /* Add a subtle border */
+        border-radius: 5px;
+        /* Add border radius */
+        resize: vertical;
+        /* Allow vertical resizing */
+        font-size: 14px;
+        /* Font size */
+    }
+
+    /* Placeholder style for the Textarea */
+    textarea::placeholder {
+        color: #999;
+        /* Placeholder text color */
     }
 </style>
 <div style="margin-top: 150px;">
@@ -112,42 +178,77 @@ Order Details
                         {% endfor %}
                     </div>
                     <div class="card-body">
-                        <h6 class="text-truncate mb-2">Product: {{ order_item.product.product }}</h6>
-                        <h6 class="text-truncate mb-2">Size: {{ order_item.product.size }}</h6>
-                        <h6 class="text-truncate mb-2">Category: {{ order_item.product.product.category }}</h6>
-                        <h6 class="text-truncate mb-2">Color: {{ order_item.product.color }}</h6>
-                        <h6 class="text-truncate mb-2">Price: {{ order_item.order.total_price_tax }}</h6>
-                        <h6 class="text-truncate mb-2">Payment Method: {{ order_item.order.payment_method }}</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="text-truncate mb-2">Order Status: {{ order_item.order_status }}</h6>
-                            {% if order_item.order_status == 'Order Placed' or order_item.order_status == 'Shipped' %}
-                            <form method="post" action="{% url 'cancel_order' order_item.order.id order_item.product.id %}">
+                        <h6 class="text-truncate">Product: {{ order_item.product.product }}</h6>
+                        <h6 class="text-truncate">Size: {{ order_item.product.size }}</h6>
+                        <h6 class="text-truncate">Category: {{ order_item.product.product.category }}</h6>
+                        <h6 class="text-truncate">Color: {{ order_item.product.color }}</h6>
+                        <h6 class="text-truncate">Price: {{ order_item.order.total_price_tax }}</h6>
+                        <h6 class="text-truncate">Payment Method: {{ order_item.order.payment_method }}</h6>
+                        <h6 class="text-truncate">Order Status: {{ order_item.order_status }}</h6>
+                        {% if order_item.order_status == 'Return Requested' %}
+                        <h6>Reason: {{order_item.return_reason}}</h6>
+                        {% endif %}
+                        {% if order_item.order_status == 'Order Placed' or order_item.order_status == 'Shipped' %}
+                        <form method="post" action="{% url 'cancel_order' order_item.order.id order_item.product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-cancel">CANCEL</button>
+                        </form>
+                        {% elif order_item.order_status == 'Delivered' %}
+                        <input type="checkbox" id="return_checkbox">
+                        <label for="return_checkbox" class="form-label">Want to Return</label>
+                        <div id="return_section">
+                            <form method="post"
+                                action="{% url 'return_order' order_item.order.id order_item.product.id %}">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-dark btn-cancel">CANCEL</button>
+                                <label for="return_reason" class="form-label">REASON FOR RETURN</label>
+                                <textarea class="form-control" id="return_reason" name="return_reason" rows="4"
+                                    placeholder="Enter your reason for return" required></textarea>
+                                <button type="submit" class="btn btn-sm btn-return">RETURN</button>
+                                <div class="col-md-6"></div>
                             </form>
-                            {% endif %}
                         </div>
-                        <div class="d-flex flex-column align-items-center mb-2">
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </section>
             <div class="col-md-3 mt-2 mb-4 ml-5">
                 <div class="card shipping-address ml-auto" style="width: 350px;">
-                    <h4 class="mb-3">Shipping Address:</h4>
+                    <h4 class="mb-3"><strong>SHIPPING ADDRESS</strong></h4>
                     <ul>
-                        <li><strong>Name:</strong> {{ order.address.user }}</li>
-                        <li><strong>Phone:</strong> {{ order.address.user.phone_number }}</li>
-                        <li><strong>House:</strong> {{ order.address.name }}</li>
-                        <li><strong>Street:</strong> {{ order.address.street }}</li>
-                        <li><strong>City:</strong> {{ order.address.city }}</li>
-                        <li><strong>State:</strong> {{ order.address.state }}</li>
-                        <li><strong>Country:</strong> {{ order.address.country }}</li>
-                        <li><strong>Pin code:</strong> {{ order.address.pin_code }}</li>
+                        <li><strong>Name :</strong> {{ order.address.user }}</li>
+                        <li><strong>Phone :</strong> {{ order.address.user.phone_number }}</li>
+                        <li><strong>House :</strong> {{ order.address.name }}</li>
+                        <li><strong>Street :</strong> {{ order.address.street }}</li>
+                        <li><strong>City :</strong> {{ order.address.city }}</li>
+                        <li><strong>State :</strong> {{ order.address.state }}</li>
+                        <li><strong>Country :</strong> {{ order.address.country }}</li>
+                        <li><strong>Pin code :</strong> {{ order.address.pin_code }}</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get references to the checkbox and return section
+        const returnCheckbox = document.getElementById("return_checkbox");
+        const returnSection = document.getElementById("return_section");
+
+        // Function to toggle the visibility of the return section
+        function toggleReturnSection() {
+            if (returnCheckbox.checked) {
+                returnSection.style.display = "block";
+            } else {
+                returnSection.style.display = "none";
+            }
+        }
+
+        // Add an event listener to the checkbox to trigger the toggle function
+        returnCheckbox.addEventListener("change", toggleReturnSection);
+
+        // Initial call to set the initial visibility based on checkbox state
+        toggleReturnSection();
+    });
+</script>
 {% endblock content %}
