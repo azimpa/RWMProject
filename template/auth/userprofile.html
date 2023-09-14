@@ -38,7 +38,9 @@ PROFILE
                     <div class="d-inline-flex p-2"
                         style="background-color: rgb(255, 255, 255); width: 260px; height: 60px;">
                         <i class="bi bi-cart4 ms-3" style="font-size: 28px; color: rgb(65, 65, 184);"></i>
-                        <a href="{% url 'my_orders' %}"><h6 style="margin-left: 17px; margin-top: 12px; color: rgb(146, 149, 152);">MY ORDERS</h6></a>
+                        <a href="{% url 'my_orders' %}">
+                            <h6 style="margin-left: 17px; margin-top: 12px; color: rgb(146, 149, 152);">MY ORDERS</h6>
+                        </a>
                         <i class="bi bi-arrow-right-circle"
                             style="font-size: 15px; margin-top: 12px; color: rgb(146, 149, 152); margin-left: 70px;"></i>
                     </div>
@@ -85,52 +87,56 @@ PROFILE
             {% block profile %}
             <div class="col-lg-8 col-md-6 bg-white mt-5 pb-5"
                 style="border: 0.3px solid rgb(255, 255, 255);box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                <form action="userprofile" method="post">
+                <form action="{% url 'userprofile' %}" method="post">
                     {% csrf_token %}
                     <div class="mt-5 ms-5">
                         <h2 class="d-inline-flex me-5" style="margin-left: 50px;">Personal Information</h2>
                         <div style="margin-top: 40px; margin-left: 50px;">
-                            <div style="display: flex; align-items: center;">
+                            <div style="display: flex; align-items: center; margin-top: 40px;">
                                 <label for="first_name"
                                     style="width: 100px; margin-right: 10px; margin-top: 20px;">First Name:</label>
                                 <input type="text" class="form-control mt-3" style="width: 300px;" id="first_name"
-                                    name="first_name" value="{{first_name}}" placeholder="{{first_name}}">
-                                <span style="margin-left: 15px; margin-top: 20px;">
+                                    name="first_name" value="{{first_name}}" placeholder="{{first_name}}" required
+                                    onkeyup="validateFirstname()">
+                                <span id="firstname-error" style="margin-left: 15px; margin-top: 20px;"></span>
                             </div>
                             <div style="display: flex; align-items: center; margin-top: 40px;">
                                 <label for="last_name" style="width: 100px; margin-right: 10px; margin-top: 20px;">Last
                                     Name:</label>
                                 <input type="text" class="form-control mt-3" style="width: 300px;" id="last_name"
-                                    name="last_name" value="{{last_name}}" placeholder="{{last_name}}">
-                                <span style="margin-left: 15px; margin-top: 20px;">
+                                    name="last_name" value="{{last_name}}" placeholder="{{last_name}}" required
+                                    onkeyup="validateLastname()">
+                                <span id="lastname-error" style="margin-left: 15px; margin-top: 20px;"></span>
                             </div>
                             <div style="display: flex; align-items: center; margin-top: 40px;">
                                 <label for="gender"
                                     style="width: 100px; margin-right: 10px; margin-top: 20px;">Gender:</label>
                                 <input type="text" class="form-control mt-3" style="width: 300px;" id="gender"
-                                    name="gender" value="{{gender}}" placeholder="{{gender}}">
-                                <span style="margin-left: 15px; margin-top: 20px;">
+                                    name="gender" value="{{gender}}" placeholder="{{gender}}"
+                                    onkeyup="validateGender()">
+                                <span id="gender-error" style="margin-left: 15px; margin-top: 20px;"></span>
                             </div>
                             <div style="display: flex; align-items: center; margin-top: 40px;">
                                 <label for="age"
                                     style="width: 100px; margin-right: 10px; margin-top: 20px;">Age:</label>
                                 <input type="text" class="form-control mt-3" style="width: 300px;" id="age" name="age"
-                                    value="{{age}}" placeholder="{{age}}">
-                                <span style="margin-left: 15px; margin-top: 20px;">
+                                    value="{{age}}" placeholder="{{age}}" onkeyup="validateAge()">
+                                <span id="age-error" style="margin-left: 15px; margin-top: 20px;"></span>
                             </div>
                             <div style="display: flex; align-items: center; margin-top: 40px;">
                                 <label for="email" style="width: 100px; margin-right: 10px; margin-top: 20px;">Email
                                     Address:</label>
                                 <input type="email" class="form-control mt-3" style="width: 300px;" id="email"
-                                    name="email" value="{{email}}" placeholder="{{email}}">
-                                <span style="margin-left: 15px; margin-top: 20px;">
+                                    name="email" value="{{email}}" placeholder="{{email}}" onkeyup="validateEmail()">
+                                <span id="email-error" style="margin-left: 15px; margin-top: 20px;"></span>
                             </div>
                             <div style="display: flex; align-items: center; margin-top: 40px;">
-                                <label for="phone" style="width: 100px; margin-right: 10px; margin-top: 20px;">Phone
-                                    Number:</label>
-                                <input type="tel" class="form-control mt-3" style="width: 300px;" id="phone"
-                                    name="phone" placeholder="{{phone}}" readonly>
-                                <span style="margin-left: 15px; margin-top: 20px;">
+                                <label for="phone_number"
+                                    style="width: 100px; margin-right: 10px; margin-top: 20px;">Phone Number:</label>
+                                <input type="tel" class="form-control mt-3" style="width: 300px;" id="phone_number"
+                                    name="phone_number" placeholder="{{phone}}" value="{{phone}}"
+                                    onkeyup="validatePhoneNumber()">
+                                <span id="phone_number-error" style="margin-left: 15px; margin-top: 20px;"></span>
                             </div>
                         </div>
                         <div class="mt-4 ms-5" style="margin-left: 50px;">
@@ -142,4 +148,121 @@ PROFILE
         </div>
     </div>
 </section>
+<script>
+    $(document).on("submit", "form", function (e) {
+        if (
+            !validateFirstname() ||
+            !validateLastname() ||
+            !validateGender() ||
+            !validateAge() ||
+            !validateEmail() ||
+            !validatePhoneNumber()
+        ) {
+            e.preventDefault();
+            swal("Invalid data! Ensure you have entered correct data");
+        }
+    });
+
+    function validateFirstname() {
+        var firstname = $("#first_name").val().trim();
+        var required = 2;
+        var left = required - firstname.length;
+        if (firstname.length == 0) {
+            $("#firstname-error").html("Firstname is required").css("color", "red");
+            return false;
+        }
+        if (left > 0) {
+            $("#firstname-error").html(left + " more characters required").css("color", "red");
+            return false;
+        }
+        $("#firstname-error").html("First name is valid").css("color", "green");
+        return true;
+    }
+
+
+    function validateLastname() {
+        var lastname = $("#last_name").val().trim();
+        var required = 2;
+        var left = required - lastname.length;
+        if (lastname.length == 0) {
+            $("#lastname-error").html("Lastname is required").css("color", "red");
+            return false;
+        }
+        if (left > 0) {
+            $("#lastname-error").html(left + " more characters required").css("color", "red");
+            return false;
+        }
+        $("#lastname-error").html("lastname is valid").css("color", "green");
+        return true;
+    }
+
+    function validateGender() {
+        var gender = $("#gender").val().trim().toLowerCase(); // Convert to lowercase for case-insensitive comparison
+        var validGenders = ["male", "female", "others"];
+
+        if (validGenders.includes(gender)) {
+            $("#gender-error").html("Gender is valid").css("color", "green");
+            return true;
+        } else {
+            $("#gender-error").html("Invalid gender. Please enter Male, Female, or Others.").css("color", "red");
+            return false;
+        }
+    }
+
+
+    function validateAge() {
+        var age = $("#age").val().trim();
+        var ageError = $("#age-error");
+
+        // Check if age is not empty and is a valid number
+        if (age === "" || isNaN(age)) {
+            ageError.html("Age must be a valid number").css("color", "red");
+            return false;
+        }
+
+        // Convert age to a number
+        age = parseInt(age);
+
+        // Check if age is within the specified range
+        if (age >= 10 && age <= 100) {
+            ageError.html("Age is valid").css("color", "green");
+            return true;
+        } else {
+            ageError.html("Invalid age. Age must be between 10 and 100").css("color", "red");
+            return false;
+        }
+    }
+
+    function validateEmail() {
+        var email = $("#email").val().trim();
+        if (email.length == 0) {
+            $("#email-error").html("Email is Required").css("color", "red");
+            return false;
+        }
+        var emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!email.match(emailPattern)) {
+            $("#email-error").html("Email is Invalid").css("color", "red");
+            return false;
+        }
+        $("#email-error").html("Email is valid").css("color", "green");
+        return true;
+    }
+
+
+    function validatePhoneNumber() {
+        var phoneNumber = $("#phone_number").val().trim();
+        var num = phoneNumber.replace(/[^\d]/g, "");
+        console.log(num);
+        if (num.length == 0) {
+            $("#phone_number-error").html("Phone number is Required").css("color", "red");
+            return false;
+        }
+        if (num.length < 10 || num.length > 14) {
+            $("#phone_number-error").html("Phone number should be between 10 and 14 digits").css("color", "red");
+            return false;
+        }
+        $("#phone_number-error").html("Phone number is valid").css("color", "green");
+        return true;
+    }
+</script>
 {% endblock %}

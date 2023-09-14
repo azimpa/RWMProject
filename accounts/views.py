@@ -139,29 +139,35 @@ def user_logout(request):
     return redirect("home")
 
 
+
 def userprofile(request):
     user = request.user
 
-    if "first_name" in request.POST:
-        edited_fist_name = request.POST["first_name"]
-        user.first_name = edited_fist_name
+    if request.method == "POST":
+        if "first_name" in request.POST:
+            edited_first_name = request.POST["first_name"]
+            user.first_name = edited_first_name
+        if "last_name" in request.POST:
+            edited_last_name = request.POST["last_name"]
+            user.last_name = edited_last_name
+        if "gender" in request.POST:
+            edited_gender = request.POST["gender"]
+            user.gender = edited_gender
+        if "age" in request.POST:
+            edited_age = request.POST["age"]
+            user.age = edited_age
+        if "email" in request.POST:
+            edited_email = request.POST["email"]
+            user.email = edited_email
+        if "phone" in request.POST:
+            edited_phone = request.POST["phone"]
+            user.phone_number = edited_phone  
+
         user.save()
-    if "last_name" in request.POST:
-        edited_last_name = request.POST["last_name"]
-        user.last_name = edited_last_name
-        user.save()
-    if "gender" in request.POST:
-        edited_gender = request.POST["gender"]
-        user.gender = edited_gender
-        user.save()
-    if "age" in request.POST:
-        edited_age = request.POST["age"]
-        user.age = edited_age
-        user.save()
-    if "email" in request.POST:
-        edited_email = request.POST["email"]
-        user.email = edited_email
-        user.save()
+        messages.success(request, "Profile updated successfully")
+
+        # Redirect the user to the profile page or any other appropriate page
+        return redirect("userprofile")  # You may need to adjust the URL name
 
     return render(
         request,
@@ -169,7 +175,7 @@ def userprofile(request):
         {
             "username": user.username,
             "email": user.email,
-            "phone": user.phone_number,
+            "phone": user.phone_number, 
             "age": user.age,
             "gender": user.gender,
             "first_name": user.first_name,
