@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from home.models import Address
 from django.contrib.auth import logout
 from django.contrib import messages
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
 import razorpay
+from django.db.models import Q
 import os
 from django.http import JsonResponse
 from adm.models import (
@@ -318,7 +319,6 @@ def delete_cart_item(request, id):
     return redirect("cart")
 
 
-
 def checkout(request):
     if not request.user.is_authenticated:
         return redirect("user_login")
@@ -328,7 +328,7 @@ def checkout(request):
     cart_items_param = request.GET.get("cart_items")
 
     selected_address_id = None
-    default_address = addresses.order_by('-id').first()
+    default_address = addresses.order_by("-id").first()
 
     if request.method == "POST":
         selected_address_id = request.POST.get("selected_address")
@@ -338,14 +338,13 @@ def checkout(request):
             address_id=selected_address_id,
         )
 
-
     if cart_items_param == "true":
         return render(
             request,
             "user/checkout.html",
             {
                 "addresses": addresses,
-                "default_address": default_address, 
+                "default_address": default_address,
             },
         )
     else:
@@ -700,3 +699,26 @@ def return_order(request, order_id, product_id):
             order_item.save()
 
     return redirect("my_orders")
+
+
+def search(request):
+    if request.method == "GET":
+        query = request.GET.get("query")
+
+        if query:
+            product = ProductVariant.objects.filter(
+                Q(price__icontains=query,is_active=True)
+                | Q(offer_price__icontains=query,is_active=True)
+                | Q(product__name__icontains=query,is_active=True)
+                | Q(color__name__icontains=query,is_active=True)
+                | Q(product__category__name__icontains=query,is_active=True)
+                | Q(size__name__icontains=query,is_active=True)  # Add the condition for is_active=True
+            )
+
+            return render(request, "user/search.html", {"products": product})
+        else:
+            product = ProductVariant.objects.none()
+            return render(request, "user/search.html", {"products": product})
+    else:
+        # Handle other HTTP methods if necessary
+        return HttpResponse("Method not allowed", status=405)

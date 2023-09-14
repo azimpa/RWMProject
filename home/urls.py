@@ -30,4 +30,5 @@ urlpatterns = [
     path('razorpay/<int:address_id>/<str:after_tax_amount>', views.razor, name="razorpay"),
     path('single_order/<int:order_id>/<int:product_id>', views.single_order, name="single_order"),
     path('return_order/<int:order_id>/<int:product_id>', views.return_order, name="return_order"),
+    path('search', views.search, name="search"),
 ]

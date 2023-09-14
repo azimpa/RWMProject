@@ -116,13 +116,13 @@
             </div>
             <div class="logo menu_mm"><a href="/">RWM</a></div>
             <div class="search">
-                <form action="#">
-                    <input type="search" class="search_input menu_mm" required="required">
-                    <button type="submit" id="search_button_menu" class="search_button menu_mm">
-                        <img class="menu_mm" src="{% static 'images/magnifying-glass.svg' %}" alt="">
+                <form action="{% url 'search' %}" method="GET"> {% csrf_token %}
+                    <input type="text" class="search_input" name="query" placeholder="Type to Search" required="required">
+                    <button type="submit" id="search_button" class="search_button">
+                        <img src="{% static 'images/magnifying-glass.svg' %}" alt="">
                     </button>
                 </form>
-            </div>
+            </div>            
             <nav class="menu_nav">
                 <ul class="menu_mm">
                     <li class="menu_mm"><a href="{% url 'total_products' %}">Shop</a></li>
