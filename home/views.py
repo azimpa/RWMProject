@@ -318,6 +318,7 @@ def delete_cart_item(request, id):
     return redirect("cart")
 
 
+
 def checkout(request):
     if not request.user.is_authenticated:
         return redirect("user_login")
@@ -327,6 +328,7 @@ def checkout(request):
     cart_items_param = request.GET.get("cart_items")
 
     selected_address_id = None
+    default_address = addresses.order_by('-id').first()
 
     if request.method == "POST":
         selected_address_id = request.POST.get("selected_address")
@@ -336,21 +338,23 @@ def checkout(request):
             address_id=selected_address_id,
         )
 
+
     if cart_items_param == "true":
         return render(
             request,
             "user/checkout.html",
             {
                 "addresses": addresses,
+                "default_address": default_address, 
             },
         )
-
     else:
         return render(
             request,
             "user/checkout.html",
             {
                 "addresses": addresses,
+                "default_address": default_address,  # Pass the default address to the template
             },
         )
 
