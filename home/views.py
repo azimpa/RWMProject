@@ -8,6 +8,7 @@ import razorpay
 from django.db.models import Q
 import os
 from django.http import JsonResponse
+from home.models import Cartitem, Cart, Order, OrderItem
 from adm.models import (
     AdmProducts,
     AdmCategories,
@@ -15,7 +16,6 @@ from adm.models import (
     ProductColor,
     ProductSize,
 )
-from home.models import Cartitem, Cart, Order, OrderItem
 
 # Create your views here.
 
@@ -266,12 +266,9 @@ def cart(request):
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
 
-    final_total = total_price + 50
-
     context = {
         "cart_items": cart_items,
         "total_price": total_price,
-        "final_total": final_total,
     }
 
     return render(request, "user/cart.html", context)
@@ -517,105 +514,6 @@ def payment(request, address_id):
                 )
 
 
-def order_summary(request, address_id, order_id):
-    if not request.user.is_authenticated:
-        return redirect("user_login")
-
-    user = request.user
-    address = Address.objects.get(id=address_id)
-    username = user.username
-
-    orders = Order.objects.get(id=order_id, address=address)
-    order_items = OrderItem.objects.filter(order=orders)
-
-    total_price = 0
-    final_total = 0
-
-    for item in order_items:
-        item.offer_price = item.product.offer_price
-        item.total_price_each = item.offer_price * item.quantity
-        total_price += item.total_price_each
-
-    final_total = total_price + 50
-
-    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
-        Decimal("1"), rounding=ROUND_HALF_UP
-    )
-
-    context = {
-        "address": address,
-        "username": username,
-        "orders": orders,
-        "order_items": order_items,
-        "total_price": total_price,
-        "final_total": final_total,
-        "after_tax_amount": after_tax_amount,
-    }
-
-    return render(request, "user/order_summary.html", context)
-
-
-def my_orders(request):
-    if not request.user.is_authenticated:
-        return redirect("user_login")
-
-    user = request.user
-    orders = Order.objects.filter(user=user)
-
-    order_items = OrderItem.objects.filter(order__in=orders).order_by("-id")
-
-    return render(request, "user/my_orders.html", {"order_items": order_items})
-
-
-def cancel_order(request, order_id, product_id):
-    order = get_object_or_404(Order, id=order_id)
-    order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
-
-    if order_item:
-        order_item.order_status = "Cancelled"
-        order_item.save()
-
-    return redirect("my_orders")
-
-
-def invoice(request, address_id, order_id):
-    if not request.user.is_authenticated:
-        return redirect("user_login")
-
-    user = request.user
-    address = Address.objects.get(id=address_id)
-    username = user.username
-
-    orders = Order.objects.get(id=order_id, address=address)
-    order_items = OrderItem.objects.filter(order=orders)
-
-    total_price = 0
-    final_total = 0
-
-    for item in order_items:
-        item.offer_price = item.product.offer_price
-        item.total_price_each = item.offer_price * item.quantity
-        total_price += item.total_price_each
-
-    final_total = total_price + 50
-
-    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
-        Decimal("1"), rounding=ROUND_HALF_UP
-    )
-
-    context = {
-        "address": address,
-        "username": username,
-        "orders": orders,
-        "order_items": order_items,
-        "total_price": total_price,
-        "final_total": final_total,
-        "after_tax_amount": after_tax_amount,
-    }
-
-    return render(request, "user/invoice.html", context)
-
-
 def razor(request, address_id, after_tax_amount):
     try:
         user = request.user
@@ -678,6 +576,67 @@ def razor(request, address_id, after_tax_amount):
         pass
 
 
+def order_summary(request, address_id, order_id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
+    user = request.user
+    address = Address.objects.get(id=address_id)
+    username = user.username
+
+    orders = Order.objects.get(id=order_id, address=address)
+    order_items = OrderItem.objects.filter(order=orders)
+
+    total_price = 0
+    final_total = 0
+
+    for item in order_items:
+        item.offer_price = item.product.offer_price
+        item.total_price_each = item.offer_price * item.quantity
+        total_price += item.total_price_each
+
+    final_total = total_price + 50
+
+    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+        Decimal("1"), rounding=ROUND_HALF_UP
+    )
+
+    context = {
+        "address": address,
+        "username": username,
+        "orders": orders,
+        "order_items": order_items,
+        "total_price": total_price,
+        "final_total": final_total,
+        "after_tax_amount": after_tax_amount,
+    }
+
+    return render(request, "user/order_summary.html", context)
+
+
+def my_orders(request):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
+    user = request.user
+    orders = Order.objects.filter(user=user)
+
+    order_items = OrderItem.objects.filter(order__in=orders).order_by("-id")
+
+    return render(request, "user/my_orders.html", {"order_items": order_items})
+
+
+def cancel_order(request, order_id, product_id):
+    order = get_object_or_404(Order, id=order_id)
+    order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
+
+    if order_item:
+        order_item.order_status = "Cancelled"
+        order_item.save()
+
+    return redirect("my_orders")
+
+
 def single_order(request, order_id, product_id):
     order = get_object_or_404(Order, id=order_id)
     order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
@@ -701,18 +660,58 @@ def return_order(request, order_id, product_id):
     return redirect("my_orders")
 
 
+def invoice(request, address_id, order_id):
+    if not request.user.is_authenticated:
+        return redirect("user_login")
+
+    user = request.user
+    address = Address.objects.get(id=address_id)
+    username = user.username
+
+    orders = Order.objects.get(id=order_id, address=address)
+    order_items = OrderItem.objects.filter(order=orders)
+
+    total_price = 0
+    final_total = 0
+
+    for item in order_items:
+        item.offer_price = item.product.offer_price
+        item.total_price_each = item.offer_price * item.quantity
+        total_price += item.total_price_each
+
+    final_total = total_price + 50
+
+    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+        Decimal("1"), rounding=ROUND_HALF_UP
+    )
+
+    context = {
+        "address": address,
+        "username": username,
+        "orders": orders,
+        "order_items": order_items,
+        "total_price": total_price,
+        "final_total": final_total,
+        "after_tax_amount": after_tax_amount,
+    }
+
+    return render(request, "user/invoice.html", context)
+
+
 def search(request):
     if request.method == "GET":
         query = request.GET.get("query")
 
         if query:
             product = ProductVariant.objects.filter(
-                Q(price__icontains=query,is_active=True)
-                | Q(offer_price__icontains=query,is_active=True)
-                | Q(product__name__icontains=query,is_active=True)
-                | Q(color__name__icontains=query,is_active=True)
-                | Q(product__category__name__icontains=query,is_active=True)
-                | Q(size__name__icontains=query,is_active=True)  # Add the condition for is_active=True
+                Q(price__icontains=query, is_active=True)
+                | Q(offer_price__icontains=query, is_active=True)
+                | Q(product__name__icontains=query, is_active=True)
+                | Q(color__name__icontains=query, is_active=True)
+                | Q(product__category__name__icontains=query, is_active=True)
+                | Q(
+                    size__name__icontains=query, is_active=True
+                )  # Add the condition for is_active=True
             )
 
             return render(request, "user/search.html", {"products": product})

@@ -142,6 +142,8 @@
             <p>{{ orders }}</p>
             <h5>INVOICE DATE :</h5>
             <p>{{ orders.order_date|date:"d - M - Y" }}</p>
+            <h5>PAYMENT TYPE :</h5>
+            <p>{{ orders.payment_method}}</p>
         </div>
         <div class="table-container">
             <h5 class="font-size-15 text-center"><strong>ITEMS SUMMARY</strong></h5>
@@ -167,16 +169,12 @@
                     {% endfor %}
                     <tr class="total-row">
                         <td colspan="4" class="text-end">
-                            Sub Total (Including Shipping Charges)
+                            Total Amount (Inclusive of Shipping Fee of ₹50)
                         </td>
                         <td class="text-end">₹{{ final_total }}</td>
                     </tr>
                     <tr class="total-row">
-                        <td colspan="4" class="border-0 text-end">Tax (GSTIN)</td>
-                        <td class="border-0 text-end">2 %</td>
-                    </tr>
-                    <tr class="total-row">
-                        <td colspan="4" class="border-0 text-end">Total</td>
+                        <td colspan="4" class="border-0 text-end">Final Total (A tax rate of 2% applies)</td>
                         <td class="border-0 text-end">
                             <h4 class="m-0 fw-semibold"><strong>₹{{ after_tax_amount }}</strong></h4>
                         </td>
@@ -184,9 +182,29 @@
                 </tbody>
             </table>
         </div>
-        <div class="btn-pdf">
-            <button class="btn btn-primary" id="generate-pdf">PDF</button>
-        </div>
+    </div>
+    <div class="btn-pdf">
+        <button class="btn btn-primary" id="pdfButton">PDF</button>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script>
+    // Update the event listener to target the correct ID
+    document.getElementById("pdfButton").addEventListener("click", function () {
+        // Select the appropriate element for PDF conversion
+        const invoiceContainer = document.querySelector(".invoice-container");
+
+        // Define PDF generation options
+        const pdfOptions = {
+            filename: 'invoice.pdf',
+            image: { type: 'jpeg', quality: 1.0 }, // Adjust the image quality (1.0 for maximum quality)
+            html2canvas: { scale: 2 }, // Adjust the scale for higher quality
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+
+        // Generate and save the PDF
+        html2pdf().from(invoiceContainer).set(pdfOptions).save();
+    });
+</script>
 {% endblock content %}

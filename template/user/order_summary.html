@@ -63,7 +63,7 @@
                         <div class="mb-5">
                             <div class="d-flex justify-content-between mt-4">
                                 <h6 class="mb-0 font-weight-bold">PAYMENT TYPE</h6>
-                                <h6 class="mb-0 fw-bold">{{ orders.payment_method }}</h6>
+                                <h6 class="mb-0 fw-bold"><strong>{{ orders.payment_method }}</strong></h6>
                             </div>
                             <div class="d-flex justify-content-between mt-4">
                                 <h6 class="mb-0 font-weight-bold">SHIPPING ADDRESS</h6>
@@ -75,18 +75,18 @@
                             </div>
                             <div class="d-flex justify-content-between mt-4">
                                 <h6 class="mb-0 font-weight-bold">SUB TOTAL</h6>
-                                <h6 class="mb-0 fw-bold">₹{{total_price}}</h6>
+                                <h6 class="mb-0 fw-bold"><strong>₹{{total_price}}</strong></h6>
                             </div>
                             <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold">
-                                    TOTAL (Including Shipping Charges)
+                                <h6 class="mb-0 font-weight-bold"> TOTAL
+                                    (Inclusive of Shipping Fee of ₹50)
                                 </h6>
-                                <h6 class="mb-0 fw-bold">₹ {{final_total}}</h6>
+                                <h6 class="mb-0 fw-bold"><strong>₹ {{final_total}}</strong></h6>
                             </div>
                             <hr style="height: 30px; border-color: #333333d0" />
                             <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold">AMOUNT TO PAY (Including Tax) :</h6>
-                                <h6 class="mb-0 fw-bold">₹ {{after_tax_amount}}</h6>
+                                <h6 class="mb-0 font-weight-bold">FINAL TOTAL (A tax rate of 2% applies) :</h6>
+                                <h5 class="mb-0 fw-bold"><strong>₹ {{after_tax_amount}}</strong></h5>
                             </div>
                         </div>
                     </div>
