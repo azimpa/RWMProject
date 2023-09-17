@@ -161,16 +161,18 @@
                         <th scope="col" class="text-center" style="width: 100px;">Date</th>
                         <th scope="col" class="text-center" style="width: 80px;">Amount</th>
                         <th scope="col" class="text-center" style="width: 120px;">Payment</th>
+                        <th scope="col" class="text-center" style="width: 120px;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for order in orders %}
+                    {% for item in order_items %}
                     <tr>
-                        <td class="text-center">{{ order.id }}</td>
-                        <td class="text-center">{{ order.user.username }}</td>
-                        <td class="text-center">{{ order.order_date }}</td>
-                        <td class="text-center">{{ order.total_price_tax }}</td>
-                        <td class="text-center">{{ order.payment_method }}</td>
+                        <td class="text-center">{{ item.order.id }}</td>
+                        <td class="text-center">{{ item.order.user }}</td>
+                        <td class="text-center">{{ item.order.order_date }}</td>
+                        <td class="text-center">{{ item.order.total_price_tax }}</td>
+                        <td class="text-center">{{ item.order.payment_method }}</td>
+                        <td class="text-center">{{ item.order_status }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
