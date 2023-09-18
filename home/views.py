@@ -8,7 +8,7 @@ import razorpay
 from django.db.models import Q
 import os
 from django.http import JsonResponse
-from home.models import Cartitem, Cart, Order, OrderItem,OrderAddress
+from home.models import Cartitem, Cart, Order, OrderItem, OrderAddress
 from adm.models import (
     AdmProducts,
     AdmCategories,
@@ -114,10 +114,47 @@ def total_products(request):
         .order_by("product", "id")
         .distinct("product")
     )
+
+    colors = ProductColor.objects.filter(is_active=True)
+    sizes = ProductSize.objects.filter(is_active=True)
+
+    selected_price = None
+    selected_color = None
+    selected_size = None
+    filtered_variants = variants
+
+    if request.method == "POST":
+        # Apply price filter
+        if "price-filter" in request.POST:
+            selected_price = request.POST.getlist("price-filter")
+            print("selected_price:", selected_price)  # Debug print
+            filtered_variants = filtered_variants.filter(id__in=selected_price)
+            print(
+                "Filtered variants after price filter:", filtered_variants
+            )  # Debug print
+
+        # Apply color filter
+        if "color-filter" in request.POST:
+            selected_color = request.POST.getlist("color-filter")
+            print("selected_color:", selected_color)  # Debug print
+            filtered_variants = filtered_variants.filter(color__id__in=selected_color)
+            print(
+                "Filtered variants after color filter:", filtered_variants
+            )  # Debug print
+
+        # Apply size filter
+        if "size-filter" in request.POST:
+            selected_size = request.POST.getlist("size-filter")
+            print("selected_size:", selected_size)  # Debug print
+            filtered_variants = filtered_variants.filter(size__id__in=selected_size)
+            print(
+                "Filtered variants after size filter:", filtered_variants
+            )  # Debug print
+
     return render(
         request,
         "user/total_products.html",
-        {"products": products, "variants": variants},
+        {"variants": filtered_variants, "colors": colors, "sizes": sizes},
     )
 
 
@@ -521,8 +558,8 @@ def razor(request, address_id, after_tax_amount):
         cart = Cart.objects.get(user=user)
 
         cart_items = Cartitem.objects.filter(cart=cart)
-        total_price = 0 
-        final_total = 0 
+        total_price = 0
+        final_total = 0
 
         for item in cart_items:
             item.offer_price = item.product.offer_price
