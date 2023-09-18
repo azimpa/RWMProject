@@ -152,6 +152,7 @@ def userprofile(request):
             user.last_name = edited_last_name
         if "gender" in request.POST:
             edited_gender = request.POST["gender"]
+            print(edited_gender,"qqqqqwwww")
             user.gender = edited_gender
         if "age" in request.POST:
             edited_age = request.POST["age"]

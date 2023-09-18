@@ -109,13 +109,16 @@ PROFILE
                                 <span id="lastname-error" style="margin-left: 15px; margin-top: 20px;"></span>
                             </div>
                             <div style="display: flex; align-items: center; margin-top: 40px;">
-                                <label for="gender"
-                                    style="width: 100px; margin-right: 10px; margin-top: 20px;">Gender:</label>
-                                <input type="text" class="form-control mt-3" style="width: 300px;" id="gender"
-                                    name="gender" value="{{gender}}" placeholder="{{gender}}"
-                                    onkeyup="validateGender()">
+                                <label for="gender" style="width: 100px; margin-top: 20px;">Gender:</label>
+                                <select class="form-control" style="width: 300px; margin-left: 10px;" name="gender" id="gender"
+                                    onchange="validateGender()" required>
+                                    <option value="">{{ gender }}</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Others">Others</option>
+                                </select>
                                 <span id="gender-error" style="margin-left: 15px; margin-top: 20px;"></span>
-                            </div>
+                            </div>                            
                             <div style="display: flex; align-items: center; margin-top: 40px;">
                                 <label for="age"
                                     style="width: 100px; margin-right: 10px; margin-top: 20px;">Age:</label>
