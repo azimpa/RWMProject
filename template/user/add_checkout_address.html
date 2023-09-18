@@ -32,7 +32,7 @@
                             <label for="inputStreet">Street:</label>
                             <input type="text" class="form-control" id="inputStreet" name="Street" placeholder="Street"
                                 onkeyup="validateStreet()">
-                            <div id="street-error"></div> <!-- This is where we will display error/success messages -->
+                            <div id="street-error"></div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="inputCity">City:</label>
@@ -236,8 +236,5 @@
         $("#pincode-error").html("Pin code is valid").css("color", "green");
         return true;
     }
-
-
-
 </script>
 {% endblock %}

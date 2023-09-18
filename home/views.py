@@ -8,7 +8,7 @@ import razorpay
 from django.db.models import Q
 import os
 from django.http import JsonResponse
-from home.models import Cartitem, Cart, Order, OrderItem
+from home.models import Cartitem, Cart, Order, OrderItem,OrderAddress
 from adm.models import (
     AdmProducts,
     AdmCategories,
@@ -321,7 +321,7 @@ def checkout(request):
         return redirect("user_login")
 
     user = request.user
-    addresses = Address.objects.filter(user=user)
+    addresses = OrderAddress.objects.filter(user=user)
     cart_items_param = request.GET.get("cart_items")
 
     selected_address_id = None
@@ -350,7 +350,7 @@ def checkout(request):
             "user/checkout.html",
             {
                 "addresses": addresses,
-                "default_address": default_address,  # Pass the default address to the template
+                "default_address": default_address,
             },
         )
 
@@ -368,7 +368,7 @@ def add_checkout_address(request):
         country = request.POST.get("Country")
         pin_code = request.POST.get("Pin_code")
 
-        address = Address(
+        address = OrderAddress(
             user=request.user,
             name=housename_companyname,
             postoffice=post_office,
@@ -389,7 +389,7 @@ def edit_checkout_address(request, id):
     if not request.user.is_authenticated:
         return redirect("user_login")
 
-    address = get_object_or_404(Address, id=id, user=request.user)
+    address = get_object_or_404(OrderAddress, id=id, user=request.user)
 
     if request.method == "POST":
         housename_companyname = request.POST.get("Edited_Housename_companyname")
@@ -415,7 +415,7 @@ def edit_checkout_address(request, id):
 
 
 def delete_checkout_address(request, id):
-    address = get_object_or_404(Address, id=id)
+    address = get_object_or_404(OrderAddress, id=id)
     address.delete()
     return redirect("checkout")
 
@@ -425,7 +425,7 @@ def payment(request, address_id):
         return redirect("user_login")
 
     user = request.user
-    address = Address.objects.get(id=address_id)
+    address = OrderAddress.objects.get(id=address_id)
     address_id = address.id
 
     cart = Cart.objects.get(user=user)
@@ -517,12 +517,12 @@ def payment(request, address_id):
 def razor(request, address_id, after_tax_amount):
     try:
         user = request.user
-        address = Address.objects.get(id=address_id)
+        address = OrderAddress.objects.get(id=address_id)
         cart = Cart.objects.get(user=user)
 
         cart_items = Cartitem.objects.filter(cart=cart)
-        total_price = 0  # Initialize total_price
-        final_total = 0  # Initialize final_total
+        total_price = 0 
+        final_total = 0 
 
         for item in cart_items:
             item.offer_price = item.product.offer_price
@@ -568,7 +568,7 @@ def razor(request, address_id, after_tax_amount):
             )
         else:
             pass
-    except Address.DoesNotExist:
+    except OrderAddress.DoesNotExist:
         print("Address DoesNotExist...")
         pass
     except Cart.DoesNotExist:
@@ -581,7 +581,7 @@ def order_summary(request, address_id, order_id):
         return redirect("user_login")
 
     user = request.user
-    address = Address.objects.get(id=address_id)
+    address = OrderAddress.objects.get(id=address_id)
     username = user.username
 
     orders = Order.objects.get(id=order_id, address=address)
@@ -665,7 +665,7 @@ def invoice(request, address_id, order_id):
         return redirect("user_login")
 
     user = request.user
-    address = Address.objects.get(id=address_id)
+    address = OrderAddress.objects.get(id=address_id)
     username = user.username
 
     orders = Order.objects.get(id=order_id, address=address)

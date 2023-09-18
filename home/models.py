@@ -1,11 +1,43 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from datetime import datetime
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from accounts.models import CustomUser
 from adm.models import ProductVariant
 
 
 class Address(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, verbose_name="House or Company Name")
+    postoffice = models.CharField(max_length=100)
+    street = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    country = models.CharField(max_length=50)
+    pin_code = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+
+# Define the receiver function to create OrderAddress
+@receiver(post_save, sender=Address)
+def create_order_address(sender, instance, created, **kwargs):
+    if created:
+        OrderAddress.objects.create(
+            user=instance.user,
+            name=instance.name,
+            postoffice=instance.postoffice,
+            street=instance.street,
+            city=instance.city,
+            state=instance.state,
+            country=instance.country,
+            pin_code=instance.pin_code,
+        )
+
+
+class OrderAddress(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name="House or Company Name")
     postoffice = models.CharField(max_length=100)
@@ -39,7 +71,7 @@ class Cartitem(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    address = models.ForeignKey(OrderAddress, on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=50)
     order_date = models.DateTimeField(default=datetime.now())
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
