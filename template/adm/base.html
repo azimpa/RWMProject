@@ -82,6 +82,9 @@
                     <a href="{% url 'adm_order' %}" class="nav-item nav-link{% if request.resolver_match.url_name == 'adm_order' %} active{% endif %}">
                         <i class="fas fa-shopping-cart me-2"></i>Orders
                     </a>
+                    <a href="{% url 'sales_report' %}" class="nav-item nav-link{% if request.resolver_match.url_name == 'sales_report' %} active{% endif %}">
+                        <i class="fas fa-chart-bar me-2"></i>Reports   
+                    </a>                    
                     <a href="{% url 'adm_logout' %}" class="nav-item nav-link{% if request.resolver_match.url_name == 'adm_logout' %} active{% endif %}">
                         <i class="fas fa-sign-out-alt me-2"></i>Logout
                     </a>

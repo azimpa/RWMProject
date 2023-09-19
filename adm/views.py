@@ -73,7 +73,7 @@ def index(request):
                 or 0
             )
 
-            order_items = OrderItem.objects.all().order_by('-id')
+            order_items = OrderItem.objects.all().order_by("-id")
             return render(
                 request,
                 "adm/index.html",
@@ -82,7 +82,7 @@ def index(request):
                     "today_revenue": today_revenue,
                     "total_sales": total_sales,
                     "total_revenue": total_revenue,
-                    "order_items":order_items
+                    "order_items": order_items,
                 },
             )
 
@@ -654,3 +654,8 @@ def edit_order_status(request, id):
             return redirect("adm_order")
 
     return render(request, "adm/edit_order_status.html", {"order_items": order_items})
+
+
+def sales_report(request):
+    order_items = OrderItem.objects.all().order_by("-id")
+    return render(request, "adm/sales_report.html", {"order_items": order_items})
