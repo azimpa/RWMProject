@@ -97,6 +97,7 @@ class OrderItem(models.Model):
         default="Order Placed",
     )
     return_reason = models.TextField(blank=True, null=True)
-
+    refund_added_to_wallet = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in order {self.order.id}"

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.http import HttpResponseServerError
 from home.models import Address
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -758,3 +759,28 @@ def search(request):
     else:
         # Handle other HTTP methods if necessary
         return HttpResponse("Method not allowed", status=405)
+
+
+def wallet(request):
+    try:
+        user = request.user
+        orders = Order.objects.filter(user=user, payment_method="Razor Pay")
+        order_ids = orders.values_list('id', flat=True)
+        order_items = OrderItem.objects.filter(Q(order_id__in=order_ids) & (Q(order_status="Return Requested") | Q(order_status="Cancelled")))
+
+        total_refund_amount = 0
+
+        for item in order_items:
+            if not item.refund_added_to_wallet:
+                total_refund_amount += item.order.total_price_tax
+                item.refund_added_to_wallet = True
+                item.save()  # Save the item
+
+        user.wallet_balance += Decimal(total_refund_amount)
+        user.save()
+        
+        return render(request, "user/wallet.html", {"order_items": order_items, "total_refund_amount": total_refund_amount})
+
+    except Exception as e:
+        error_message = "An error occurred: {}".format(str(e))
+        return HttpResponseServerError(error_message)
