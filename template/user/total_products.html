@@ -30,8 +30,6 @@
                 <div class="border-bottom mb-4 pb-4">
                     <h3 style="font-weight: bold;">SHOP BIKES</h3>
                     <h5 class="font-weight-semi-bold mb-4" style="margin-top: 30px;">Filter by price</h5>
-                    <form action="{% url 'total_products' %}" method="post">
-                        {% csrf_token %}
                         {% for variant in variants %}
                         <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
                             <input type="checkbox" class="custom-control-input" id="price-{{ variant.id }}"
@@ -41,16 +39,12 @@
                             <span class="badge border font-weight-normal">168</span>
                         </div>
                         {% endfor %}
-                        <button type="submit">Submit</button>
-                    </form>
                 </div>
                 <!-- Price End -->
 
                 <!-- Color Start -->
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
-                    <form action="{% url 'total_products' %}" method="post"> <!-- Specify action and method -->
-                        {% csrf_token %} <!-- Add CSRF token for security -->
                         {% for color in colors %}
                         <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
                             <input type="checkbox" class="custom-control-input" id="color-{{color.id}}"
@@ -58,17 +52,13 @@
                             <label class="custom-control-label" for="color-{{color.id}}">{{color.name}}</label>
                             <span class="badge border font-weight-normal">168</span>
                         </div>
-                        {% endfor %}
-                        <button type="submit">Submit</button>
-                    </form>
+                        {% endfor %}    
                 </div>
                 <!-- Color End -->
 
                 <!-- Size Start -->
                 <div class="mb-5">
                     <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
-                    <form action="{% url 'total_products' %}" method="post"> <!-- Specify action and method -->
-                        {% csrf_token %} <!-- Add CSRF token for security -->
                         {% for size in sizes %}
                         <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
                             <input type="checkbox" class="custom-control-input" id="size-{{size.id}}" name="size-filter"
@@ -76,9 +66,7 @@
                             <label class="custom-control-label" for="size-{{size.id}}">{{ size.name }}</label>
                             <span class="badge border font-weight-normal">168</span>
                         </div>
-                        {% endfor %}
-                        <button type="submit">Submit</button>
-                    </form>
+                        {% endfor %}    
                 </div>
                 <!-- Size End -->
             </div>
@@ -96,26 +84,27 @@
                                     aria-label="Close"></button>
                             </div>
                             {% endfor %}
-                            <form action="">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search by name">
+                                    <input type="text" class="form-control" placeholder="Search by name"
+                                        name="name-search">
                                     <div class="input-group-append">
-                                        <span class="input-group-text bg-transparent text-primary">
+                                        <button type="submit" class="input-group-text bg-transparent text-primary">
                                             <i class="fa fa-search"></i>
-                                        </span>
+                                        </button>
                                     </div>
                                 </div>
-                            </form>
-                            <div class="dropdown ml-4">
-                                <button class="btn border dropdown-toggle" type="button" id="sortDropdown"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Sort by
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-                                    <a class="dropdown-item" href="#" data-value="latest">Low to High</a>
-                                    <a class="dropdown-item" href="#" data-value="popularity">High to Low</a>
+                                <div class="dropdown ml-4">
+                                    <button class="btn border dropdown-toggle" type="button" id="sortDropdown"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Sort by
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
+                                        <button class="dropdown-item" type="submit" name="sort" value="Low to High">Low
+                                            to High</button>
+                                        <button class="dropdown-item" type="submit" name="sort" value="High to Low">High
+                                            to Low</button>
+                                    </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                     {% for variant in variants %}
