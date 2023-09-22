@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from accounts.models import CustomUser
 
 
 class AdmCategories(models.Model):
@@ -56,12 +58,33 @@ class ProductVariant(models.Model):
     size = models.ForeignKey(ProductSize, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     offer_price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
     stock = models.PositiveIntegerField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)  # New field for soft delete
 
     def __str__(self):
         return f"{self.product.name} - {self.color.name} - {self.size.name}"
+    
+
+class Coupon(models.Model):
+    coupon_code = models.CharField(max_length=30, unique=True)
+    description = models.TextField()
+    minimum_amount = models.IntegerField()
+    discount = models.DecimalField(max_digits=20, decimal_places=2)
+    is_expired = models.BooleanField(default=True)
+    valid_from = models.DateField()
+    valid_to = models.DateField()
+
+    def __str__(self):
+        return self.coupon_code
+    
+    def is_valid(self):
+        now = timezone.now().date()
+        return self.valid_from <= now <= self.valid_to
+
+
+class UserCoupons(models.Model):
+    user=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    coupon=models.ForeignKey(Coupon, on_delete=models.CASCADE)
+
+

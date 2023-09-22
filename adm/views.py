@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import CustomUser
-from datetime import datetime
+from decimal import Decimal
 from django.utils import timezone
 from django.db.models import Sum, F
 from home.models import Order, OrderItem
@@ -13,6 +13,7 @@ from adm.models import (
     ProductColor,
     ProductVariant,
     VariantImage,
+    Coupon,
 )
 
 
@@ -659,3 +660,88 @@ def edit_order_status(request, id):
 def sales_report(request):
     order_items = OrderItem.objects.all().order_by("-id")
     return render(request, "adm/sales_report.html", {"order_items": order_items})
+
+
+def coupons(request):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect("adm_login")
+
+    coupons = Coupon.objects.all()
+
+    return render(request, "adm/coupons.html", {"coupons": coupons})
+
+
+def add_coupons(request):
+    if request.method == "POST":
+        coupon_code = request.POST.get("coupon_code", "")
+        description = request.POST.get("description", "")
+        minimum_amount = int(request.POST.get("minimum_amount", 0))
+        discount = Decimal(request.POST.get("discount", 0.0))
+        valid_from = timezone.datetime.strptime(
+            request.POST.get("valid_from", ""), "%Y-%m-%d"
+        ).date()
+        valid_to_str = request.POST.get("valid_to")
+        valid_to = (
+            timezone.datetime.strptime(valid_to_str, "%Y-%m-%d").date()
+            if valid_to_str
+            else None
+        )
+        current_date = timezone.now().date()
+        is_expired = not (valid_from <= current_date <= valid_to)
+
+        # Create the Coupon object with the correct is_expired value
+        coupon = Coupon.objects.create(
+            coupon_code=coupon_code,
+            description=description,
+            minimum_amount=minimum_amount,
+            discount=discount,
+            valid_from=valid_from,
+            valid_to=valid_to,
+            is_expired=is_expired,  # Set the correct is_expired value
+        )
+
+        return redirect("coupons")
+
+    return render(request, "adm/add_coupons.html")
+
+
+def edit_coupons(request, id):
+    coupon = get_object_or_404(Coupon, id=id)
+
+    if request.method == "POST":
+        if "edit_coupon_code" in request.POST:
+            edit_coupon_code = request.POST.get("edit_coupon_code")
+            coupon.coupon_code = edit_coupon_code
+
+        if "edit_description" in request.POST:
+            edit_description = request.POST.get("edit_description")
+            coupon.description = edit_description
+
+        if "edit_minimum_amount" in request.POST:
+            edit_minimum_amount = request.POST.get("edit_minimum_amount")
+            coupon.minimum_amount = edit_minimum_amount
+
+        if "edit_discount" in request.POST:
+            edit_discount = request.POST.get("edit_discount")
+            coupon.discount = edit_discount
+
+        if "edit_valid_from" in request.POST:
+            edit_valid_from = request.POST.get("edit_valid_from")
+            coupon.valid_from = edit_valid_from
+
+        if "edit_valid_to" in request.POST:
+            edit_valid_to = request.POST.get("edit_valid_to")
+            coupon.valid_to = edit_valid_to
+
+        coupon.save()
+        return redirect("coupons")
+
+    return render(request, "adm/edit_coupons.html", {"coupon": coupon})
+
+
+def delete_coupons(request, id):
+    coupon = get_object_or_404(Coupon, id=id)
+    print(coupon, "aaaaaa")
+
+    coupon.delete()
+    return redirect("coupons")

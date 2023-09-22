@@ -141,7 +141,15 @@
                     <div class="cart_title">Cart Total</div>
                     <ul>
                         <li class="d-flex flex-row align-items-center justify-content-start">
-                            <div class="cart_total_title">Total</div>
+                            <div class="cart_total_title">Sub Total</div>
+                            <div class="cart_total_price ml-auto">₹ {{ total_price }}</div>
+                        </li>
+                        <li class="d-flex flex-row align-items-center justify-content-start">
+                            <div class="cart_total_title">Coupon Savings</div>
+                            <div class="cart_total_price ml-auto">₹ {{ total_price }}</div>
+                        </li>
+                        <li class="d-flex flex-row align-items-center justify-content-start">
+                            <div class="cart_total_title">Final Total</div>
                             <div class="cart_total_price ml-auto">₹ {{ total_price }}</div>
                         </li>
                     </ul>

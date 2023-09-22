@@ -84,7 +84,10 @@
                     </a>
                     <a href="{% url 'sales_report' %}" class="nav-item nav-link{% if request.resolver_match.url_name == 'sales_report' %} active{% endif %}">
                         <i class="fas fa-chart-bar me-2"></i>Reports   
-                    </a>                    
+                    </a>
+                    <a href="{% url 'coupons' %}" class="nav-item nav-link{% if request.resolver_match.url_name == 'coupons' %} active{% endif %}">
+                        <i class="fas fa-tags me-2"></i>Coupons
+                    </a>                                                        
                     <a href="{% url 'adm_logout' %}" class="nav-item nav-link{% if request.resolver_match.url_name == 'adm_logout' %} active{% endif %}">
                         <i class="fas fa-sign-out-alt me-2"></i>Logout
                     </a>
