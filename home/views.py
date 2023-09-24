@@ -491,8 +491,9 @@ def payment(request, address_id):
     user = request.user
     address = OrderAddress.objects.get(id=address_id)
     address_id = address.id
-
     cart = Cart.objects.get(user=user)
+    cart_coupon = cart.coupon
+    coupon_discount = cart_coupon.discount if cart_coupon else 0
     cart_items = Cartitem.objects.filter(cart=cart)
 
     total_price = 0
@@ -502,6 +503,11 @@ def payment(request, address_id):
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
+
+        if cart_coupon:
+            total_price = total_price - coupon_discount
+        else:
+            pass
 
     final_total = total_price + 50
 
@@ -569,6 +575,8 @@ def payment(request, address_id):
                         print("Insufficient stock...")
                         pass
 
+                cart.coupon = None
+                cart.save()    
                 cart_items.delete()
 
                 return redirect(
@@ -622,7 +630,9 @@ def razor(request, address_id, after_tax_amount):
                 else:
                     print("Insufficient stock...")
                     pass
-
+            
+            cart.coupon = None
+            cart.save() 
             cart_items.delete()
 
             return redirect(
