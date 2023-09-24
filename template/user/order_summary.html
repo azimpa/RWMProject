@@ -32,14 +32,29 @@
                                         {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <div style="margin-left: 40px;">
-                                        <p><strong>PRODUCT:</strong></p>
-                                        <p>{{ item.product }}</p>
+                                    <div class="col-md-2 d-flex align-items-center" style="margin-left: 100px;">
+                                        <p class="mb-0">
+                                            PRODUCT:<br>{{item.product}}
+                                        </p>
                                     </div>
-                                    <div style="margin-left: 40px;">
-                                        <p class="text-center"><strong>QUANTITY:</strong></p>
-                                        <p class="text-center">{{ item.quantity }}</p>
-                                    </div>                                    
+                                    <div class="col-md-2 d-flex align-items-center">
+                                        <p class="mb-0 small">
+                                            PRICE: <br />
+                                            ₹{{ item.product.offer_price }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-center">
+                                        <p class="mb-0 small">
+                                            QUANTITY: <br />
+                                            {{ item.quantity }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-center">
+                                        <p class="mb-0 small">
+                                            Total: <br />
+                                            {{item.total_price_each}}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -61,6 +76,10 @@
                             <div class="d-flex justify-content-between mt-4">
                                 <h6 class="mb-0 font-weight-bold">SUB TOTAL</h6>
                                 <h6 class="mb-0 fw-bold"><strong>₹{{total_price}}</strong></h6>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <h6 class="mb-0 font-weight-bold">Discount (Coupon)</h6>
+                                <h6 class="mb-0 fw-bold"><strong>₹{{discount}}</strong></h6>
                             </div>
                             <div class="d-flex justify-content-between mt-4">
                                 <h6 class="mb-0 font-weight-bold"> TOTAL

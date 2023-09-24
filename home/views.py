@@ -671,7 +671,22 @@ def order_summary(request, address_id, order_id):
 
     orders = Order.objects.get(id=order_id, address=address)
     order_items = OrderItem.objects.filter(order=orders)
-    total_price = orders.total_price
+    order_total_price = orders.total_price
+
+    total_price = 0
+    final_total = 0
+    discount = 0
+
+    for item in order_items:
+        item.offer_price = item.product.offer_price
+        item.total_price_each = item.offer_price * item.quantity
+        total_price += item.total_price_each
+
+        if order_total_price != total_price:
+            discount = total_price - order_total_price
+            total_price = order_total_price
+        else:
+            pass
 
     final_total = total_price + 50
 
@@ -687,6 +702,7 @@ def order_summary(request, address_id, order_id):
         "total_price": total_price,
         "final_total": final_total,
         "after_tax_amount": after_tax_amount,
+        "discount": discount,
     }
 
     return render(request, "user/order_summary.html", context)
@@ -748,14 +764,22 @@ def invoice(request, address_id, order_id):
 
     orders = Order.objects.get(id=order_id, address=address)
     order_items = OrderItem.objects.filter(order=orders)
+    order_total_price = orders.total_price
 
     total_price = 0
     final_total = 0
+    discount = 0
 
     for item in order_items:
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
+
+        if order_total_price != total_price:
+            discount = total_price - order_total_price
+            total_price = order_total_price
+        else:
+            pass
 
     final_total = total_price + 50
 
@@ -771,6 +795,7 @@ def invoice(request, address_id, order_id):
         "total_price": total_price,
         "final_total": final_total,
         "after_tax_amount": after_tax_amount,
+        "discount": discount,
     }
 
     return render(request, "user/invoice.html", context)
