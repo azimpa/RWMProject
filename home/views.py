@@ -576,7 +576,7 @@ def payment(request, address_id):
                         pass
 
                 cart.coupon = None
-                cart.save()    
+                cart.save()
                 cart_items.delete()
 
                 return redirect(
@@ -591,8 +591,10 @@ def razor(request, address_id, after_tax_amount):
         user = request.user
         address = OrderAddress.objects.get(id=address_id)
         cart = Cart.objects.get(user=user)
-
+        cart_coupon = cart.coupon
+        coupon_discount = cart_coupon.discount if cart_coupon else 0
         cart_items = Cartitem.objects.filter(cart=cart)
+
         total_price = 0
         final_total = 0
 
@@ -601,8 +603,16 @@ def razor(request, address_id, after_tax_amount):
             item.total_price_each = item.offer_price * item.quantity
             total_price += item.total_price_each
 
+            if cart_coupon:
+                total_price = total_price - coupon_discount
+            else:
+                pass
+
         final_total = total_price + 50
-        after_tax_amount = float(after_tax_amount)
+
+        after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+            Decimal("1"), rounding=ROUND_HALF_UP
+        )
 
         if address:
             order = Order.objects.create(
@@ -610,9 +620,10 @@ def razor(request, address_id, after_tax_amount):
                 address=address,
                 payment_method="Razor Pay",
                 order_date=timezone.now(),
-                total_price=final_total,
+                total_price=total_price,
                 total_price_tax=after_tax_amount,
             )
+
             for item in cart_items:
                 product = item.product
                 quantity = item.quantity
@@ -630,9 +641,9 @@ def razor(request, address_id, after_tax_amount):
                 else:
                     print("Insufficient stock...")
                     pass
-            
+
             cart.coupon = None
-            cart.save() 
+            cart.save()
             cart_items.delete()
 
             return redirect(
@@ -660,14 +671,7 @@ def order_summary(request, address_id, order_id):
 
     orders = Order.objects.get(id=order_id, address=address)
     order_items = OrderItem.objects.filter(order=orders)
-
-    total_price = 0
-    final_total = 0
-
-    for item in order_items:
-        item.offer_price = item.product.offer_price
-        item.total_price_each = item.offer_price * item.quantity
-        total_price += item.total_price_each
+    total_price = orders.total_price
 
     final_total = total_price + 50
 
