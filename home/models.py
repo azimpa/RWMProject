@@ -4,7 +4,7 @@ from datetime import datetime
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from accounts.models import CustomUser
-from adm.models import ProductVariant
+from adm.models import ProductVariant,Coupon
 
 
 class Address(models.Model):
@@ -55,6 +55,8 @@ class Cart(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=datetime.now())
     modified_at = models.DateTimeField(auto_now=True)
+    coupon = models.ForeignKey(Coupon, null=True, blank=True, on_delete=models.SET_NULL)  # Add coupon field
+
 
     def __str__(self):
         return f"cart for {self.user.username}"

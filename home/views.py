@@ -16,6 +16,7 @@ from adm.models import (
     ProductVariant,
     ProductColor,
     ProductSize,
+    Coupon,
 )
 
 # Create your views here.
@@ -265,22 +266,76 @@ def cart(request):
         return redirect("user_login")
 
     user = request.user
-    cart_items = Cartitem.objects.filter(cart__user=user)
+    cart = get_object_or_404(Cart, user=user)
+    cart_items = Cartitem.objects.filter(cart=cart)
+    cart_coupon = cart.coupon
 
     total_price = 0
-    final_total = 0
 
     for item in cart_items:
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
 
+    if request.method == "POST":
+        coupon_code = request.POST.get("coupon_code")
+        try:
+            coupon = Coupon.objects.get(coupon_code=coupon_code)
+            if not cart_coupon and total_price >= coupon.minimum_amount:
+                cart.coupon = coupon
+                cart.save()
+                messages.success(request, "Coupon added successfully")
+                return redirect("cart")
+            elif cart_coupon:
+                messages.warning(request, "You have already used a coupon")
+            else:
+                messages.warning(
+                    request, "Not eligible for the current price, add more items"
+                )
+        except Coupon.DoesNotExist:
+            messages.warning(request, "Please enter a valid coupon")
+
+    coupon_discount = cart_coupon.discount if cart_coupon else 0
+    final_total = total_price - coupon_discount
+
     context = {
         "cart_items": cart_items,
         "total_price": total_price,
+        "coupon_discount": coupon_discount,
+        "final_total": final_total,
+        "cart_coupon": cart_coupon,
     }
 
     return render(request, "user/cart.html", context)
+
+
+def coupons_details(request):
+    user = request.user
+    cart = get_object_or_404(Cart, user=user)
+    coupons = Coupon.objects.all()
+
+    context = {
+        "coupons": coupons,
+    }
+
+    return render(request, "user/coupons_details.html", context)
+
+
+def remove_coupon(request):
+    user = request.user
+
+    try:
+        cart = get_object_or_404(Cart, user=user)
+        if cart.coupon:
+            cart.coupon = None
+            cart.save()
+            messages.success(request, "Coupon removed successfully")
+        else:
+            messages.warning(request, "No coupon applied to your cart")
+    except:
+        messages.warning(request, "Error: Could not remove coupon")
+
+    return redirect("cart")
 
 
 def update_cart_item(request, id):

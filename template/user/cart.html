@@ -120,15 +120,36 @@
         </div>
         <div class="row cart_extra">
             <div class="col-lg-6">
-                <div class="cart_coupon">
+                <div class="cart_coupon" style="margin-top: 40px;">
                     <div class="cart_title">Coupon Code</div>
-                    <form action="#" class="cart_coupon_form d-flex flex-row align-items-start justify-content-start"
+                    {% if coupon_discount > 0 %}
+                    <!-- Display the applied coupon if one exists -->
+                    <div class="applied_coupon"
+                        style="background-color: #f9f9f9; padding: 10px; border-radius: 5px; margin-top: 20px;">
+                        <p><strong>Applied Coupon:</strong> <span style="font-weight: bold; color: #3498db;">{{cart_coupon.coupon_code }}</span></p>
+                        <p><strong>Coupon Discount:</strong> <span style="font-weight: bold; color: #2ecc71;">{{coupon_discount }}</span></p>
+                        <!-- Add a delete button -->
+                        <form action="{% url 'remove_coupon' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="coupon_id" value="{{ cart_coupon.pk }}">
+                            <button type="submit" class="btn btn-danger">Remove Coupon</button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <!-- Display the regular coupon input form if no coupon is applied -->
+                    <form action="{% url 'cart' %}" method="POST"
+                        class="cart_coupon_form d-flex flex-row align-items-start justify-content-start"
                         id="cart_coupon_form">
+                        {% csrf_token %}
                         <input type="text" class="cart_coupon_input form-control" placeholder="Coupon code"
-                            required="required" />
-                        <button class="button_clear cart_button_2 btn btn-primary">Apply Coupon</button>
+                            name="coupon_code" required="required" />
+                        <button type="submit" class="button_clear cart_button_2 btn btn-primary">Apply Coupon</button>
                     </form>
+                    {% endif %}
                 </div>
+                <a href="{% url 'coupons_details' %}">
+                    <p>coupons.</p>
+                </a>
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show col-6" role="alert">
                     <strong></strong>{{ message }}
@@ -144,14 +165,16 @@
                             <div class="cart_total_title">Sub Total</div>
                             <div class="cart_total_price ml-auto">₹ {{ total_price }}</div>
                         </li>
+                        {% if coupon_discount %}
                         <li class="d-flex flex-row align-items-center justify-content-start">
                             <div class="cart_total_title">Coupon Savings</div>
-                            <div class="cart_total_price ml-auto">₹ {{ total_price }}</div>
+                            <div class="cart_total_price ml-auto">₹ {{ coupon_discount }}</div>
                         </li>
                         <li class="d-flex flex-row align-items-center justify-content-start">
                             <div class="cart_total_title">Final Total</div>
-                            <div class="cart_total_price ml-auto">₹ {{ total_price }}</div>
+                            <div class="cart_total_price ml-auto">₹ {{ final_total }}</div>
                         </li>
+                        {% endif %}
                     </ul>
                     <a href="{% url 'checkout' %}?cart_items=true">
                         <button class="cart_total_button btn btn-success">Proceed to Checkout</button>

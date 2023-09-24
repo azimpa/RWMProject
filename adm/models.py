@@ -82,9 +82,3 @@ class Coupon(models.Model):
         now = timezone.now().date()
         return self.valid_from <= now <= self.valid_to
 
-
-class UserCoupons(models.Model):
-    user=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    coupon=models.ForeignKey(Coupon, on_delete=models.CASCADE)
-
-
