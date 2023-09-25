@@ -5,7 +5,7 @@
 {% block content %}
 <style>
     .card {
-        height: 380px;
+        height: 420px;
         /* Set the card's height */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         transition: transform 0.2s ease-in-out;
@@ -127,6 +127,14 @@
                                             <span
                                                 class="text-muted fixed-price"><del>&#8377;{{variant.price}}</del></span>
                                         </div>
+                                    </div>
+                                    <div class="card-body text-center p-1">
+                                        <span class="text-muted">Discount:</span>
+                                        <span class="fixed-color">{{ variant.product.discount_percentage }} % </span>
+                                    </div>
+                                    <div class="card-body text-center p-1">
+                                        <span class="text-muted">Current Offer:</span>
+                                        <span class="fixed-color">{{ variant.product.offer_type }}</span>
                                     </div>
                                     <div class="card-body text-center p-1">
                                         <span class="text-muted">Color:</span>
