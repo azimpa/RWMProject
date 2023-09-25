@@ -62,8 +62,22 @@
           </select>
         </div>
         <div class="col-md-6">
+          <label for="discount">Discount (%)</label>
+          <input type="text" class="form-control" id="discount_percentage" name="discount_percentage" required>
+        </div>
+        <div class="col-md-6">
           <label for="product_description" class="form-label">DESCRIPTION</label>
-          <textarea class="form-control" id="product_description" name="product_description" rows="4" required></textarea>
+          <textarea class="form-control" id="product_description" name="product_description" rows="4"
+            required></textarea>
+        </div>
+        <div class="col-md-6">
+          <label for="offer_type" class="form-label">OFFER TYPE</label>
+          <select class="form-select" id="offer_type" name="offer_type" required>
+            <option value="Product Offer">Product offer</option>
+            <option value="Product Offer">Category offer</option>
+            <option value="Special Offer">Special</option>
+            <option value="Other Offer">Other</option>
+          </select>
         </div>
       </div>
       <div class="text-center">

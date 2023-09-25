@@ -207,6 +207,8 @@ def add_adm_product(request):
         image = request.FILES.get("product_images")
         cat = AdmCategories.objects.get(id=category, is_active=True)
         product_description = request.POST.get("product_description")
+        offer_type = request.POST.get("offer_type")
+        discount_percentage = request.POST.get("discount_percentage") 
         price = request.POST.get("price", "")
         offer_price = request.POST.get("offer_price", "")
         prod_status = request.POST.get("product_status", "active")
@@ -221,6 +223,8 @@ def add_adm_product(request):
             images=image,
             category=cat,
             status=prod_status,
+            offer_type=offer_type,
+            discount_percentage=discount_percentage,
             price=price,
             offer_price=offer_price,
             description=product_description,
@@ -257,6 +261,14 @@ def edit_adm_product(request, id):
         if "edited_price" in request.POST:
             editprice = request.POST.get("edited_price")
             product.price = editprice
+
+        if "edited_discount" in request.POST:
+            edited_discount = request.POST.get("edited_discount")
+            product.discount_percentage = edited_discount
+
+        if "edited_offer_type" in request.POST:
+            edited_offer_type = request.POST.get("edited_offer_type")
+            product.offer_type = edited_offer_type        
 
         if "new_images" in request.FILES:
             editimages = request.FILES.get("new_images")

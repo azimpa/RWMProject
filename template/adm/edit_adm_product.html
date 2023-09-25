@@ -31,6 +31,11 @@
                             <input type="text" class="form-control" id="edited_offer_price" name="edited_offer_price"
                                 value="{{ product.offer_price }}" required>
                         </div>
+                        <div class="form-group">
+                            <label for="edited_discount">Discount %</label>
+                            <input type="text" class="form-control" id="edited_discount" name="edited_discount"
+                                value="{{ product.discount_percentage }}" required>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
@@ -50,6 +55,19 @@
                                 <option value="active" {% if product.status == 'active' %}selected{% endif %}>Active
                                 </option>
                                 <option value="inactive" {% if product.status == 'inactive' %}selected{% endif %}>Inactive
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edited_offer_type">Offer Type</label>
+                            <select class="form-control" id="edited_offer_type" name="edited_offer_type" required>
+                                <option value="Product Offer" {% if product.offer_type == 'Product Offer' %}selected{% endif %}>Product Offer
+                                </option>
+                                <option value="Category Offer" {% if product.offer_type == 'Category Offer' %}selected{% endif %}>Category Offer
+                                </option>
+                                <option value="Special Offer" {% if product.offer_type == 'Special Offer' %}selected{% endif %}>Special Offer
+                                </option>
+                                <option value="Other Offer" {% if product.offer_type == 'Other Offer' %}selected{% endif %}>Other
                                 </option>
                             </select>
                         </div>
