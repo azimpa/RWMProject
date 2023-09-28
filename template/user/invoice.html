@@ -6,73 +6,78 @@
 
 {% block content %}
 <style>
-    /* Custom CSS for styling */
     body {
         font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
+        background-color: #f9f9f9;
+        padding: 20px;
     }
 
     .invoice-container {
+        max-width: 800px;
         margin: 0 auto;
         padding: 20px;
-        border: 1px solid #ccc;
-        max-width: 800px;
-        background-color: #fff;
+        background-color: #ffffff;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
     }
 
     .invoice-header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
 
-    .invoice-header h5 {
+    .invoice-header h1 {
         font-weight: bold;
-        color: #333;
+        color: #333333;
     }
 
     .contact-info {
         text-align: center;
+        margin-bottom: 30px;
     }
 
     .contact-info p {
-        color: #555;
+        color: #555555;
+        margin: 5px 0;
     }
 
     .address-container {
         display: flex;
         justify-content: space-between;
-        margin-top: 30px;
+        margin-top: 70px;
+        margin-bottom: 30px;
     }
 
     .address-container .address {
-        flex: 0.5;
+        flex: 0.48;
     }
 
     .order-details {
-        margin-top: 30px;
+        margin-top: 40px;
+        margin-bottom: 40px;
     }
 
-    .order-details h5 {
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
+    .order-details p {
+        color: #333333;
+        margin: 5px 0;
     }
 
     .table-container {
-        margin-top: 30px;
+        margin-top: 20px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
+        margin-top: 10px;
     }
 
     table th,
     table td {
-        border: 1px solid #ccc;
-        padding: 10px;
+        border: 1px solid #cccccc;
+        padding: 12px;
         text-align: center;
+        font-size: 14px;
     }
 
     table th {
@@ -84,16 +89,16 @@
     }
 
     .btn-pdf {
-        margin-top: 30px;
         text-align: center;
+        margin-top: 30px;
     }
 
     .btn-pdf button {
         background-color: #007bff;
-        color: #fff;
+        color: #ffffff;
         padding: 12px 24px;
         border: none;
-        border-radius: 8px;
+        border-radius: 2px;
         cursor: pointer;
         font-size: 16px;
         font-weight: bold;
@@ -102,51 +107,48 @@
 
     .btn-pdf button:hover {
         background-color: #0056b3;
-        /* Darker shade of blue on hover */
         transform: scale(1.05);
-        /* Enlarge the button slightly on hover */
     }
 </style>
 <div style="margin-top: 150px;">
     <div class="invoice-container">
         <div class="invoice-header">
-            <h6><strong>INVOICE</strong></h6>
+            <h1>INVOICE</h1>
         </div>
+
         <div class="contact-info">
-            <h2><strong>RWM</strong></h2>
-            <p>ridewithme@gmail.com</p>
-            <p><i class="uil uil-phone me-1"></i> 012-345-6789</p>
+            <h3><strong>RWM</strong></h3>
+            <p>Email: ridewithme@gmail.com</p>
+            <p>Phone: 012-345-6789</p>
         </div>
+
         <div class="address-container">
             <div class="address">
-                <h6 class="font-weight-bold">SHIPPING ADDRESS</h6>
-                <p>
-                    {{ address.name }}<br />
-                    {{ address.street }}<br />
-                    {{ address.city }}, {{ address.state }}<br />
+                <h5 class="font-weight-bold">SHIPPING ADDRESS</h5>
+                <address>
+                    {{ address.name }}<br>
+                    {{ address.street }}<br>
+                    {{ address.city }}, {{ address.state }}<br>
                     {{ address.country }}, {{ address.pin_code }}
-                </p>
+                </address>
             </div>
             <div class="address">
-                <h6 class="font-weight-bold">BILLING ADDRESS</h6>
-                <p>
-                    {{ address.name }}<br />
-                    {{ address.street }}<br />
-                    {{ address.city }}, {{ address.state }}<br />
+                <h5 class="font-weight-bold">BILLING ADDRESS</h5>
+                <address>
+                    {{ address.name }}<br>
+                    {{ address.street }}<br>
+                    {{ address.city }}, {{ address.state }}<br>
                     {{ address.country }}, {{ address.pin_code }}
-                </p>
+                </address>
             </div>
         </div>
         <div class="order-details">
-            <h5>ORDER DETAILS :</h5>
-            <p>{{ orders }}</p>
-            <h5>INVOICE DATE :</h5>
-            <p>{{ orders.order_date|date:"d - M - Y" }}</p>
-            <h5>PAYMENT TYPE :</h5>
-            <p>{{ orders.payment_method}}</p>
+            <p><strong>Order ID:</strong> {{ orders.id }}</p>
+            <p><strong>Order Date:</strong> {{ orders.order_date|date:"d - M - Y" }}</p>
+            <p><strong>Payment Type:</strong> {{ orders.payment_method}}</p>
         </div>
         <div class="table-container">
-            <h5 class="font-size-15 text-center"><strong>ITEMS SUMMARY</strong></h5>
+            <h4 class="text-center"><strong>ITEMS SUMMARY</strong></h4>
             <table>
                 <thead>
                     <tr>
@@ -167,31 +169,35 @@
                         <td class="text-end">₹{{ order_item.total_price_each }}</td>
                     </tr>
                     {% endfor %}
+                    {% if discount > 0 %}
                     <tr class="total-row">
-                        <td colspan="4" class="text-end">
-                           Discount (Coupon)
-                        </td>
+                        <td colspan="4" class="text-end">Discount</td>
                         <td class="text-end">₹{{ discount }}</td>
                     </tr>
+                    {% endif %}
                     <tr class="total-row">
-                        <td colspan="4" class="text-end">
-                            Total Amount (Inclusive of Shipping Fee of ₹50)
-                        </td>
-                        <td class="text-end">₹{{ final_total }}</td>
+                        <td colspan="4" class="text-end">Shipping Fee</td>
+                        <td class="text-end">₹50</td>
                     </tr>
                     <tr class="total-row">
-                        <td colspan="4" class="border-0 text-end">Final Total (A tax rate of 2% applies)</td>
+                        <td colspan="4" class="text-end">Applicable Tax Rate</td>
+                        <td class="text-end">2%</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="4" class="border-0 text-end">
+                            Total Amount (Inclusive of Taxes and Shipping)
+                        </td>
                         <td class="border-0 text-end">
-                            <h4 class="m-0 fw-semibold"><strong>₹{{ after_tax_amount }}</strong></h4>
+                            <h5><strong>₹{{ after_tax_amount }}</strong></h5>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="btn-pdf">
-        <button class="btn btn-primary" id="pdfButton">PDF</button>
-    </div>
+</div>
+<div class="btn-pdf">
+    <button class="btn btn-primary" id="pdfButton">Download PDF</button>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 <script>
@@ -202,12 +208,11 @@
 
         // Define PDF generation options
         const pdfOptions = {
-            filename: 'invoice.pdf',
-            image: { type: 'jpeg', quality: 1.0 }, // Adjust the image quality (1.0 for maximum quality)
+            filename: "invoice.pdf",
+            image: { type: "jpeg", quality: 1.0 }, // Adjust the image quality (1.0 for maximum quality)
             html2canvas: { scale: 2 }, // Adjust the scale for higher quality
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
-
 
         // Generate and save the PDF
         html2pdf().from(invoiceContainer).set(pdfOptions).save();

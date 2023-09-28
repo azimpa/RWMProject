@@ -525,7 +525,9 @@ def payment(request, address_id):
                         pass
 
                 cart.coupon = None
+                cart.total_price = 0
                 cart.save()
+
                 cart_items.delete()
 
                 return redirect(
@@ -589,7 +591,9 @@ def razor(request, address_id, after_tax_amount):
                     pass
 
             cart.coupon = None
+            cart.total_price = 0
             cart.save()
+
             cart_items.delete()
 
             return redirect(
@@ -700,23 +704,13 @@ def invoice(request, address_id, order_id):
     orders = Order.objects.get(id=order_id, address=address)
     order_items = OrderItem.objects.filter(order=orders)
     order_total_price = orders.total_price
-
-    total_price = 0
-    final_total = 0
-    discount = 0
+    coupon_discount = orders.coupon_discount if orders.coupon_discount else 0
+    total_price = order_total_price - coupon_discount
+    final_total = total_price + 50
 
     for item in order_items:
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
-        total_price += item.total_price_each
-
-        if order_total_price != total_price:
-            discount = total_price - order_total_price
-            total_price = order_total_price
-        else:
-            pass
-
-    final_total = total_price + 50
 
     after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
@@ -727,10 +721,9 @@ def invoice(request, address_id, order_id):
         "username": username,
         "orders": orders,
         "order_items": order_items,
-        "total_price": total_price,
-        "final_total": final_total,
+        "order_total_price": order_total_price,
+        "discount": coupon_discount,
         "after_tax_amount": after_tax_amount,
-        "discount": discount,
     }
 
     return render(request, "user/invoice.html", context)
