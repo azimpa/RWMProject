@@ -386,7 +386,6 @@ def checkout(request):
 
     user = request.user
     addresses = OrderAddress.objects.filter(user=user)
-    cart_items_param = request.GET.get("cart_items")
 
     selected_address_id = None
     default_address = addresses.order_by("-id").first()
@@ -398,16 +397,6 @@ def checkout(request):
             "payment",
             address_id=selected_address_id,
         )
-
-    if cart_items_param == "true":
-        return render(
-            request,
-            "user/checkout.html",
-            {
-                "addresses": addresses,
-                "default_address": default_address,
-            },
-        )
     else:
         return render(
             request,
@@ -417,36 +406,6 @@ def checkout(request):
                 "default_address": default_address,
             },
         )
-
-
-def add_checkout_address(request):
-    if not request.user.is_authenticated:
-        return redirect("user_login")
-
-    if request.method == "POST":
-        housename_companyname = request.POST.get("Housename_companyname")
-        post_office = request.POST.get("Post_office")
-        street = request.POST.get("Street")
-        city = request.POST.get("City")
-        state = request.POST.get("State")
-        country = request.POST.get("Country")
-        pin_code = request.POST.get("Pin_code")
-
-        address = OrderAddress(
-            user=request.user,
-            name=housename_companyname,
-            postoffice=post_office,
-            street=street,
-            city=city,
-            state=state,
-            country=country,
-            pin_code=pin_code,
-        )
-        address.save()
-
-        return redirect("checkout")
-
-    return render(request, "user/add_checkout_address.html")
 
 
 def edit_checkout_address(request, id):

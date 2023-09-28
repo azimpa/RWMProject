@@ -1,96 +1,215 @@
 {% extends 'user/base_user.html' %}
 
+{% load static %}
+
 {% block content %}
-<div style="margin-top: 180px">
-    <div class="container my-5">
+<style>
+    .card {
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        background-color: #3498db;
+        color: white;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .total-section {
+        margin-bottom: 10px;
+    }
+
+    .total-section h6 {
+        margin: 5px 0;
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+
+    .total-section p {
+        margin: 0;
+    }
+
+    .product-details .item {
+        padding: 10px;
+    }
+
+    .product-details .item img {
+        max-width: 220px;
+        max-height: 120px;
+    }
+
+    /* Custom styling for order item details */
+    .order-item-card {
+        border: 1px solid #dcdcdc;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .order-item-card .card-body {
+        padding: 15px;
+    }
+
+    .order-item-card .row {
+        align-items: center;
+    }
+
+    .order-item-card img {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 5px;
+    }
+
+    .order-item-card .item-details {
+        padding-left: 20px;
+    }
+
+    .order-item-card .item-details h5 {
+        margin: 0;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .order-item-card .item-details strong {
+        font-weight: bold;
+    }
+
+    /* Updated styling for total sections */
+    .total-section {
+        margin-bottom: 10px;
+    }
+
+    .total-section h6 {
+        margin: 5px 0;
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+
+    .total-section p {
+        margin: 0;
+    }
+
+    /* Updated styling for shipping address */
+    .shipping-address {
+        margin-bottom: 10px;
+    }
+
+    .shipping-address p {
+        margin: 5px 0;
+    }
+
+    /* Updated styling for the layout */
+    .container {
+        margin-top: 50px;
+        /* Adjusted margin-top */
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .col-md-6,
+    .col-md-12 {
+        width: 48%;
+        /* Adjusted width */
+    }
+
+    .col-md-12 {
+        width: 100%;
+        /* Adjusted width for the single column */
+    }
+
+    .col-md-6 .total-section {
+        margin-bottom: 15px;
+        /* Adjusted margin */
+    }
+
+    .col-md-6 .total-section h6 {
+        font-size: 1em;
+        /* Adjusted font size */
+    }
+</style>
+<div style="margin-top: 150px;">
+    <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10 col-xl-8">
-                <div class="card" style="border-radius: 10px">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h5 class="mb-0 font-weight-bold">ORDER SUMMARY</h5>
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="text-center"><strong>ORDER SUMMARY</strong></h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-4">
                             <p class="lead mb-0">
-                                Thank you for your order,
-                                <span class="text-primary">{{username}}</span>
-                                <a href="{% url 'invoice' address_id=address.id order_id=orders.id %}"
-                                    style="display: block; text-align: right;">
-                                    <span style="font-weight: bold;">Invoice</span>
+                                Dear <span class="text-primary"><strong>{{ username }}</strong></span>,
+                                <br>Thank you for placing your order with us.
+                                <a href="{% url 'invoice' address_id=address.id order_id=orders.id %}">
+                                    <h6>View Invoice</h6>
                                 </a>
                             </p>
                         </div>
+
                         {% for item in order_items %}
-                        <!-- Product in Order {{ order.id }} -->
-                        <div class="card mb-4">
+                        <div class="card order-item-card">
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-2">
+                                <div class="row product-details">
+                                    <div class="col-md-3 item">
                                         {% for img in item.product.images.all %}
                                         {% if forloop.first %}
-                                        <img src="{{img.image.url}}" style="height: 70px; width: 100px" alt="" />
+                                        <img src="{{ img.image.url }}" alt="Product Image" class="img-fluid" />
                                         {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <div class="col-md-2 d-flex align-items-center" style="margin-left: 100px;">
-                                        <p class="mb-0">
-                                            PRODUCT:<br>{{item.product}}
-                                        </p>
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-center">
-                                        <p class="mb-0 small">
-                                            PRICE: <br />
-                                            ₹{{ item.product.offer_price }}
-                                        </p>
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-center">
-                                        <p class="mb-0 small">
-                                            QUANTITY: <br />
-                                            {{ item.quantity }}
-                                        </p>
-                                    </div>
-                                    <div class="col-md-1 d-flex align-items-center">
-                                        <p class="mb-0 small">
-                                            Total: <br />
-                                            {{item.total_price_each}}
-                                        </p>
+                                    <div class="col-md-9 item-details">
+                                        <h5><strong>Product:</strong> {{ item.product }}</h5>
+                                        <h5><strong>Price:</strong> ₹{{ item.product.offer_price }}</h5>
+                                        <h5><strong>Quantity:</strong> {{ item.quantity }}</h5>
+                                        <h5><strong>Total:</strong> ₹{{ item.total_price_each }}</h5>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
-                        <!-- Order Summary -->
-                        <div class="mb-5">
-                            <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold">PAYMENT TYPE</h6>
-                                <h6 class="mb-0 fw-bold"><strong>{{ orders.payment_method }}</strong></h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="total-section">
+                                    <h4><strong>PAYMENT TYPE</strong></h4>
+                                    <h6>{{ orders.payment_method }}</h6>
+                                </div>
+                                <div class="shipping-address">
+                                    <h4><strong>SHIPPING ADDRESS</strong></h4>
+                                    <h6>
+                                        {{ address.name }}, {{ address.postoffice }}, {{ address.street}},
+                                        {{address.city}}, {{ address.state }},<br />
+                                        {{ address.country }}, {{ address.pin_code }}.
+                                    </h6>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold">SHIPPING ADDRESS</h6>
-                                <p style="margin-top: -5px">
-                                    {{ address.name }}, {{ address.postoffice }}, {{ address.street}}, {{address.city}},
-                                    {{ address.state }},<br />
-                                    {{ address.country }}, {{ address.pin_code }}.
-                                </p>
+                            <div class="col-md-6">
+                                <div class="total-section">
+                                    <h6>TOTAL PRICE</h6>
+                                    <h6><strong>₹{{total_price}}</strong></h6>
+                                </div>
+                                <div class="total-section">
+                                    <h6>SUB TOTAL</h6>
+                                    <h6><strong>₹{{total_price}}</strong></h6>
+                                </div>
+                                <div class="total-section">
+                                    <h6>Discount</h6>
+                                    <h6><strong>₹{{discount}}</strong></h6>
+                                </div>
+                                <div class="total-section">
+                                    <h6>TOTAL (Inclusive of Shipping Fee of ₹50)</h6>
+                                    <h6><strong>₹{{final_total}}</strong></h6>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold">SUB TOTAL</h6>
-                                <h6 class="mb-0 fw-bold"><strong>₹{{total_price}}</strong></h6>
-                            </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold">Discount (Coupon)</h6>
-                                <h6 class="mb-0 fw-bold"><strong>₹{{discount}}</strong></h6>
-                            </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold"> TOTAL
-                                    (Inclusive of Shipping Fee of ₹50)
-                                </h6>
-                                <h6 class="mb-0 fw-bold"><strong>₹ {{final_total}}</strong></h6>
-                            </div>
-                            <hr style="height: 30px; border-color: #333333d0" />
-                            <div class="d-flex justify-content-between mt-4">
-                                <h6 class="mb-0 font-weight-bold">FINAL TOTAL (A tax rate of 2% applies) :</h6>
-                                <h5 class="mb-0 fw-bold"><strong>₹ {{after_tax_amount}}</strong></h5>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>FINAL TOTAL (A tax rate of 2% applies) :</h5>
+                                <h5><strong>₹{{after_tax_amount}}</strong></h5>
                             </div>
                         </div>
                     </div>
