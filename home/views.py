@@ -297,6 +297,8 @@ def cart(request):
 
     coupon_discount = cart_coupon.discount if cart_coupon else 0
     final_total = total_price - coupon_discount
+    cart.total_price = total_price
+    cart.save()
 
     context = {
         "cart_items": cart_items,
@@ -310,14 +312,11 @@ def cart(request):
 
 
 def coupons_details(request):
-    user = request.user
-    cart = get_object_or_404(Cart, user=user)
     coupons = Coupon.objects.all()
 
     context = {
         "coupons": coupons,
     }
-
     return render(request, "user/coupons_details.html", context)
 
 
@@ -450,25 +449,14 @@ def payment(request, address_id):
     user = request.user
     address = OrderAddress.objects.get(id=address_id)
     address_id = address.id
+
     cart = Cart.objects.get(user=user)
-    cart_coupon = cart.coupon
-    coupon_discount = cart_coupon.discount if cart_coupon else 0
     cart_items = Cartitem.objects.filter(cart=cart)
+    total_price = cart.total_price
+    coupon_discount = cart.coupon.discount if cart.coupon else 0
+    cart_total = total_price - coupon_discount
 
-    total_price = 0
-    final_total = 0
-
-    for item in cart_items:
-        item.offer_price = item.product.offer_price
-        item.total_price_each = item.offer_price * item.quantity
-        total_price += item.total_price_each
-
-        if cart_coupon:
-            total_price = total_price - coupon_discount
-        else:
-            pass
-
-    final_total = total_price + 50
+    final_total = cart_total + 50
 
     after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
@@ -495,7 +483,7 @@ def payment(request, address_id):
 
         context = {
             "address_id": address_id,
-            "total_price": total_price,
+            "total_price": cart_total,
             "after_tax_amount": after_tax_amount,
         }
         return render(request, "user/payment.html", context)
@@ -513,8 +501,10 @@ def payment(request, address_id):
                     payment_method=payment_method,
                     order_date=timezone.now(),
                     total_price=total_price,
+                    coupon_discount=coupon_discount,
                     total_price_tax=after_tax_amount,
                 )
+                print(order.coupon_discount, "ooooo")
 
                 for item in cart_items:
                     product = item.product
@@ -545,16 +535,12 @@ def payment(request, address_id):
                 )
 
         elif "razorpay" in request.POST:
-            payment_method_id_2 = request.POST.get("razorpay")
-
-            if address and payment_method_id_2:
-                payment_method = "razorpay"
-                context = {
-                    "address_id": address_id,
-                    "total_price": total_price,
-                    "after_tax_amount": after_tax_amount,
-                }
-        return render(request, "user/payment.html", context)
+            context = {
+                "address_id": address_id,
+                "total_price": cart_total,
+                "after_tax_amount": after_tax_amount,
+            }
+            return render(request, "user/payment.html", context)
 
 
 def razor(request, address_id, after_tax_amount):
@@ -562,24 +548,12 @@ def razor(request, address_id, after_tax_amount):
         user = request.user
         address = OrderAddress.objects.get(id=address_id)
         cart = Cart.objects.get(user=user)
-        cart_coupon = cart.coupon
-        coupon_discount = cart_coupon.discount if cart_coupon else 0
         cart_items = Cartitem.objects.filter(cart=cart)
+        total_price = cart.total_price
+        coupon_discount = cart.coupon.discount if cart.coupon else 0
+        cart_total = total_price - coupon_discount
 
-        total_price = 0
-        final_total = 0
-
-        for item in cart_items:
-            item.offer_price = item.product.offer_price
-            item.total_price_each = item.offer_price * item.quantity
-            total_price += item.total_price_each
-
-            if cart_coupon:
-                total_price = total_price - coupon_discount
-            else:
-                pass
-
-        final_total = total_price + 50
+        final_total = cart_total + 50
 
         after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
             Decimal("1"), rounding=ROUND_HALF_UP
@@ -592,6 +566,7 @@ def razor(request, address_id, after_tax_amount):
                 payment_method="Razor Pay",
                 order_date=timezone.now(),
                 total_price=total_price,
+                coupon_discount=coupon_discount,
                 total_price_tax=after_tax_amount,
             )
 
@@ -643,23 +618,13 @@ def order_summary(request, address_id, order_id):
     orders = Order.objects.get(id=order_id, address=address)
     order_items = OrderItem.objects.filter(order=orders)
     order_total_price = orders.total_price
-
-    total_price = 0
-    final_total = 0
-    discount = 0
+    coupon_discount = orders.coupon_discount if orders.coupon_discount else 0
+    total_price = order_total_price - coupon_discount
+    final_total = total_price + 50
 
     for item in order_items:
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
-        total_price += item.total_price_each
-
-        if order_total_price != total_price:
-            discount = total_price - order_total_price
-            total_price = order_total_price
-        else:
-            pass
-
-    final_total = total_price + 50
 
     after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
@@ -670,10 +635,9 @@ def order_summary(request, address_id, order_id):
         "username": username,
         "orders": orders,
         "order_items": order_items,
-        "total_price": total_price,
-        "final_total": final_total,
+        "order_total_price": order_total_price,
+        "discount": coupon_discount,
         "after_tax_amount": after_tax_amount,
-        "discount": discount,
     }
 
     return render(request, "user/order_summary.html", context)

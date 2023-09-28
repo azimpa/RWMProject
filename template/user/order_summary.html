@@ -5,29 +5,15 @@
 {% block content %}
 <style>
     .card {
-        border: 2px solid #3498db;
+        border: 2px solid #000000;
         border-radius: 10px;
         margin-bottom: 20px;
     }
 
     .card-header {
-        background-color: #3498db;
-        color: white;
+        background-color: #000000;
+        color: rgb(255, 254, 254);
         border-radius: 8px 8px 0 0;
-    }
-
-    .total-section {
-        margin-bottom: 10px;
-    }
-
-    .total-section h6 {
-        margin: 5px 0;
-        font-size: 1.1em;
-        font-weight: bold;
-    }
-
-    .total-section p {
-        margin: 0;
     }
 
     .product-details .item {
@@ -72,21 +58,6 @@
 
     .order-item-card .item-details strong {
         font-weight: bold;
-    }
-
-    /* Updated styling for total sections */
-    .total-section {
-        margin-bottom: 10px;
-    }
-
-    .total-section h6 {
-        margin: 5px 0;
-        font-size: 1.1em;
-        font-weight: bold;
-    }
-
-    .total-section p {
-        margin: 0;
     }
 
     /* Updated styling for shipping address */
@@ -136,15 +107,16 @@
             <div class="col-lg-10">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="text-center"><strong>ORDER SUMMARY</strong></h5>
+                        <h5 class="text-center" style="color: aliceblue;"><strong>ORDER SUMMARY</strong></h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-4">
                             <p class="lead mb-0">
                                 Dear <span class="text-primary"><strong>{{ username }}</strong></span>,
-                                <br>Thank you for placing your order with us.
+                                <br>Thank you for placing your order with us. <br>We appreciate your business and will
+                                process your order as soon as possible.
                                 <a href="{% url 'invoice' address_id=address.id order_id=orders.id %}">
-                                    <h6>View Invoice</h6>
+                                    <h6 style="display: flex; justify-content: end;">View Order Invoice</h6>
                                 </a>
                             </p>
                         </div>
@@ -161,10 +133,10 @@
                                         {% endfor %}
                                     </div>
                                     <div class="col-md-9 item-details">
-                                        <h5><strong>Product:</strong> {{ item.product }}</h5>
+                                        <h5><strong>Product Name:</strong> {{ item.product }}</h5>
                                         <h5><strong>Price:</strong> ₹{{ item.product.offer_price }}</h5>
                                         <h5><strong>Quantity:</strong> {{ item.quantity }}</h5>
-                                        <h5><strong>Total:</strong> ₹{{ item.total_price_each }}</h5>
+                                        <h5><strong>Total Price:</strong> ₹{{ item.total_price_each }}</h5>
                                     </div>
                                 </div>
                             </div>
@@ -174,44 +146,53 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="total-section">
-                                    <h4><strong>PAYMENT TYPE</strong></h4>
+                                    <h5><strong>Payment Method</strong></h5>
                                     <h6>{{ orders.payment_method }}</h6>
                                 </div>
                                 <div class="shipping-address">
-                                    <h4><strong>SHIPPING ADDRESS</strong></h4>
+                                    <h5><strong>Shipping Address</strong></h5>
                                     <h6>
-                                        {{ address.name }}, {{ address.postoffice }}, {{ address.street}},
-                                        {{address.city}}, {{ address.state }},<br />
-                                        {{ address.country }}, {{ address.pin_code }}.
+                                        <strong>Name:</strong> {{ address.name }}<br />
+                                        <strong>Post Office:</strong> {{ address.postoffice }}<br />
+                                        <strong>Street:</strong> {{ address.street }}<br />
+                                        <strong>City:</strong> {{ address.city }}<br />
+                                        <strong>State:</strong> {{ address.state }}<br />
+                                        <strong>Country:</strong> {{ address.country }}<br />
+                                        <strong>Pin Code:</strong> {{ address.pin_code }}
                                     </h6>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div class="total-section">
-                                    <h6>TOTAL PRICE</h6>
-                                    <h6><strong>₹{{total_price}}</strong></h6>
+                                    <h5><strong>Total Price</strong></h5>
+                                    <h6>₹{{ order_total_price }}</h6>
+                                </div>
+                                {% if discount > 0 %}
+                                <div class="total-section">
+                                    <h5><strong>Discount</strong></h5>
+                                    <h6>₹{{ discount }}</h6>
+                                </div>
+                                {% endif %}
+                                <div class="total-section">
+                                    <h5><strong>Shipping Fee</strong></h5>
+                                    <h6>₹50</h6>
                                 </div>
                                 <div class="total-section">
-                                    <h6>SUB TOTAL</h6>
-                                    <h6><strong>₹{{total_price}}</strong></h6>
-                                </div>
-                                <div class="total-section">
-                                    <h6>Discount</h6>
-                                    <h6><strong>₹{{discount}}</strong></h6>
-                                </div>
-                                <div class="total-section">
-                                    <h6>TOTAL (Inclusive of Shipping Fee of ₹50)</h6>
-                                    <h6><strong>₹{{final_total}}</strong></h6>
+                                    <div class="total-section">
+                                        <h5><strong>Applicable Tax Rate</strong></h5>
+                                        <h6>2%</h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
+                        <div class="row" style="display: flex; justify-content: flex-end; align-items: flex-end;">
                             <div class="col-md-12">
-                                <h5>FINAL TOTAL (A tax rate of 2% applies) :</h5>
-                                <h5><strong>₹{{after_tax_amount}}</strong></h5>
+                                <h5 style="text-align: center;"><strong>Total Amount (Inclusive of Taxes and Shipping)</strong></h5>
+                                <h5 style="text-align: center;"><strong>₹{{ after_tax_amount }}</strong></h5>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
             </div>

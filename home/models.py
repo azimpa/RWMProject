@@ -55,8 +55,8 @@ class Cart(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=datetime.now())
     modified_at = models.DateTimeField(auto_now=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     coupon = models.ForeignKey(Coupon, null=True, blank=True, on_delete=models.SET_NULL)  # Add coupon field
-
 
     def __str__(self):
         return f"cart for {self.user.username}"
@@ -78,6 +78,7 @@ class Order(models.Model):
     order_date = models.DateTimeField(default=datetime.now())
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_price_tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)   
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username} on {self.order_date}"

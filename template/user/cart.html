@@ -126,8 +126,10 @@
                     <!-- Display the applied coupon if one exists -->
                     <div class="applied_coupon"
                         style="background-color: #f9f9f9; padding: 10px; border-radius: 5px; margin-top: 20px;">
-                        <p><strong>Applied Coupon:</strong> <span style="font-weight: bold; color: #3498db;">{{cart_coupon.coupon_code }}</span></p>
-                        <p><strong>Coupon Discount:</strong> <span style="font-weight: bold; color: #2ecc71;">{{coupon_discount }}</span></p>
+                        <p><strong>Applied Coupon:</strong> <span
+                                style="font-weight: bold; color: #3498db;">{{cart_coupon.coupon_code }}</span></p>
+                        <p><strong>Coupon Discount:</strong> <span
+                                style="font-weight: bold; color: #2ecc71;">{{coupon_discount }}</span></p>
                         <!-- Add a delete button -->
                         <form action="{% url 'remove_coupon' %}" method="POST">
                             {% csrf_token %}
