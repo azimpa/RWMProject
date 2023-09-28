@@ -500,7 +500,7 @@ def payment(request, address_id):
         }
         return render(request, "user/payment.html", context)
 
-    if request.method == "POST":
+    elif request.method == "POST":
         if "cash_on_delivery" in request.POST:
             payment_method_id_1 = request.POST.get("cash_on_delivery")
 
@@ -543,6 +543,18 @@ def payment(request, address_id):
                     address_id=address_id,
                     order_id=order.id,
                 )
+
+        elif "razorpay" in request.POST:
+            payment_method_id_2 = request.POST.get("razorpay")
+
+            if address and payment_method_id_2:
+                payment_method = "razorpay"
+                context = {
+                    "address_id": address_id,
+                    "total_price": total_price,
+                    "after_tax_amount": after_tax_amount,
+                }
+        return render(request, "user/payment.html", context)
 
 
 def razor(request, address_id, after_tax_amount):
