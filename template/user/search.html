@@ -123,7 +123,7 @@
                             </h3>
                             <span> ₹<s>{{product.price}}</s>&nbsp &nbsp ₹ {{product.offer_price}}</span>
                         </div>
-                        <a href="{% url 'product_description' id=product.id %}" class="add-to-cart-btn">Add to Cart</a>
+                        <a href="{% url 'product_description' id=product.id %}" class="add-to-cart-btn">View details</a>
                         <div class="favorit-items">
                             {% if user.is_authenticated %}
                             <span class="flaticon-heart add-wishlist"></span>

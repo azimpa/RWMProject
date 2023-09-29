@@ -271,11 +271,15 @@ def cart(request):
     cart_coupon = cart.coupon
 
     total_price = 0
-
     for item in cart_items:
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
         total_price += item.total_price_each
+
+    if cart_coupon and total_price < cart_coupon.minimum_amount:
+        cart_coupon = None
+        cart.save()
+        messages.warning(request, "Total price less than Coupon minimum amount")
 
     if request.method == "POST":
         coupon_code = request.POST.get("coupon_code")
