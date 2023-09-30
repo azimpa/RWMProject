@@ -506,7 +506,7 @@ def payment(request, address_id):
                     order_date=timezone.now(),
                     total_price=total_price,
                     coupon_discount=coupon_discount,
-                    total_price_tax=after_tax_amount,
+                    after_tax_amount=after_tax_amount,
                 )
                 print(order.coupon_discount, "ooooo")
 
@@ -573,7 +573,7 @@ def razor(request, address_id, after_tax_amount):
                 order_date=timezone.now(),
                 total_price=total_price,
                 coupon_discount=coupon_discount,
-                total_price_tax=after_tax_amount,
+                after_tax_amount=after_tax_amount,
             )
 
             for item in cart_items:
@@ -660,7 +660,7 @@ def my_orders(request):
 
     order_items = OrderItem.objects.filter(order__in=orders).order_by("-id")
 
-    return render(request, "user/my_orders.html", {"order_items": order_items})
+    return render(request, "user/my_orders.html", {"order_items": order_items, "orders":orders})
 
 
 def cancel_order(request, order_id, product_id):
@@ -674,9 +674,9 @@ def cancel_order(request, order_id, product_id):
     return redirect("my_orders")
 
 
-def single_order(request, order_id, product_id):
+def single_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    order_item = get_object_or_404(OrderItem, order=order, product_id=product_id)
+    order_item = OrderItem.objects.filter(order = order)
 
     return render(
         request, "user/single_order.html", {"order": order, "order_item": order_item}

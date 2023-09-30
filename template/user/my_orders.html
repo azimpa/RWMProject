@@ -69,53 +69,60 @@
         background-color: #c82333;
     }
 </style>
-
 <div style="margin-top: 150px;">
     <div class="order-container">
         <div class="container">
             <h3 class="order-heading">MY ORDERS</h3>
             {% if order_items %}
-            <div class="row">
-                {% for item in order_items %}
-                <div class="col-md-12 mb-4">
-                    <div class="order-card">
-                        <div class="row align-items-center">
-                            <div class="col-md-4">
-                                {% for img in item.product.images.all %}
-                                {% if forloop.first %}
-                                <a href="{% url 'single_order' item.order.id item.product.id %}"><img
-                                        src="{{ img.image.url }}" alt="{{ item.product.product }}"></a>
-                                {% endif %}
-                                {% endfor %}
-                            </div>
-                            <div class="col-md-4 order-details">
-                                <a href="{% url 'single_order' item.order.id item.product.id %}">
-                                    <h5 class="text-dark font-weight-bold">{{ item.product.product }}</h5>
-                                    <p class="text-dark font-weight-bold">Order Status:</p>
-                                    <p>{{ item.order_status }}</p>
-                                    <p class="text-dark font-weight-bold">Ordered Date:</p>
-                                    <p>{{ item.order.order_date }}</p>
-                                    <p class="text-dark font-weight-bold">Quantity:</p>
-                                    <p>{{ item.quantity }}</p>
-                                </a>
-                            </div>
-                            <div class="col-md-4 order-action">
-                                {% if item.order_status == 'Order Placed' or item.order_status == 'Shipped' %}
-                                <form method="post" action="{% url 'cancel_order' item.order.id item.product.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm">CANCEL</button>
-                                </form>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                <div class="row">
+                    {% for order in orders %}
+                    <div style="margin-left: 20px">
+                        <h6 class="font-weight-bold">Order ID: {{ order }}</h6>
+                    </div>                                                         
+                        {% for item in order_items %}
+                            {% if item.order == order %}
+                                <div class="col-md-12 mb-4">
+                                    <div class="order-card">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-4">
+                                                {% for img in item.product.images.all %}
+                                                    {% if forloop.first %}
+                                                        <a href="{% url 'single_order' item.order.id %}">
+                                                            <img src="{{ img.image.url }}" alt="{{ item.product.product }}">
+                                                        </a>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="col-md-4 order-details">
+                                                <a href="{% url 'single_order' item.order.id %}">
+                                                    <h5 class="text-dark font-weight-bold">{{ item.product.product }}</h5>
+                                                    <p class="text-dark font-weight-bold">Order Status:</p>
+                                                    <p>{{ item.order_status }}</p>
+                                                    <p class="text-dark font-weight-bold">Ordered Date:</p>
+                                                    <p>{{ item.order.order_date }}</p>
+                                                    <p class="text-dark font-weight-bold">Quantity:</p>
+                                                    <p>{{ item.quantity }}</p>
+                                                </a>
+                                            </div>
+                                            <div class="col-md-4 order-action">
+                                                {% if item.order_status == 'Order Placed' or item.order_status == 'Shipped' %}
+                                                    <form method="post" action="{% url 'cancel_order' item.order.id item.product.id %}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger btn-sm">CANCEL</button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
             {% else %}
-            <div class="text-center mt-4">
-                <p class="text-dark font-weight-bold" style="font-size: 18px;">No Active Orders</p>
-            </div>
+                <div class="text-center mt-4">
+                    <p class="text-dark font-weight-bold" style="font-size: 18px;">No Active Orders</p>
+                </div>
             {% endif %}
         </div>
     </div>
