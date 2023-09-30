@@ -671,8 +671,15 @@ def cancel_order(request, order_id, product_id):
         order_item.order_status = "Cancelled"
         order_item.save()
 
-    return redirect("my_orders")
+    source = request.GET.get('source')
+    print(source,"pppppp")
 
+    if source == 'my_orders':
+        return redirect("my_orders")
+    elif source == 'single_order':
+        return redirect("single_order", order_id=order_id)
+    else:
+        return redirect("home")
 
 def single_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)

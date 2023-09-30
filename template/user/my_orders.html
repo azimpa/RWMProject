@@ -106,10 +106,10 @@
                                             </div>
                                             <div class="col-md-4 order-action">
                                                 {% if item.order_status == 'Order Placed' or item.order_status == 'Shipped' %}
-                                                    <form method="post" action="{% url 'cancel_order' item.order.id item.product.id %}">
-                                                        {% csrf_token %}
-                                                        <button type="submit" class="btn btn-danger btn-sm">CANCEL</button>
-                                                    </form>
+                                                <form method="post" action="{% url 'cancel_order' item.order.id item.product.id %}?source=my_orders">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-sm">CANCEL</button>
+                                                </form>                                                
                                                 {% endif %}
                                             </div>
                                         </div>
