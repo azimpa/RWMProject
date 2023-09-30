@@ -48,13 +48,6 @@ Order Details
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .product-card img {
-        max-width: 100%;
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
     .product-card h6 {
         margin-top: 15px;
         font-size: 1.1em;
@@ -67,9 +60,7 @@ Order Details
     }
 
     .btn-section {
-        display: flex;
         justify-content: center;
-        margin-top: 10px;
     }
 
     .btn-cancel,
@@ -92,21 +83,32 @@ Order Details
     }
 
     .btn-return {
-        background-color: #81c784;
+        background-color: #4caf50;
+        /* Change the background color */
         color: #fff;
+        padding: 7px 24px;
+        /* Add padding for a better button size */
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
     }
 
     .btn-return:hover {
-        background-color: #66bb6a;
+        background-color: #388e3c;
+        /* Darker green on hover */
     }
 
-    #return_section {
-        display: none;
+    .return-checkbox-container {
         margin-top: 10px;
     }
 
-    #return_checkbox:checked~#return_section {
-        display: block;
+    #return_section {
+        margin-top: 10px;
+    }
+
+    #return_section textarea {
+        max-width: 100%; /* Ensure it doesn't exceed the card's width */
+        padding: 10px;
     }
 </style>
 <div style="margin-top: 150px;">
@@ -138,7 +140,7 @@ Order Details
                             <li><strong>Discount :</strong> ₹ {{ order.coupon_discount }}</li>
                             <li><strong>Shipping fee :</strong> ₹ 50</li>
                             <li><strong>Applicable Tax rate:</strong> 2 %</li>
-                            <li><strong>Total amount :</strong> ₹ {{ order.after_tax_amount }} <br>(Inclusive of
+                            <li><strong>Total amount :</strong> ₹ {{ order.total_price_tax }} <br>(Inclusive of
                                 Taxes and Shipping) </li>
                         </ul>
                     </div>
@@ -148,14 +150,12 @@ Order Details
                 <div class="row">
                     {% for order_item in order_item %}
                     <div class="col-md-4">
-                        <div class="product-card card border-1 mb-4" style="height: 550px;">
-                            <div class="card-header">
+                        <div class="product-card card border-1 mb-4" style="min-height: 550px;">
                                 {% for img in order_item.product.images.all %}
                                 {% if forloop.first %}
                                 <img class="img-fluid" src="{{img.image.url}}" alt="">
                                 {% endif %}
                                 {% endfor %}
-                            </div>
                             <div class="card-body">
                                 <h6 class="text-center"><Strong>{{ order_item.product.product }}</Strong></h6>
                                 <p class="text-center">Size: <strong>{{ order_item.product.size }}</strong></p>
@@ -171,26 +171,27 @@ Order Details
                                 {% endif %}
                                 <div class="btn-section">
                                     {% if order_item.order_status == 'Order Placed' or order_item.order_status == 'Shipped'%}
-                                    <form method="post" action="{% url 'cancel_order' order_item.order.id order_item.product.id %}?source=single_order">
+                                    <form method="post"
+                                        action="{% url 'cancel_order' order_item.order.id order_item.product.id %}?source=single_order">
                                         {% csrf_token %}
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-sm btn-cancel">CANCEL</button>
                                         </div>
                                     </form>
                                     {% elif order_item.order_status == 'Delivered' %}
-                                    <input type="checkbox" id="return_checkbox">
-                                    <label for="return_checkbox" class="form-label">Want to Return</label>
+                                    <div class="return-checkbox-container text-center">
+                                        <input type="checkbox" id="return_checkbox">
+                                        <label for="return_checkbox" class="form-label">Want to Return</label>
+                                    </div>
                                     <div id="return_section">
                                         <form method="post"
                                             action="{% url 'return_order' order_item.order.id order_item.product.id %}">
                                             {% csrf_token %}
-                                            <label for="return_reason" class="form-label">REASON FOR RETURN</label>
                                             <textarea class="form-control" id="return_reason" name="return_reason"
                                                 rows="4" placeholder="Enter your reason for return" required></textarea>
                                             <div class="text-center">
                                                 <button type="submit" class="btn btn-sm btn-return">RETURN</button>
                                             </div>
-                                            <div class="col-md-6"></div>
                                         </form>
                                     </div>
                                     {% endif %}

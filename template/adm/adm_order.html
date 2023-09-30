@@ -19,6 +19,9 @@
                         <th class="text-center">PAYMENT METHOD</th>
                         <th class="text-center">ORDER DATE</th>
                         <th class="text-center">TOTAL PRICE</th>
+                        <th class="text-center">DISCOUNT</th>
+                        <th class="text-center">SHIPPING FEE</th>
+                        <th class="text-center">TAX</th>
                         <th class="text-center">PRICE<br>(INCLUDING SHIPPING AND TAX)</th>
                         <th class="text-center">ORDER ITEMS</th>
                     </tr>
@@ -32,6 +35,9 @@
                         <td class="text-center">{{ order.payment_method }}</td>
                         <td class="text-center">{{ order.order_date }}</td>
                         <td class="text-center">{{ order.total_price }}</td>
+                        <td class="text-center">{{ order.coupon_discount }}</td>
+                        <td class="text-center">₹ 50</td>
+                        <td class="text-center">2 %</td>
                         <td class="text-center">{{ order.total_price_tax }}</td>
                         <td class="text-center">
                             <a href="{% url 'adm_order_items' order.id %}" class="btn btn-primary btn-sm">ORDER

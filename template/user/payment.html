@@ -90,7 +90,7 @@
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center total-row">
                                 <span class="cart-total-title">Total Amount (Inclusive of Taxes and Shipping)</span>
-                                <span class="cart-total-price">₹{{after_tax_amount}}</span>
+                                <span class="cart-total-price">₹{{total_price_tax}}</span>
                             </li>
                         </ul>
                     </div>
@@ -134,17 +134,17 @@
     // Your existing Razorpay code here
     var address_id = "{{ address_id }}";
     console.log("Address ID:", address_id);
-    var after_tax_amount = "{{ after_tax_amount }}";
+    var total_price_tax = "{{ total_price_tax }}";
     var options = {
         key: "rzp_test_J4ItW79ImKNvlW",
-        amount: Number("{{after_tax_amount}}") * 100,
+        amount: Number("{{total_price_tax}}") * 100,
         currency: "INR",
         name: "RWM",
         description: "Thanks",
         image: "http://127.0.0.1:8000/static/images/rwm-logo.png",
         order_id: "{{payment.id}}",
         handler: function (response) {
-            window.location.href = `http://127.0.0.1:8000/razorpay/${address_id}/${after_tax_amount}`;
+            window.location.href = `http://127.0.0.1:8000/razorpay/${address_id}/${total_price_tax}`;
         },
         theme: {
             color: "#3399cc",

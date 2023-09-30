@@ -23,16 +23,13 @@ from adm.models import (
 
 
 def home(request):
-    products = AdmProducts.objects.filter(is_active=True).order_by("id")
-
     if request.user.is_anonymous:
-        return render(request, "user/home.html", {"products": products})
+        return render(request, "user/home.html")
     elif request.user.is_superuser:
         logout(request)
-        return render(request, "user/home.html", {"products": products})
+        return render(request, "user/home.html")
     else:
-        products = AdmProducts.objects.filter(is_active=True).order_by("id")
-        return render(request, "user/home.html", {"products": products})
+        return render(request, "user/home.html")
 
 
 def useraddress(request):
@@ -462,7 +459,7 @@ def payment(request, address_id):
 
     final_total = cart_total + 50
 
-    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+    total_price_tax = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
     )
 
@@ -475,7 +472,7 @@ def payment(request, address_id):
         )
 
         order_data = {
-            "amount": int(after_tax_amount * 100),  # Amount in paise
+            "amount": int(total_price_tax * 100),  # Amount in paise
             "currency": "INR",
             "payment_capture": 1,  # Auto-capture the payment
         }
@@ -488,7 +485,7 @@ def payment(request, address_id):
         context = {
             "address_id": address_id,
             "total_price": cart_total,
-            "after_tax_amount": after_tax_amount,
+            "total_price_tax": total_price_tax,
         }
         return render(request, "user/payment.html", context)
 
@@ -506,10 +503,9 @@ def payment(request, address_id):
                     order_date=timezone.now(),
                     total_price=total_price,
                     coupon_discount=coupon_discount,
-                    after_tax_amount=after_tax_amount,
+                    total_price_tax=total_price_tax,
                 )
-                print(order.coupon_discount, "ooooo")
-
+            
                 for item in cart_items:
                     product = item.product
                     quantity = item.quantity
@@ -544,12 +540,12 @@ def payment(request, address_id):
             context = {
                 "address_id": address_id,
                 "total_price": cart_total,
-                "after_tax_amount": after_tax_amount,
+                "total_price_tax": total_price_tax,
             }
             return render(request, "user/payment.html", context)
 
 
-def razor(request, address_id, after_tax_amount):
+def razor(request, address_id, total_price_tax):
     try:
         user = request.user
         address = OrderAddress.objects.get(id=address_id)
@@ -561,7 +557,7 @@ def razor(request, address_id, after_tax_amount):
 
         final_total = cart_total + 50
 
-        after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+        total_price_tax = (final_total + (Decimal("0.02") * final_total)).quantize(
             Decimal("1"), rounding=ROUND_HALF_UP
         )
 
@@ -573,7 +569,7 @@ def razor(request, address_id, after_tax_amount):
                 order_date=timezone.now(),
                 total_price=total_price,
                 coupon_discount=coupon_discount,
-                after_tax_amount=after_tax_amount,
+                total_price_tax=total_price_tax,
             )
 
             for item in cart_items:
@@ -634,7 +630,7 @@ def order_summary(request, address_id, order_id):
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
 
-    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+    total_price_tax = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
     )
 
@@ -645,7 +641,7 @@ def order_summary(request, address_id, order_id):
         "order_items": order_items,
         "order_total_price": order_total_price,
         "discount": coupon_discount,
-        "after_tax_amount": after_tax_amount,
+        "total_price_tax": total_price_tax,
     }
 
     return render(request, "user/order_summary.html", context)
@@ -657,10 +653,11 @@ def my_orders(request):
 
     user = request.user
     orders = Order.objects.filter(user=user)
-
     order_items = OrderItem.objects.filter(order__in=orders).order_by("-id")
 
-    return render(request, "user/my_orders.html", {"order_items": order_items, "orders":orders})
+    return render(
+        request, "user/my_orders.html", {"order_items": order_items, "orders": orders}
+    )
 
 
 def cancel_order(request, order_id, product_id):
@@ -671,19 +668,19 @@ def cancel_order(request, order_id, product_id):
         order_item.order_status = "Cancelled"
         order_item.save()
 
-    source = request.GET.get('source')
-    print(source,"pppppp")
+    source = request.GET.get("source")
 
-    if source == 'my_orders':
+    if source == "my_orders":
         return redirect("my_orders")
-    elif source == 'single_order':
+    elif source == "single_order":
         return redirect("single_order", order_id=order_id)
     else:
         return redirect("home")
 
+
 def single_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    order_item = OrderItem.objects.filter(order = order)
+    order_item = OrderItem.objects.filter(order=order)
 
     return render(
         request, "user/single_order.html", {"order": order, "order_item": order_item}
@@ -723,7 +720,7 @@ def invoice(request, address_id, order_id):
         item.offer_price = item.product.offer_price
         item.total_price_each = item.offer_price * item.quantity
 
-    after_tax_amount = (final_total + (Decimal("0.02") * final_total)).quantize(
+    total_price_tax = (final_total + (Decimal("0.02") * final_total)).quantize(
         Decimal("1"), rounding=ROUND_HALF_UP
     )
 
@@ -734,7 +731,7 @@ def invoice(request, address_id, order_id):
         "order_items": order_items,
         "order_total_price": order_total_price,
         "discount": coupon_discount,
-        "after_tax_amount": after_tax_amount,
+        "total_price_tax": total_price_tax,
     }
 
     return render(request, "user/invoice.html", context)
@@ -766,6 +763,7 @@ def search(request):
 
 
 def wallet(request):
+    print(request,"oooooo")
     try:
         user = request.user
         orders = Order.objects.filter(user=user, payment_method="Razor Pay")
@@ -779,13 +777,13 @@ def wallet(request):
 
         for item in order_items:
             if not item.refund_added_to_wallet:
-                total_refund_amount += item.order.total_price_tax
+                total_refund_amount += item.order.total_price_tax  # Updated here
                 item.refund_added_to_wallet = True
                 item.save()  # Save the item
 
+
         user.wallet_balance += Decimal(total_refund_amount)
         user.save()
-
         return render(
             request,
             "user/wallet.html",

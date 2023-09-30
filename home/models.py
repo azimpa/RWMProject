@@ -78,7 +78,7 @@ class Order(models.Model):
     order_date = models.DateTimeField(default=datetime.now())
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)   
-    after_tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_price_tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username} on {self.order_date}"

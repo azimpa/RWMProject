@@ -22,6 +22,7 @@ def index(request):
         return redirect("adm_login")
     else:
         if request.user.is_anonymous:
+            logout(request)
             return redirect("adm_login")
         elif not request.user.is_superuser:
             logout(request)
@@ -55,7 +56,6 @@ def index(request):
                 or 0
             )
 
-            # Calculate total sale and revenue
             total_sales = (
                 Order.objects.filter(
                     orderitem__order_status="Delivered",
@@ -133,14 +133,11 @@ def Admin_unblock_user(request, id):
 
 
 def adm_categories(request):
-    # Check if the user is authenticated and is a superuser
     if not request.user.is_authenticated or not request.user.is_superuser:
         return redirect("adm_login")
 
-    # Retrieve active categories and order them by ID
     categories = AdmCategories.objects.filter(is_active=True).order_by("id")
 
-    # Render the template with the active categories
     return render(request, "adm/adm_categories.html", {"categories": categories})
 
 
@@ -753,7 +750,6 @@ def edit_coupons(request, id):
 
 def delete_coupons(request, id):
     coupon = get_object_or_404(Coupon, id=id)
-    print(coupon, "aaaaaa")
 
     coupon.delete()
     return redirect("coupons")

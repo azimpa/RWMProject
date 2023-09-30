@@ -139,7 +139,6 @@ def user_logout(request):
     return redirect("home")
 
 
-
 def userprofile(request):
     user = request.user
 
