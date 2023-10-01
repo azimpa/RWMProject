@@ -142,12 +142,6 @@ def gravelbikes(request):
     return render(request, "user/gravelbikes.html", {"products": products})
 
 
-def hybridbikes(request):
-    category = AdmCategories.objects.get(name="hybrid_bikes", is_active=True)
-    products = AdmProducts.objects.filter(category=category, is_active=True)
-    return render(request, "user/hybridbikes.html", {"products": products})
-
-
 def mountainbikes(request):
     category = AdmCategories.objects.get(name="mountain_bikes", is_active=True)
     products = AdmProducts.objects.filter(category=category, is_active=True)

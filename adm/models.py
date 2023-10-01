@@ -7,6 +7,7 @@ from accounts.models import CustomUser
 class AdmCategories(models.Model):
     name = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)  # New field for soft delete
+    offer_type = models.CharField(max_length=50, null=True, blank=True,)
 
     def __str__(self):
         return self.name

@@ -45,7 +45,6 @@
                         <li><a href="{% url 'roadbikes' %}">Road Bikes</a></li>
                         <li><a href="{% url 'gravelbikes' %}">Gravel Bikes</a></li>
                         <li><a href="{% url 'mountainbikes' %}">Mountain Bikes</a></li>
-                        <li><a href="{% url 'hybridbikes' %}">Hybrid Bikes</a></li>
                         {% if user.is_authenticated %}
                         <li><a href="{% url 'user_logout' %}">Logout</a></li>
                         {% else %}
@@ -73,17 +72,6 @@
                             <img src="{% static 'images/shopping-bag.svg' %}" alt="">
                         </a>
                         {% endif %}
-                        <!-- Star container -->
-                        <div style="margin-right: 10px;">
-                            <div class="star">
-                                <a href="/"><img src="{% static 'images/star.svg' %}" alt=""></a>
-                                <div class="star_num_container">
-                                    <div class="star_num_inner">
-                                        <div class="star_num">0</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <!-- Avatar container -->
                         <div class="avatar">
                             {% if user.is_authenticated %}
@@ -159,7 +147,6 @@
                                 <li><a href="{% url 'roadbikes' %}">ROAD BIKES</a></li>
                                 <li><a href="{% url 'gravelbikes' %}">GRAVEL BIKES</a></li>
                                 <li><a href="{% url 'mountainbikes' %}">MOUNTAIN BIKES</a></li>
-                                <li><a href="{% url 'hybridbikes' %}">HYBRID BIKES</a></li>
                                 {% if user.is_authenticated %}
                                 <li><a href="{% url 'user_logout' %}">Logout</a></li>
                                 {% else %}

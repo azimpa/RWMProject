@@ -10,7 +10,6 @@ urlpatterns = [
     path('total_products', views.total_products, name='total_products'),
     path('roadbikes', views.roadbikes, name='roadbikes'),
     path('gravelbikes', views.gravelbikes, name='gravelbikes'),
-    path('hybridbikes', views.hybridbikes, name='hybridbikes'),
     path('mountainbikes', views.mountainbikes, name='mountainbikes'),
     path('product_description/<int:id>', views.product_description, name="product_description"),  
     path('add_to_cart/<int:id>', views.add_to_cart, name="add_to_cart"), 

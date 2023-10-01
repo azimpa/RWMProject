@@ -60,14 +60,12 @@
                         </div>
                         <div class="form-group">
                             <label for="edited_offer_type">Offer Type</label>
-                            <select class="form-control" id="edited_offer_type" name="edited_offer_type" required>
+                            <select class="form-control" id="edited_offer_type" name="edited_offer_type">
                                 <option value="Product Offer" {% if product.offer_type == 'Product Offer' %}selected{% endif %}>Product Offer
                                 </option>
-                                <option value="Category Offer" {% if product.offer_type == 'Category Offer' %}selected{% endif %}>Category Offer
+                                <option value="Special Offer" {% if product.offer_type == 'Special Product Offer' %}selected{% endif %}>Special Product Offer
                                 </option>
-                                <option value="Special Offer" {% if product.offer_type == 'Special Offer' %}selected{% endif %}>Special Offer
-                                </option>
-                                <option value="Other Offer" {% if product.offer_type == 'Other Offer' %}selected{% endif %}>Other
+                                <option value="Other Offer" {% if product.offer_type == 'Other Product Offer' %}selected{% endif %}>Other Product Offer
                                 </option>
                             </select>
                         </div>

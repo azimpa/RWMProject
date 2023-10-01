@@ -15,6 +15,17 @@
                     <label for="name" style="margin-left: 80px;">CATEGORY NAME</label>
                     <input type="text" class="form-control" name="edited_category_name" value="{{ cat.name }}" required>
                 </div>
+                <div class="form-group">
+                    <label for="edited_category_offer" style="margin-left: 80px;">CATEGORY NAME</label>
+                    <select class="form-control" id="edited_category_offer" name="edited_category_offer">
+                        <option value="Category Offer" {% if cat.offer_type == 'Category Offer' %}selected{% endif %}>Category Offer
+                        </option>
+                        <option value="Special Category Offer" {% if cat.offer_type == 'Special Category Offer' %}selected{% endif %}>Special Category Offer
+                        </option>
+                        <option value="Other Category Offer" {% if cat.offer_type == 'Other Category Offer' %}selected{% endif %}>Other Category Offer
+                        </option>
+                    </select>
+                </div>
                 <div class="d-flex justify-content-center mt-4">
                     <button type="submit" class="btn btn-primary" style="width: 150px;">SAVE EDITS</button>
                 </div>

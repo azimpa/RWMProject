@@ -146,19 +146,32 @@ def add_adm_categories(request):
         return redirect("adm_login")
 
     if request.method == "POST":
-        cat_name = request.POST.get("category_name", "")
+        if "category_name" in request.POST:
+            cat_name = request.POST.get("category_name", "")
 
-        if cat_name.strip():
-            if AdmCategories.objects.filter(name=cat_name).exists():
-                messages.error(request, f'The category "{cat_name}" already exists.')
+            if cat_name.strip():
+                if AdmCategories.objects.filter(name=cat_name).exists():
+                    messages.error(
+                        request, f'The category "{cat_name}" already exists.'
+                    )
+                    return redirect("add_adm_categories")
+
+                category = AdmCategories(name=cat_name)
+                category.save()
+                return redirect("adm_categories")
+
+            else:
+                messages.error(request, "Category name cannot be empty.")
                 return redirect("add_adm_categories")
 
-            category = AdmCategories(name=cat_name)
-            category.save()
-            return redirect("adm_categories")
-        else:
-            messages.error(request, "Category name cannot be empty.")
-            return redirect("add_adm_categories")
+        if "category_offer" in request.POST:
+            cat_offer = request.POST.get("category_offer", "")
+
+            if cat_offer:
+                category_offer = AdmCategories(offer_type=cat_offer)
+                category_offer.save()
+            else:
+                pass
 
     return render(request, "adm/add_adm_categories.html")
 
