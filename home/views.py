@@ -114,6 +114,8 @@ def total_products(request):
         .distinct("product")
     )
 
+    print(variants, "ddddd")
+
     colors = ProductColor.objects.filter(is_active=True)
     sizes = ProductSize.objects.filter(is_active=True)
 
@@ -505,7 +507,7 @@ def payment(request, address_id):
                     coupon_discount=coupon_discount,
                     total_price_tax=total_price_tax,
                 )
-            
+
                 for item in cart_items:
                     product = item.product
                     quantity = item.quantity
@@ -763,7 +765,7 @@ def search(request):
 
 
 def wallet(request):
-    print(request,"oooooo")
+    print(request, "oooooo")
     try:
         user = request.user
         orders = Order.objects.filter(user=user, payment_method="Razor Pay")
@@ -780,7 +782,6 @@ def wallet(request):
                 total_refund_amount += item.order.total_price_tax  # Updated here
                 item.refund_added_to_wallet = True
                 item.save()  # Save the item
-
 
         user.wallet_balance += Decimal(total_refund_amount)
         user.save()

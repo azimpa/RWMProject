@@ -182,6 +182,14 @@ def delete_adm_categories(request, id):
     category = get_object_or_404(AdmCategories, id=id, is_active=True)
     category.is_active = False
     category.save()
+
+    AdmProducts.objects.filter(category=category, is_active=True).update(
+        is_active=False
+    )
+    ProductVariant.objects.filter(product__category=category, is_active=True).update(
+        is_active=False
+    )
+
     return redirect("adm_categories")
 
 
@@ -205,7 +213,7 @@ def add_adm_product(request):
         cat = AdmCategories.objects.get(id=category, is_active=True)
         product_description = request.POST.get("product_description")
         offer_type = request.POST.get("offer_type")
-        discount_percentage = request.POST.get("discount_percentage") 
+        discount_percentage = request.POST.get("discount_percentage")
         price = request.POST.get("price", "")
         offer_price = request.POST.get("offer_price", "")
         prod_status = request.POST.get("product_status", "active")
@@ -265,7 +273,7 @@ def edit_adm_product(request, id):
 
         if "edited_offer_type" in request.POST:
             edited_offer_type = request.POST.get("edited_offer_type")
-            product.offer_type = edited_offer_type        
+            product.offer_type = edited_offer_type
 
         if "new_images" in request.FILES:
             editimages = request.FILES.get("new_images")
