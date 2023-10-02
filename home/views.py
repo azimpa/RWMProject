@@ -114,8 +114,6 @@ def total_products(request):
         .distinct("product")
     )
 
-    print(variants, "ddddd")
-
     colors = ProductColor.objects.filter(is_active=True)
     sizes = ProductSize.objects.filter(is_active=True)
 
@@ -131,19 +129,19 @@ def total_products(request):
 
 
 def roadbikes(request):
-    category = AdmCategories.objects.get(name="road_bikes", is_active=True)
+    category = AdmCategories.objects.get(name="Road Bikes", is_active=True)
     products = AdmProducts.objects.filter(category=category, is_active=True)
     return render(request, "user/roadbikes.html", {"products": products})
 
 
 def gravelbikes(request):
-    category = AdmCategories.objects.get(name="gravel_bikes", is_active=True)
+    category = AdmCategories.objects.get(name="Gravel Bikes", is_active=True)
     products = AdmProducts.objects.filter(category=category, is_active=True)
     return render(request, "user/gravelbikes.html", {"products": products})
 
 
 def mountainbikes(request):
-    category = AdmCategories.objects.get(name="mountain_bikes", is_active=True)
+    category = AdmCategories.objects.get(name="Mountain Bikes", is_active=True)
     products = AdmProducts.objects.filter(category=category, is_active=True)
     return render(request, "user/mountainbikes.html", {"products": products})
 
