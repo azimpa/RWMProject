@@ -5,7 +5,7 @@
 {% block content %}
 <style>
     .card {
-        height: 420px;
+        height: 480px;
         /* Set the card's height */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         transition: transform 0.2s ease-in-out;
@@ -119,7 +119,7 @@
                             {% endif %}
                             {% endfor %}
                             <div class="card-body border-left border-right text-center p-3">
-                                <h6 class="text-truncate mb-2">{{ variant.product }}</h6>
+                                <h6 class="text-truncate mb-2"><strong>{{ variant.product }}</strong></h6>
                                 <div class="d-flex flex-column align-items-center mb-2">
                                     <div class="card-body text-center p-1">
                                         <div class="d-flex justify-content-center">
@@ -129,19 +129,27 @@
                                         </div>
                                     </div>
                                     <div class="card-body text-center p-1">
-                                        <span class="text-muted">Discount:</span>
+                                        <span class="text-muted"><strong>Category:</strong></span>
+                                        <span class="fixed-color">{{ variant.product.category }}</span>
+                                    </div>
+                                    <div class="card-body text-center p-1">
+                                        <span class="text-muted"><strong>Discount:</strong></span>
                                         <span class="fixed-color">{{ variant.product.discount_percentage }} % </span>
                                     </div>
                                     <div class="card-body text-center p-1">
-                                        <span class="text-muted">Current Offer:</span>
-                                        <span class="fixed-color">{{ variant.product.offer_type }}</span>
+                                        <span class="text-muted"><strong>Current Offer:</strong></span>
+                                        {% if variant.product.category.offer_type == 'Special Category Offer' %}
+                                        <span class="fixed-color"><br>{{ variant.product.category.offer_type }}</span>
+                                        {% else %}
+                                        <span class="fixed-color"><br>{{ variant.product.offer_type }}</span>
+                                        {% endif %}
                                     </div>
                                     <div class="card-body text-center p-1">
-                                        <span class="text-muted">Color:</span>
+                                        <span class="text-muted"><strong>Color:</strong></span>
                                         <span class="fixed-color">{{ variant.color }}</span>
                                     </div>
                                     <div>
-                                        <span class="text-muted">Size:</span>
+                                        <span class="text-muted"><strong>Size:</strong></span>
                                         <span class="fixed-size">{{ variant.size }}</span>
                                     </div>
                                 </div>

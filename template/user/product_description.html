@@ -200,11 +200,18 @@
                             <span class="product_offer_price" id="product_offer_price"><del>&#8377;
                                     {{products.price}}</del></span>
                         </div>
-                        <div class="d-flex flex-wrap align-items-center mb-3">
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <h2 style="font-weight: bold; font-size: 30px; font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif">{{products.product.category}}</h2>
+                        </div>                                            
+                        <div class="d-flex flex-wrap align-items-center mb-3 mt-4">
                             <span class="product_discount"
                                 id="product_discount">{{products.product.discount_percentage}}% OFF</span>
                             <span class="product_offer_type"
-                                id="product_offer_type">{{products.product.offer_type}}</span>
+                            {% if products.product.category.offer_type == 'Special Category Offer' %}
+                            id="product_offer_type">{{products.product.category.offer_type}}</span>
+                            {% else %}
+                            id="product_offer_type">{{products.product.offer_type}}</span>
+                            {% endif %}
                         </div>
                         <div class="d-flex flex-wrap align-items-center mb-3">
                             <!-- Improved alignment and added margin-bottom -->
