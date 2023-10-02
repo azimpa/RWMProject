@@ -15,6 +15,7 @@
                     <tr>
                         <th class="text-center">CATEGORY ID</th>
                         <th class="text-center">CATEGORY NAME</th>
+                        <th class="text-center">OFFER</th>
                         <th class="text-center">ACTIONS</th>
                     </tr>
                 </thead>
@@ -24,6 +25,7 @@
                     <tr>
                         <td class="text-center">{{ cat.id }}</td>
                         <td class="text-center">{{ cat.name }}</td>
+                        <td class="text-center">{{ cat.offer_type }}</td>
                         <td class="text-center">
                             <a href="{% url 'edit_adm_categories' cat.id %}"
                                 class="btn btn-primary btn-sm me-2">EDIT</a>

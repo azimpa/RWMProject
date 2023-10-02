@@ -146,32 +146,18 @@ def add_adm_categories(request):
         return redirect("adm_login")
 
     if request.method == "POST":
-        if "category_name" in request.POST:
-            cat_name = request.POST.get("category_name", "")
+        cat_name = request.POST.get("category_name", "")
+        cat_offer = request.POST.get("category_offer", "")
 
-            if cat_name.strip():
-                if AdmCategories.objects.filter(name=cat_name).exists():
-                    messages.error(
-                        request, f'The category "{cat_name}" already exists.'
-                    )
-                    return redirect("add_adm_categories")
+        if not cat_name:
+            messages.error(request, "Category name cannot be empty.")
 
-                category = AdmCategories(name=cat_name)
-                category.save()
-                return redirect("adm_categories")
+        elif AdmCategories.objects.filter(name=cat_name).exists():
+            messages.error(request, f'The category "{cat_name}" already exists.')
 
-            else:
-                messages.error(request, "Category name cannot be empty.")
-                return redirect("add_adm_categories")
-
-        if "category_offer" in request.POST:
-            cat_offer = request.POST.get("category_offer", "")
-
-            if cat_offer:
-                category_offer = AdmCategories(offer_type=cat_offer)
-                category_offer.save()
-            else:
-                pass
+        else:
+            AdmCategories.objects.create(name=cat_name, offer_type=cat_offer)
+            return redirect("adm_categories")
 
     return render(request, "adm/add_adm_categories.html")
 
@@ -183,11 +169,17 @@ def edit_adm_categories(request, id):
     category = get_object_or_404(AdmCategories, id=id, is_active=True)
 
     if request.method == "POST":
-        new_name = request.POST.get("edited_category_name", "")
-        if new_name:
-            category.name = new_name
-            category.save()
-            return redirect("adm_categories")
+        edited_category_name = request.POST.get("edited_category_name", "")
+        if edited_category_name:
+            category.name = edited_category_name
+
+        edited_category_offer = request.POST.get("edited_category_offer", "")
+        if edited_category_offer:
+            category.offer_type = edited_category_offer
+
+        category.save()
+        return redirect("adm_categories")
+
     return render(request, "adm/edit_adm_categories.html", {"cat": category})
 
 
