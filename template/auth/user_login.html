@@ -109,14 +109,13 @@
                             <h6 class="heading-section">Log In</h6>
                             <div class="form-group">
                                 <input type="email" class="form-control" placeholder="Email ID" name="email" required>
+                                <input type="text" class="form-control" placeholder="Referral Code (optional)" name="referral_code">
                                 <div style="position: relative;">
-                                    <input id="password-field" type="password" class="form-control" name="pass"
-                                        placeholder="Password" required>
-                                    <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"
-                                        onclick="togglePasswordVisibility()"></span>
+                                    <input id="password-field" type="password" class="form-control" name="pass" placeholder="Password" required>
+                                    <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" onclick="togglePasswordVisibility()"></span>
                                 </div>
                                 <button type="submit" class="form-control btn btn-secondary submit px-3">Log In</button>
-                            </div>
+                            </div>                            
                         </form>
                         <div class="form-group d-md-flex justify-content-end">
                             <a href="forgot_password">Forgot Password</a>

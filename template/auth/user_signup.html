@@ -8,91 +8,117 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet" />
 	<link rel="stylesheet" href="{% static 'sigcss/style.css' %}" />
+
+	<style>
+		body {
+			background-image: url('{% static 'sigimages/4.png' %}');
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-position: center;
+			font-family: 'Lato', sans-serif;
+		}
+
+		.heading-section {
+			font-weight: bold;
+			font-size: 40px;
+			margin-bottom: 14px;
+		}
+
+
+		.form-control {
+			font-size: 14px;
+			height: 47px;
+			border: 1px solid #ffffff;
+			border-radius: 10px;
+			padding: 10px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		.form-control:focus {
+			border-color: #007BFF;
+			outline: 0;
+		}
+
+		.submit {
+			background-color: #007BFF;
+			color: white;
+			border: none;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		.submit:hover {
+			background-color: #0056b3;
+		}
+
+		.text-black {
+			color: rgb(244, 244, 244);
+		}
+
+		.text-black a {
+			color: #e5fa01;
+		}
+	</style>
 </head>
 
-<body class="img js-fullheight" style="background-image: url('{% static 'sigimages/4.png' %}'); overflow: hidden;">
+<body>
 	<section class="ftco-section">
-		<div class="container">
-			<div class="row justify-content-center" style="margin-top: -75px">
-				<div class="col-md-6 text-center mb-5" style="margin-top: 5px">
-					<h1 class="heading-section" style="font-family: Arial, sans-serif; font-weight: bold;">Sign Up</h1>
-				</div>
+		<div class="container" style="position: relative;bottom: 100px;">
+			<div class="row justify-content-center">
+					<h1 class="heading-section">Sign Up</h1>
 			</div>
 			<div class="row justify-content-center">
 				<div class="col-md-6 col-lg-4">
-					<div class="login-wrap p-0" style="margin-top: -50px">
+					<div class="login-wrap p-0">
 						<form action="user_signup" method="post">
 							{% csrf_token %}
-							<div class="form-group" style="display: flex; flex-direction: column;">
-								<div style="display: flex; flex-direction: column;">
-									<div style="display: flex; gap: 5px;">
-										<input type="text" class="form-control" placeholder="First Name"
-											name="first_name" id="first_name"
-											style="font-size: 14px; height: 40px; flex: 1;" />
-										<input type="text" class="form-control" placeholder="Last Name" name="last_name"
-											id="last_name" style="font-size: 14px; height: 40px; flex: 1;" />
-									</div>
+							<div class="form-group">
+								<div class="d-flex">
+									<input type="text" class="form-control" placeholder="First Name" name="first_name" id="first_name" />
+									<input type="text" class="form-control" placeholder="Last Name" name="last_name" id="last_name" />
 								</div>
 							</div>
-							<div style="display: flex; flex-direction: column; gap: 14px; margin-top: -11px; margin-bottom: 5px;">
-								<div style="display: flex; gap: 5px;">
-									<input type="text" class="form-control" placeholder="Age" name="age" id="age"
-										style="font-size: 14px; height: 40px; width: 100px;" />
-									<select class="form-control" name="gender" id="gender"
-										style="font-size: 14px; height: 40px; flex: 1;">
+							<div class="form-group">
+								<div class="d-flex">
+									<input type="text" class="form-control" placeholder="Age" name="age" id="age" style="width: 100px;" />
+									<select class="form-control" name="gender" id="gender">
 										<option value="male">Male</option>
 										<option value="female">Female</option>
 										<option value="other">Other</option>
 									</select>
 								</div>
 							</div>
-							<div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 5px;">
-								<div style="display: flex; gap: 5px;">
-									<div style="display: flex; flex-direction: column; flex: 1;">
-										<input type="text" class="form-control" placeholder="Username" name="username"
-											id="username" style="font-size: 14px; height: 40px;"
-											onkeyup="validateUsername()" />
-										<p id="username-error" style="color: red;"></p>
-									</div>
-									<div style="display: flex; flex-direction: column; flex: 1;">
-										<input type="email" class="form-control" placeholder="Email ID" name="email"
-											id="email" style="font-size: 14px; height: 40px;"
-											onkeyup="validateEmail()" />
-										<p id="email-error" style="color: red;"></p>
-									</div>
-								</div>
+							<div class="form-group">
+									<input type="text" class="form-control" placeholder="Username" name="username" id="username" onkeyup="validateUsername()" />
+									<p id="username-error" style="color: red;"></p>
 							</div>
-							<div style="display: flex; flex-direction: column; margin-top: -16px;">
-								<input type="tel" class="form-control" placeholder="Phone Number" name="phone_number"
-									id="phone_number" style="font-size: 14px; height: 40px;"
-									onkeyup="validatePhoneNumber()" />
+							<div class="form-group">
+									<input type="email" class="form-control" placeholder="Email ID" name="email" id="email" onkeyup="validateEmail()" />
+									<p id="email-error" style="color: red;"></p>
+							</div>
+							<div class="form-group">
+								<input type="tel" class="form-control" placeholder="Phone Number" name="phone_number" id="phone_number" onkeyup="validatePhoneNumber()" />
 								<p id="phone_number-error" style="color: red;"></p>
 							</div>
-							<div style="display: flex; gap: 5px; margin-top: -11px;">
-								<div style="display: flex; flex-direction: column; flex: 1;">
-									<input id="password1-field" type="password" class="form-control" placeholder="Password"
-										name="password1" id="password1-field" style="font-size: 14px; height: 40px;"
-										onkeyup="validatePasswords()" />
-									<p id="password1-error" style="color: red;"></p>
-								</div>
-								<div style="display: flex; flex-direction: column; flex: 1;">
-									<input id="password2-field" type="password" class="form-control" placeholder="Confirm Password"
-										name="password2" id="password2-field" style="font-size: 14px; height: 40px;"
-										onkeyup="validatePasswords()" />
-									<p id="password2-error" style="color: red;"></p>
-								</div>
+							<div class="form-group">
+								<input id="password1-field" type="password" class="form-control" placeholder="Password" name="password1" id="password1-field" onkeyup="validatePasswords()" />
+								<p id="password1-error" style="color: red;"></p>
 							</div>
-							<button type="submit" class="form-control btn btn-primary submit px-3 mt-2"
-								style="font-size: 14px; height: 55px;">
+							<div class="form-group">
+								<input id="password2-field" type="password" class="form-control" placeholder="Confirm Password" name="password2" id="password2-field" onkeyup="validatePasswords()" />
+								<p id="password2-error" style="color: red;"></p>
+							</div>
+							<button type="submit" class="form-control btn btn-primary submit">
 								Sign Up
 							</button>
+						</form>
 					</div>
-					</form>
 					<div class="form-group d-md-flex"></div>
 					<div class="mt-4" style="text-align: right;">
 						<p class="text-black">
 							Already have an account?
-							<a href="user_login" style="color: rgb(229, 250, 1)">Log in</a>
+							<a href="user_login">Log in</a>
 							here.
 						</p>
 					</div>
@@ -100,8 +126,8 @@
 				</div>
 			</div>
 		</div>
-		</div>
 	</section>
+
 	<script src="{% static 'sigjs/jquery.min.js' %}"></script>
 	<script src="{% static 'sigjs/popper.js' %}"></script>
 	<script src="{% static 'sigjs/bootstrap.min.js' %}"></script>
