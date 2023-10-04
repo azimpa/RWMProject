@@ -8,6 +8,7 @@ from django.utils import timezone
 import razorpay
 from django.db.models import Q
 import os
+from django.db.models import OuterRef, Subquery
 from django.http import JsonResponse
 from home.models import Cartitem, Cart, Order, OrderItem, OrderAddress
 from adm.models import (
@@ -107,21 +108,51 @@ def delete_address(request, id):
 
 
 def total_products(request):
-    products = AdmProducts.objects.filter(is_active=True).order_by("id")
-    variants = (
-        ProductVariant.objects.filter(product__in=products, is_active=True)
-        .order_by("product", "id")
-        .distinct("product")
-    )
+    price_filter_ids = [int(id) for id in request.POST.getlist("price_filter")]
+    color_filter_ids = [int(id) for id in request.POST.getlist("color_filter")]
+    size_filter_ids = [int(id) for id in request.POST.getlist("size_filter")]
+    name_search = request.POST.get("name_search")
+    sort_order = request.POST.get("sort", "")
+
+    products = AdmProducts.objects.filter(is_active=True)
 
     colors = ProductColor.objects.filter(is_active=True)
     sizes = ProductSize.objects.filter(is_active=True)
+
+    if price_filter_ids:
+        products = products.filter(id__in=price_filter_ids)
+
+    if color_filter_ids:
+        products = products.annotate(
+            first_variant_id=Subquery(
+                ProductVariant.objects.filter(
+                    product=OuterRef("pk"), color__id__in=color_filter_ids
+                ).values("id")[:1]
+            )
+        ).filter(first_variant_id__isnull=False)
+
+    if size_filter_ids:
+        products = products.annotate(
+            first_variant_id=Subquery(
+                ProductVariant.objects.filter(
+                    product=OuterRef("pk"), size__id__in=size_filter_ids
+                ).values("id")[:1]
+            )
+        ).filter(first_variant_id__isnull=False)
+
+    if name_search:
+        products = products.filter(name__icontains=name_search)
+
+    if sort_order == "Low to High":
+        products = products.order_by("offer_price")
+    elif sort_order == "High to Low":
+        products = products.order_by("-offer_price")
 
     return render(
         request,
         "user/total_products.html",
         {
-            "variants": variants,
+            "products": products,
             "colors": colors,
             "sizes": sizes,
         },

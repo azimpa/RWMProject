@@ -4,9 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from . import verify
 
-
 # Create your views here.
-
 
 def user_signup(request):
     if request.method == "POST":
@@ -64,6 +62,7 @@ def user_signup(request):
                 return redirect(user_signup)
         except:
             pass
+
 
         my_user = CustomUser.objects.create(
             first_name=first_name,
@@ -151,7 +150,7 @@ def userprofile(request):
             user.last_name = edited_last_name
         if "gender" in request.POST:
             edited_gender = request.POST["gender"]
-            print(edited_gender,"qqqqqwwww")
+            print(edited_gender, "qqqqqwwww")
             user.gender = edited_gender
         if "age" in request.POST:
             edited_age = request.POST["age"]
@@ -161,7 +160,7 @@ def userprofile(request):
             user.email = edited_email
         if "phone" in request.POST:
             edited_phone = request.POST["phone"]
-            user.phone_number = edited_phone  
+            user.phone_number = edited_phone
 
         user.save()
         messages.success(request, "Profile updated successfully")
@@ -175,7 +174,7 @@ def userprofile(request):
         {
             "username": user.username,
             "email": user.email,
-            "phone": user.phone_number, 
+            "phone": user.phone_number,
             "age": user.age,
             "gender": user.gender,
             "first_name": user.first_name,

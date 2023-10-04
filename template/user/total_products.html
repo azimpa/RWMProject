@@ -22,71 +22,56 @@
     }
 </style>
 <div style="margin-top: 150px;">
-    <div class="container-fluid pt-5">
-        <div class="row px-xl-5">
-            <!-- Shop Sidebar Start -->
-            <div class="col-lg-3 col-md-12">
-                <!-- Price Start -->
-                <div class="border-bottom mb-4 pb-4">
-                    <h3 style="font-weight: bold;">SHOP BIKES</h3>
-                    <h5 class="font-weight-semi-bold mb-4" style="margin-top: 30px;">Filter by price</h5>
-                        {% for variant in variants %}
-                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="price-{{ variant.id }}"
-                                name="price-filter" value="{{ variant.id }}">
-                            <label class="custom-control-label" for="price-{{ variant.id }}">{{ variant.offer_price }} -
-                                {{ variant.price }}</label>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
+    <form id="filterForm" method="POST" data-action="{% url 'total_products' %}">
+        {% csrf_token %}
+        <div class="container-fluid pt-5">
+            <div class="row px-xl-5">
+                <div class="col-lg-3 col-md-12">
+                    <div class="border-bottom mb-4 pb-4">
+                        <h3 style="font-weight: bold;">SHOP BIKES</h3>
+                        <h5 class="font-weight-semi-bold mb-4" style="margin-top: 30px;">Filter by price</h5>
+                        {% for product in products %}
+                            {% with product_first_variant=product.productvariant_set.first %}
+                                {% if product_first_variant %}
+                                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
+                                        <input type="checkbox" class="custom-control-input" id="price-{{ product.id }}" name="price_filter" value="{{ product.id }}">
+                                        <label class="custom-control-label" for="price-{{ product.id }}">{{ product_first_variant.offer_price }} - {{ product.price }}</label>
+                                        <span class="badge border font-weight-normal">168</span>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
                         {% endfor %}
-                </div>
-                <!-- Price End -->
+                    </div>
 
-                <!-- Color Start -->
-                <div class="border-bottom mb-4 pb-4">
-                    <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
+                    <div class="border-bottom mb-4 pb-4">
+                        <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
                         {% for color in colors %}
-                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="color-{{color.id}}"
-                                name="color-filter" value="{{ color.id }}">
-                            <label class="custom-control-label" for="color-{{color.id}}">{{color.name}}</label>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
-                        {% endfor %}    
-                </div>
-                <!-- Color End -->
-
-                <!-- Size Start -->
-                <div class="mb-5">
-                    <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
-                        {% for size in sizes %}
-                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="size-{{size.id}}" name="size-filter"
-                                value="{{ size.id }}">
-                            <label class="custom-control-label" for="size-{{size.id}}">{{ size.name }}</label>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
-                        {% endfor %}    
-                </div>
-                <!-- Size End -->
-            </div>
-            <!-- Shop Sidebar End -->
-
-            <!-- Shop Product Start -->
-            <div class="col-lg-9 col-md-12">
-                <div class="row pb-3">
-                    <div class="col-12 pb-1">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show col-6" role="alert">
-                                <strong></strong>{{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
+                            <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
+                                <input type="checkbox" class="custom-control-input" id="color-{{color.id}}" name="color_filter" value="{{ color.id }}">
+                                <label class="custom-control-label" for="color-{{color.id}}">{{color.name}}</label>
+                                <span class="badge border font-weight-normal">168</span>
                             </div>
-                            {% endfor %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-5">
+                        <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
+                        {% for size in sizes %}
+                            <div class="custom-control custom-radio d-flex align-items-center justify-content-between">
+                                <input type="checkbox" class="custom-control-input" id="size-{{size.id}}" name="size_filter" value="{{ size.id }}">
+                                <label class="custom-control-label" for="size-{{size.id}}">{{ size.name }}</label>
+                                <span class="badge border font-weight-normal">168</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-lg-9 col-md-12" id="product-list">
+                    <div class="row pb-3">
+                        <div class="col-12 pb-1">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search by name"
-                                        name="name-search">
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name" name="name_search">
                                     <div class="input-group-append">
                                         <button type="submit" class="input-group-text bg-transparent text-primary">
                                             <i class="fa fa-search"></i>
@@ -94,102 +79,97 @@
                                     </div>
                                 </div>
                                 <div class="dropdown ml-4">
-                                    <button class="btn border dropdown-toggle" type="button" id="sortDropdown"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn border dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Sort by
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-                                        <button class="dropdown-item" type="submit" name="sort" value="Low to High">Low
-                                            to High</button>
-                                        <button class="dropdown-item" type="submit" name="sort" value="High to Low">High
-                                            to Low</button>
+                                        <button class="dropdown-item" type="submit" name="sort" value="Low to High">Low to High</button>
+                                        <button class="dropdown-item" type="submit" name="sort" value="High to Low">High to Low</button>
                                     </div>
                                 </div>
-                        </div>
-                    </div>
-                    {% for variant in variants %}
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-3">
-                        <div class="card product-item border-0 mb-4">
-                            {% for var in variant.images.all %}
-                            {% if forloop.first %}
-                            <div
-                                class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid card-image" src="{{ var.image.url }}" alt="">
                             </div>
-                            {% endif %}
-                            {% endfor %}
-                            <div class="card-body border-left border-right text-center p-3">
-                                <h6 class="text-truncate mb-2"><strong>{{ variant.product }}</strong></h6>
-                                <div class="d-flex flex-column align-items-center mb-2">
-                                    <div class="card-body text-center p-1">
-                                        <div class="d-flex justify-content-center">
-                                            <span class="text-success fixed-price">&#8377;{{variant.offer_price}}</span>
-                                            <span
-                                                class="text-muted fixed-price"><del>&#8377;{{variant.price}}</del></span>
+                        </div>
+                        {% for product in products %}
+                            {% with product_first_variant=product.productvariant_set.first %}
+                                {% if product_first_variant %}
+                                    <div class="col-lg-4 col-md-6 col-sm-12 pb-3">
+                                        <div class="card product-item border-0 mb-4">
+                                            {% for var in product_first_variant.images.all %}
+                                                {% if forloop.first %}
+                                                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                                        <img class="img-fluid card-image" src="{{ var.image.url }}" alt="">
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <div class="card-body border-left border-right text-center p-3">
+                                                <h6 class="text-truncate mb-2"><strong>{{ product }}</strong></h6>
+                                                <div class="d-flex flex-column align-items-center mb-2">
+                                                    <div class="card-body text-center p-1">
+                                                        <div class="d-flex justify-content-center">
+                                                            <span class="text-success fixed-price">&#8377;{{product_first_variant.offer_price}}</span>
+                                                            <span class="text-muted fixed-price"><del>&#8377;{{product_first_variant.price}}</del></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body text-center p-1">
+                                                        <span class="text-muted"><strong>Category:</strong></span>
+                                                        <span class="fixed-color">{{ product.category }}</span>
+                                                    </div>
+                                                    <div class="card-body text-center p-1">
+                                                        <span class="text-muted"><strong>Discount:</strong></span>
+                                                        <span class="fixed-color">{{ product.discount_percentage }}%</span>
+                                                    </div>
+                                                    <div class="card-body text-center p-1">
+                                                        <span class="text-muted"><strong>Current Offer:</strong></span>
+                                                        {% if product.category.offer_type == 'Special Category Offer' %}
+                                                            <span class="fixed-color"><br>{{ product.category.offer_type}}</span>
+                                                        {% else %}
+                                                            <span class="fixed-color"><br>{{ product.offer_type }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="card-body text-center p-1">
+                                                        <span class="text-muted"><strong>Color:</strong></span>
+                                                        <span class="fixed-color">{{ product_first_variant.color }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-muted"><strong>Size:</strong></span>
+                                                        <span class="fixed-size">{{ product_first_variant.size }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer d-flex justify-content-between bg-light border">
+                                                <a href="{% url 'product_description' id=product_first_variant.id %}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                                                <a href="{% url 'add_to_cart' id=product_first_variant.id %}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="card-body text-center p-1">
-                                        <span class="text-muted"><strong>Category:</strong></span>
-                                        <span class="fixed-color">{{ variant.product.category }}</span>
-                                    </div>
-                                    <div class="card-body text-center p-1">
-                                        <span class="text-muted"><strong>Discount:</strong></span>
-                                        <span class="fixed-color">{{ variant.product.discount_percentage }} % </span>
-                                    </div>
-                                    <div class="card-body text-center p-1">
-                                        <span class="text-muted"><strong>Current Offer:</strong></span>
-                                        {% if variant.product.category.offer_type == 'Special Category Offer' %}
-                                        <span class="fixed-color"><br>{{ variant.product.category.offer_type }}</span>
-                                        {% else %}
-                                        <span class="fixed-color"><br>{{ variant.product.offer_type }}</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="card-body text-center p-1">
-                                        <span class="text-muted"><strong>Color:</strong></span>
-                                        <span class="fixed-color">{{ variant.color }}</span>
-                                    </div>
-                                    <div>
-                                        <span class="text-muted"><strong>Size:</strong></span>
-                                        <span class="fixed-size">{{ variant.size }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="{% url 'product_description' id=variant.id %}"
-                                    class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View
-                                    Detail</a>
-                                <a href="{% url 'add_to_cart' id=variant.id %}" class="btn btn-sm text-dark p-0"><i
-                                        class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                            </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                        <div class="col-12 pb-1">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center mb-3">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
-                    </div>
-                    {% endfor %}
-                    <div class="col-12 pb-1">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center mb-3">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                        <span class="sr-only">Previous</span>
-                                    </a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                        <span class="sr-only">Next</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
                     </div>
                 </div>
             </div>
-            <!-- Shop Product End -->
         </div>
-    </div>
-    <!-- Shop End -->
+    </form>
 </div>
 {% endblock %}
