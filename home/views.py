@@ -108,46 +108,90 @@ def delete_address(request, id):
 
 
 def total_products(request):
-    price_filter_ids = [int(id) for id in request.POST.getlist("price_filter")]
-    color_filter_ids = [int(id) for id in request.POST.getlist("color_filter")]
-    size_filter_ids = [int(id) for id in request.POST.getlist("size_filter")]
-    name_search = request.POST.get("name_search")
-    sort_order = request.POST.get("sort", "")
-
-    products = AdmProducts.objects.filter(is_active=True)
-
+    # Get all active products, categories, colors, and sizes
+    products = ProductVariant.objects.filter(is_active=True)
+    category = AdmCategories.objects.filter(is_active=True)
     colors = ProductColor.objects.filter(is_active=True)
     sizes = ProductSize.objects.filter(is_active=True)
 
-    if price_filter_ids:
-        products = products.filter(id__in=price_filter_ids)
+    # Get selected filters from the URL (GET request)
+    selected_sizes = request.GET.getlist("size")
+    print(selected_sizes, "ddddddd")
+    selected_colors = request.GET.getlist("color")
+    print(selected_colors, "jjjjjj")
+    selected_category = request.GET.getlist("category")
+    print(selected_category, "pppppp")
 
-    if color_filter_ids:
-        products = products.annotate(
-            first_variant_id=Subquery(
+    # Get additional filters from the form if it's a POST request
+    if request.method == "POST":
+        name_search = request.POST.get("name_search")
+        sort_order = request.POST.get("sort", "")
+        print(sort_order,"jjj")
+    else:
+        pass
+
+    # Apply filters to the products
+    if products:
+        # Subquery to get the first variant for each product
+        first_variant_subquery = (
+            ProductVariant.objects.filter(product=OuterRef("pk"))
+            .order_by("pk")
+            .values("size")[:1]
+        )
+
+        # Filter based on selected sizes using the subquery
+        if selected_sizes:
+            products = products.annotate(
+                first_variant_size=Subquery(first_variant_subquery)
+            ).filter(first_variant_size__in=selected_sizes)
+
+            print(products, "iiiii")
+
+        # Apply other filters
+        if selected_colors:
+            # Subquery to get the first variant for each product for color filter
+            first_variant_color_subquery = (
                 ProductVariant.objects.filter(
-                    product=OuterRef("pk"), color__id__in=color_filter_ids
-                ).values("id")[:1]
+                    product=OuterRef("pk"), color__in=selected_colors
+                )
+                .order_by("pk")
+                .values("color")[:1]
             )
-        ).filter(first_variant_id__isnull=False)
 
-    if size_filter_ids:
-        products = products.annotate(
-            first_variant_id=Subquery(
+            products = products.annotate(
+                first_variant_color=Subquery(first_variant_color_subquery)
+            ).filter(first_variant_color__isnull=False)
+
+            print(products, "ddddd")
+
+        if selected_category:
+            # Subquery to get the first variant for each product for category filter
+            first_variant_category_subquery = (
                 ProductVariant.objects.filter(
-                    product=OuterRef("pk"), size__id__in=size_filter_ids
-                ).values("id")[:1]
+                    product=OuterRef("pk"), product_category__in=selected_category
+                )
+                .order_by("pk")
+                .values("product_category")[:1]
             )
-        ).filter(first_variant_id__isnull=False)
 
-    if name_search:
-        products = products.filter(name__icontains=name_search)
+            products = products.annotate(
+                first_variant_category=Subquery(first_variant_category_subquery)
+            ).filter(first_variant_category__isnull=False)
 
-    if sort_order == "Low to High":
-        products = products.order_by("offer_price")
-    elif sort_order == "High to Low":
-        products = products.order_by("-offer_price")
+            print(products, "wwwww")
 
+        if name_search:
+            products = products.filter(product__name__icontains=name_search)
+
+        # Apply sorting
+        if sort_order == "Low to High":
+            products = products.order_by("price")
+            print(products, "ttttt")
+        elif sort_order == "High to Low":
+            products = products.order_by("-price")
+            print(products, "xxxx")
+
+    # Render the template with the filtered products and other necessary data
     return render(
         request,
         "user/total_products.html",
@@ -155,6 +199,10 @@ def total_products(request):
             "products": products,
             "colors": colors,
             "sizes": sizes,
+            "category": category,
+            "selected_sizes": selected_sizes,
+            "selected_colors": selected_colors,
+            "selected_category": selected_category,
         },
     )
 
