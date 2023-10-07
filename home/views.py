@@ -163,7 +163,6 @@ def total_products(request):
                 first_variant_color=Subquery(first_variant_color_subquery)
             ).filter(first_variant_color__isnull=False)
 
-            print(products, "ddddd")
 
         if selected_category:
             # Update the filter to use the 'product__category__name' field
