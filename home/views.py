@@ -108,38 +108,41 @@ def delete_address(request, id):
 
 
 def total_products(request):
-    # Get all active products, categories, colors, and sizes
     products = ProductVariant.objects.filter(is_active=True)
     category = AdmCategories.objects.filter(is_active=True)
     colors = ProductColor.objects.filter(is_active=True)
     sizes = ProductSize.objects.filter(is_active=True)
 
-    # Get selected filters from the URL (GET request)
-    selected_sizes = request.GET.getlist("size")
-    print(selected_sizes, "ddddddd")
-    selected_colors = request.GET.getlist("color")
-    print(selected_colors, "jjjjjj")
-    selected_category = request.GET.getlist("category")
-    print(selected_category, "pppppp")
+    selected_sizes = []
+    selected_colors = []
+    selected_category = []
 
-    # Get additional filters from the form if it's a POST request
     if request.method == "POST":
         name_search = request.POST.get("name_search")
         sort_order = request.POST.get("sort", "")
-        print(sort_order,"jjj")
-    else:
-        pass
 
-    # Apply filters to the products
+        if name_search:
+            products = products.filter(product__name__icontains=name_search)
+
+        if sort_order == "Low to High":
+            products = products.order_by("price")
+        elif sort_order == "High to Low":
+            products = products.order_by("-price")
+    else:
+        selected_sizes = request.GET.getlist("size")
+        print(selected_sizes, "eeeee")
+        selected_colors = request.GET.getlist("color")
+        print(selected_colors, "ffff")
+        selected_category = request.GET.getlist("category")
+        print(selected_category, "aaaaaa")
+
     if products:
-        # Subquery to get the first variant for each product
         first_variant_subquery = (
             ProductVariant.objects.filter(product=OuterRef("pk"))
             .order_by("pk")
             .values("size")[:1]
         )
 
-        # Filter based on selected sizes using the subquery
         if selected_sizes:
             products = products.annotate(
                 first_variant_size=Subquery(first_variant_subquery)
@@ -147,9 +150,7 @@ def total_products(request):
 
             print(products, "iiiii")
 
-        # Apply other filters
         if selected_colors:
-            # Subquery to get the first variant for each product for color filter
             first_variant_color_subquery = (
                 ProductVariant.objects.filter(
                     product=OuterRef("pk"), color__in=selected_colors
@@ -165,33 +166,23 @@ def total_products(request):
             print(products, "ddddd")
 
         if selected_category:
-            # Subquery to get the first variant for each product for category filter
+            # Update the filter to use the 'product__category__name' field
+            products = products.filter(product__category__name__in=selected_category)
+
             first_variant_category_subquery = (
                 ProductVariant.objects.filter(
-                    product=OuterRef("pk"), product_category__in=selected_category
+                    product__category__name__in=selected_category,
+                    product=OuterRef("product"),
                 )
                 .order_by("pk")
-                .values("product_category")[:1]
+                .values("product__category__name")[:1]
             )
 
             products = products.annotate(
                 first_variant_category=Subquery(first_variant_category_subquery)
             ).filter(first_variant_category__isnull=False)
 
-            print(products, "wwwww")
 
-        if name_search:
-            products = products.filter(product__name__icontains=name_search)
-
-        # Apply sorting
-        if sort_order == "Low to High":
-            products = products.order_by("price")
-            print(products, "ttttt")
-        elif sort_order == "High to Low":
-            products = products.order_by("-price")
-            print(products, "xxxx")
-
-    # Render the template with the filtered products and other necessary data
     return render(
         request,
         "user/total_products.html",
