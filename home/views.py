@@ -98,7 +98,6 @@ def edit_address(request, id):
 
         return redirect("useraddress")
 
-
     return render(request, "user/edit_address.html", {"address": address})
 
 
