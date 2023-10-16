@@ -98,6 +98,7 @@ def edit_address(request, id):
 
         return redirect("useraddress")
 
+
     return render(request, "user/edit_address.html", {"address": address})
 
 
@@ -135,12 +136,9 @@ def total_products(request):
             products = sorted(products, key=lambda x: x.price, reverse=True)
 
     else:
-        selected_sizes = request.GET.getlist("size")
-        print(selected_sizes, "ttttt")
-        selected_colors = request.GET.getlist("color")
-        print(selected_colors, "kkkkk")
-        selected_category = request.GET.getlist("category")
-        print(selected_category, "iiii")
+        selected_sizes = request.GET.getlist("size", []) 
+        selected_colors = request.GET.getlist("color", []) 
+        selected_category = request.GET.getlist("category", []) 
 
     if products:
         if selected_sizes:
@@ -148,12 +146,10 @@ def total_products(request):
 
         if selected_colors:
             products = ProductVariant.objects.filter(color__name__in=selected_colors)
-            print(products,"colors")
+            print(products, "colors")
 
         if selected_category:
-            products = ProductVariant.objects.filter(
-                product__category__name__in=selected_category
-            )
+            products = ProductVariant.objects.filter(product__category__name__in=selected_category)
 
     return render(
         request,
