@@ -823,3 +823,4 @@ def wallet(request):
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return HttpResponseServerError(error_message)
+
