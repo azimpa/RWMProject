@@ -108,79 +108,52 @@ def delete_address(request, id):
 
 
 def total_products(request):
-    products = ProductVariant.objects.filter(is_active=True)
+    Adm_products = AdmProducts.objects.filter(is_active=True)
+    products = []
+    for prod in Adm_products:
+        variant = ProductVariant.objects.filter(product=prod, is_active=True).first()
+        if variant:
+            products.append(variant)
+
     category = AdmCategories.objects.filter(is_active=True)
     colors = ProductColor.objects.filter(is_active=True)
     sizes = ProductSize.objects.filter(is_active=True)
-
-    selected_sizes = []
-    selected_colors = []
-    selected_category = []
 
     if request.method == "POST":
         name_search = request.POST.get("name_search")
         sort_order = request.POST.get("sort", "")
 
         if name_search:
-            products = products.filter(product__name__icontains=name_search)
+            products = ProductVariant.objects.filter(
+                product__name__icontains=name_search
+            )
 
         if sort_order == "Low to High":
-            products = products.order_by("price")
+            products = sorted(products, key=lambda x: x.price)
+
         elif sort_order == "High to Low":
-            products = products.order_by("-price")
+            products = sorted(products, key=lambda x: x.price, reverse=True)
+
     else:
         selected_sizes = request.GET.getlist("size")
-        print(selected_sizes, "eeeee")
+        print(selected_sizes, "ttttt")
         selected_colors = request.GET.getlist("color")
-        print(selected_colors, "ffff")
+        print(selected_colors, "kkkkk")
         selected_category = request.GET.getlist("category")
-        print(selected_category, "aaaaaa")
+        print(selected_category, "iiii")
 
     if products:
-        first_variant_subquery = (
-            ProductVariant.objects.filter(product=OuterRef("pk"))
-            .order_by("pk")
-            .values("size")[:1]
-        )
-
         if selected_sizes:
-            products = products.annotate(
-                first_variant_size=Subquery(first_variant_subquery)
-            ).filter(first_variant_size__in=selected_sizes)
-
-            print(products, "iiiii")
+            products = ProductVariant.objects.filter(size__name__in=selected_sizes)
 
         if selected_colors:
-            first_variant_color_subquery = (
-                ProductVariant.objects.filter(
-                    product=OuterRef("pk"), color__in=selected_colors
-                )
-                .order_by("pk")
-                .values("color")[:1]
-            )
-
-            products = products.annotate(
-                first_variant_color=Subquery(first_variant_color_subquery)
-            ).filter(first_variant_color__isnull=False)
-
+            products = ProductVariant.objects.filter(color__name__in=selected_colors)
+            print(products,"colors")
 
         if selected_category:
-            # Update the filter to use the 'product__category__name' field
-            products = products.filter(product__category__name__in=selected_category)
-
-            first_variant_category_subquery = (
-                ProductVariant.objects.filter(
-                    product__category__name__in=selected_category,
-                    product=OuterRef("product"),
-                )
-                .order_by("pk")
-                .values("product__category__name")[:1]
+            products = ProductVariant.objects.filter(
+                product__category__name__in=selected_category
             )
-
-            products = products.annotate(
-                first_variant_category=Subquery(first_variant_category_subquery)
-            ).filter(first_variant_category__isnull=False)
-
 
     return render(
         request,
