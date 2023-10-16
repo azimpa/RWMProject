@@ -118,6 +118,10 @@ def total_products(request):
     category = AdmCategories.objects.filter(is_active=True)
     colors = ProductColor.objects.filter(is_active=True)
     sizes = ProductSize.objects.filter(is_active=True)
+    
+    selected_sizes = []
+    selected_colors = []
+    selected_category = []
 
     if request.method == "POST":
         name_search = request.POST.get("name_search")
@@ -135,9 +139,9 @@ def total_products(request):
             products = sorted(products, key=lambda x: x.price, reverse=True)
 
     else:
-        selected_sizes = request.GET.getlist("size", []) 
-        selected_colors = request.GET.getlist("color", []) 
-        selected_category = request.GET.getlist("category", []) 
+        selected_sizes = request.GET.getlist("size",) 
+        selected_colors = request.GET.getlist("color",) 
+        selected_category = request.GET.getlist("category",) 
 
     if products:
         if selected_sizes:
